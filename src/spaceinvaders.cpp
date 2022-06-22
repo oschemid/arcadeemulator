@@ -109,16 +109,25 @@ void ae::spaceinvaders::run()
 			while (SDL_PollEvent(&ev)) {
 			}
 			cpu.inPort[1] &= 0b10001000;
-			if (Keyboard[SDL_SCANCODE_0])
+			cpu.inPort[2] &= 0b00000000;
+			if (Keyboard[SDL_SCANCODE_RETURN])
 				cpu.inPort[1] |= 1;
 			if (Keyboard[SDL_SCANCODE_1])
 				cpu.inPort[1] |= 4;
-			if (Keyboard[SDL_SCANCODE_LEFT])
+			if (Keyboard[SDL_SCANCODE_2])
+				cpu.inPort[1] |= 2;
+			if (Keyboard[SDL_SCANCODE_LEFT]) {
 				cpu.inPort[1] |= 0x20;
-			if (Keyboard[SDL_SCANCODE_RIGHT])
+				cpu.inPort[2] |= 0x20;
+			}
+			if (Keyboard[SDL_SCANCODE_RIGHT]) {
 				cpu.inPort[1] |= 0x40;
-			if (Keyboard[SDL_SCANCODE_SPACE])
+				cpu.inPort[2] |= 0x40;
+			}
+			if (Keyboard[SDL_SCANCODE_SPACE]) {
 				cpu.inPort[1] |= 0x10;
+				cpu.inPort[2] |= 0x10;
+			}
 		}
 	}
 }

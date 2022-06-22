@@ -1384,8 +1384,14 @@ namespace ae::cpu {
 			memory->write(get_hl(), c);
 			cycle = 7;
 			break;
-//		case 0x72: /* MOV M,D */
-//		case 0x73: /* MOV M,E */
+		case 0x72: /* MOV M,D */
+			memory->write(get_hl(), d);
+			cycle = 7;
+			break;
+		case 0x73: /* MOV M,E */
+			memory->write(get_hl(), e);
+			cycle = 7;
+			break;
 //		case 0x74: /* MOV M,H */
 //		case 0x75: /* MOV M,L */
 //		case 0x76: /* HLT */
@@ -1875,6 +1881,9 @@ namespace ae::cpu {
 		{
 		case 1:
 			a = inPort[1];
+			break;
+		case 2:
+			a = inPort[2];
 			break;
 		case 3:
 		{
