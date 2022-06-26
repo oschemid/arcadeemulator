@@ -79,6 +79,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <LibraryPath>$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)external\nuklear-4.9.6;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -151,11 +152,13 @@
     <ClCompile Include="src\cpu\i8080.cpp" />
     <ClCompile Include="src\memory.cpp" />
     <ClCompile Include="src\spaceinvaders.cpp" />
+    <ClCompile Include="src\ui\ui.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\cpu\i8080.h" />
     <ClInclude Include="src\memory.h" />
     <ClInclude Include="src\spaceinvaders.h" />
+    <ClInclude Include="src\ui\ui.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
