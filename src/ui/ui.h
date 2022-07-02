@@ -1,6 +1,6 @@
 #pragma once
+#include <cstdint>
 
-#include <SDL2/SDL.h>
 
 namespace ae
 {
@@ -8,15 +8,23 @@ namespace ae
 	{
 		// UI creation
 		bool init();
+		bool refresh();
+		bool destroy();
 
 		// Console Display
-		bool createDisplay(const uint16_t, const uint16_t);
-		bool updateDisplay(const uint16_t*);
+		bool createDisplay(const std::uint16_t, const std::uint16_t);
+		bool updateDisplay(const std::uint16_t*);
 		bool destroyDisplay();
 
-		bool refresh();
+		// Menu
+		class menu
+		{
+		public:
+			enum response { NOTHING, LAUNCH, SETTINGS, QUIT };
 
-		// Ui delete
-		bool destroy();
+		public:
+			menu();
+			response run();
+		};
 	}
 }

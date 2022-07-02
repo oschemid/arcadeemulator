@@ -9,17 +9,29 @@
 
 int main(int argc, char** argv)
 {
-    // UI creation
-    if (!ae::ui::init())
-        return 1;
+	// UI creation
+	if (!ae::ui::init())
+		return 1;
 
-    // Machine selection
-    ae::spaceinvaders si;
-    si.init();
-    
-    si.run();
+	// Machine selection
+	ae::spaceinvaders si;
+	si.init();
 
-    ae::ui::destroy();
-    return 0;
+	ae::ui::menu my_menu;
+	ae::ui::menu::response r = ae::ui::menu::response::NOTHING;
+
+	while (r != ae::ui::menu::response::QUIT) {
+		r = my_menu.run();
+		switch (r) {
+		case ae::ui::menu::response::LAUNCH:
+			si.run();
+			break;
+		case ae::ui::menu::response::SETTINGS:
+			std::cout << "Settings";
+			break;
+		}
+	}
+	ae::ui::destroy();
+	return 0;
 }
 

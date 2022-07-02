@@ -23,7 +23,7 @@
 #include "ui/ui.h"
 
 ae::spaceinvaders::spaceinvaders() :
-    memory(),
+	memory(),
 	cpu(&memory)
 {
 }
@@ -31,19 +31,19 @@ ae::spaceinvaders::spaceinvaders() :
 
 bool ae::spaceinvaders::init()
 {
-    memory.load("roms/spaceinvaders/invaders.h", 0);
-    memory.load("roms/spaceinvaders/invaders.g", 0x0800);
-    memory.load("roms/spaceinvaders/invaders.f", 0x1000);
-    memory.load("roms/spaceinvaders/invaders.e", 0x1800);
+	memory.load("roms/spaceinvaders/invaders.h", 0);
+	memory.load("roms/spaceinvaders/invaders.g", 0x0800);
+	memory.load("roms/spaceinvaders/invaders.f", 0x1000);
+	memory.load("roms/spaceinvaders/invaders.e", 0x1800);
 
-//	SDL_SetRenderDrawColor(MainRenderer, 0x00, 0x00, 0x00, 0x00);
-//	SDL_RenderClear(MainRenderer);
+	//	SDL_SetRenderDrawColor(MainRenderer, 0x00, 0x00, 0x00, 0x00);
+	//	SDL_RenderClear(MainRenderer);
 
 	ae::ui::createDisplay(224, 256);
-//	ctx = nk_sdl_init(MainWindow, MainRenderer);
-//	{struct nk_font_atlas* atlas;
-//	nk_sdl_font_stash_begin(&atlas);
-//	nk_sdl_font_stash_end(); }
+	//	ctx = nk_sdl_init(MainWindow, MainRenderer);
+	//	{struct nk_font_atlas* atlas;
+	//	nk_sdl_font_stash_begin(&atlas);
+	//	nk_sdl_font_stash_end(); }
 	return true;
 }
 
@@ -72,20 +72,20 @@ void ae::spaceinvaders::updateDisplay() {
 			}
 		}
 	}
-	
-//	if (nk_begin(ctx, "Demo", nk_rect(50, 50, 230, 250),
-//				 NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
-//				 NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE))
-//	{
-//		nk_layout_row_dynamic(ctx, 30, 4);
-//		if (nk_)
-//		if (nk_option_label(ctx, "3 ships", ships == 3)) ships = 3;
-//		if (nk_option_label(ctx, "4 ships", ships == 4)) ships = 4;
-//		if (nk_option_label(ctx, "5 ships", ships == 5)) ships = 5;
-//		if (nk_option_label(ctx, "6 ships", ships == 6)) ships = 6;
-//	}
-//	nk_end(ctx);
-//	nk_sdl_render(NK_ANTI_ALIASING_ON);
+
+	//	if (nk_begin(ctx, "Demo", nk_rect(50, 50, 230, 250),
+	//				 NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
+	//				 NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE))
+	//	{
+	//		nk_layout_row_dynamic(ctx, 30, 4);
+	//		if (nk_)
+	//		if (nk_option_label(ctx, "3 ships", ships == 3)) ships = 3;
+	//		if (nk_option_label(ctx, "4 ships", ships == 4)) ships = 4;
+	//		if (nk_option_label(ctx, "5 ships", ships == 5)) ships = 5;
+	//		if (nk_option_label(ctx, "6 ships", ships == 6)) ships = 6;
+	//	}
+	//	nk_end(ctx);
+	//	nk_sdl_render(NK_ANTI_ALIASING_ON);
 	ae::ui::updateDisplay(Pixels);
 	ae::ui::refresh();
 }
@@ -137,12 +137,6 @@ void ae::spaceinvaders::run()
 		}
 		if (CurrentTime - LastInput > 1000000000 / 30 || LastInput > CurrentTime) { // 30 Hz - Manage Events
 			LastInput = CurrentTime;
-//			nk_input_begin(ctx);
-//			while (SDL_PollEvent(&ev)) {
-//				if (evt.type == SDL_QUIT) goto cleanup;
-//				nk_sdl_handle_event(&ev);
-//			}
-//			nk_input_end(ctx);
 			while (SDL_PollEvent(&ev)) {
 			}
 			cpu.inPort[1] &= 0b10001000;
@@ -178,6 +172,9 @@ void ae::spaceinvaders::run()
 			if (Keyboard[SDL_SCANCODE_SPACE]) {
 				cpu.inPort[1] |= 0x10;
 				cpu.inPort[2] |= 0x10;
+			}
+			if (Keyboard[SDL_SCANCODE_ESCAPE]) {
+				return;
 			}
 		}
 	}

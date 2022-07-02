@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -152,12 +152,14 @@
     <ClCompile Include="src\cpu\i8080.cpp" />
     <ClCompile Include="src\memory.cpp" />
     <ClCompile Include="src\spaceinvaders.cpp" />
+    <ClCompile Include="src\ui\menu.cpp" />
     <ClCompile Include="src\ui\ui.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\cpu\i8080.h" />
     <ClInclude Include="src\memory.h" />
     <ClInclude Include="src\spaceinvaders.h" />
+    <ClInclude Include="src\ui\nuklear_sdl_renderer.h" />
     <ClInclude Include="src\ui\ui.h" />
   </ItemGroup>
   <ItemGroup>
