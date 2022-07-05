@@ -3,6 +3,10 @@
 ## References
 [Computer Archeology](http://computerarcheology.com/Arcade/SpaceInvaders/Hardware.html)
 
+## Version
+- Midway (MAME roms - invaders)
+- TV (MAME roms - sitv)
+
 ## Architecture
 ### CPU
 - Intel 8080

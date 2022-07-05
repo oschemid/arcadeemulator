@@ -4,46 +4,33 @@
 #include "time.h"
 #include <iostream>
 #include "SDL2/SDL.h"
+#include "../ui/ui.h"
 
-//#define NK_INCLUDE_FIXED_TYPES
-//#define NK_INCLUDE_STANDARD_IO
-//#define NK_INCLUDE_STANDARD_VARARGS
-//#define NK_INCLUDE_DEFAULT_ALLOCATOR
-//#define NK_INCLUDE_VERTEX_BUFFER_OUTPUT
-//#define NK_INCLUDE_FONT_BAKING
-//#define NK_INCLUDE_DEFAULT_FONT
-//#define NK_IMPLEMENTATION
-//#define NK_SDL_RENDERER_IMPLEMENTATION
 
-//#include "nuklear.h"
-//#include "nuklear_sdl_renderer.h"
-
-//nk_context* ctx;
-
-#include "ui/ui.h"
-
-ae::spaceinvaders::spaceinvaders() :
+ae::machine::spaceinvaders::spaceinvaders(const string& version) :
+	version(version),
 	memory(),
 	cpu(&memory)
 {
 }
 
 
-bool ae::spaceinvaders::init()
+bool ae::machine::spaceinvaders::init()
 {
-	memory.load("roms/spaceinvaders/invaders.h", 0);
-	memory.load("roms/spaceinvaders/invaders.g", 0x0800);
-	memory.load("roms/spaceinvaders/invaders.f", 0x1000);
-	memory.load("roms/spaceinvaders/invaders.e", 0x1800);
-
-	//	SDL_SetRenderDrawColor(MainRenderer, 0x00, 0x00, 0x00, 0x00);
-	//	SDL_RenderClear(MainRenderer);
+	if (version == "Midway") {
+		memory.load("roms/spaceinvaders/invaders.h", 0);
+		memory.load("roms/spaceinvaders/invaders.g", 0x0800);
+		memory.load("roms/spaceinvaders/invaders.f", 0x1000);
+		memory.load("roms/spaceinvaders/invaders.e", 0x1800);
+	}
+	else if (version == "TV") {
+		memory.load("roms/spaceinvaders/tv0h.s1", 0);
+		memory.load("roms/spaceinvaders/tv02.rp1", 0x0800);
+		memory.load("roms/spaceinvaders/tv03.n1", 0x1000);
+		memory.load("roms/spaceinvaders/tv04.m1", 0x1800);
+	}
 
 	ae::ui::createDisplay(224, 256);
-	//	ctx = nk_sdl_init(MainWindow, MainRenderer);
-	//	{struct nk_font_atlas* atlas;
-	//	nk_sdl_font_stash_begin(&atlas);
-	//	nk_sdl_font_stash_end(); }
 	return true;
 }
 
@@ -52,7 +39,7 @@ uint64_t getNanoSeconds(std::chrono::time_point<std::chrono::high_resolution_clo
 	return duration_cast<std::chrono::nanoseconds>(diff).count();
 }
 
-void ae::spaceinvaders::updateDisplay() {
+void ae::machine::spaceinvaders::updateDisplay() {
 	uint32_t ColorToDraw = 0xffff;
 
 	for (int x = 0; x < 224; x++) {
@@ -73,23 +60,11 @@ void ae::spaceinvaders::updateDisplay() {
 		}
 	}
 
-	//	if (nk_begin(ctx, "Demo", nk_rect(50, 50, 230, 250),
-	//				 NK_WINDOW_BORDER | NK_WINDOW_MOVABLE | NK_WINDOW_SCALABLE |
-	//				 NK_WINDOW_MINIMIZABLE | NK_WINDOW_TITLE))
-	//	{
-	//		nk_layout_row_dynamic(ctx, 30, 4);
-	//		if (nk_)
-	//		if (nk_option_label(ctx, "3 ships", ships == 3)) ships = 3;
-	//		if (nk_option_label(ctx, "4 ships", ships == 4)) ships = 4;
-	//		if (nk_option_label(ctx, "5 ships", ships == 5)) ships = 5;
-	//		if (nk_option_label(ctx, "6 ships", ships == 6)) ships = 6;
-	//	}
-	//	nk_end(ctx);
-	//	nk_sdl_render(NK_ANTI_ALIASING_ON);
 	ae::ui::updateDisplay(Pixels);
 	ae::ui::refresh();
 }
-void ae::spaceinvaders::run()
+
+bool ae::machine::spaceinvaders::run()
 {
 	auto StartTime = std::chrono::high_resolution_clock::now();
 
@@ -174,7 +149,7 @@ void ae::spaceinvaders::run()
 				cpu.inPort[2] |= 0x10;
 			}
 			if (Keyboard[SDL_SCANCODE_ESCAPE]) {
-				return;
+				return true;
 			}
 		}
 	}

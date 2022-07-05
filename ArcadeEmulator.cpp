@@ -3,7 +3,8 @@
 
 #include <iostream>
 
-#include "src/spaceinvaders.h"
+#include "machine.h"
+#include "src/machine/spaceinvaders.h"
 #include "src/ui/ui.h"
 
 
@@ -14,8 +15,8 @@ int main(int argc, char** argv)
 		return 1;
 
 	// Machine selection
-	ae::spaceinvaders si;
-	si.init();
+	ae::IMachine* si = ae::newMachine("SpaceInvaders");
+	si->init();
 
 	ae::ui::menu my_menu;
 	ae::ui::menu::response r = ae::ui::menu::response::NOTHING;
@@ -24,7 +25,7 @@ int main(int argc, char** argv)
 		r = my_menu.run();
 		switch (r) {
 		case ae::ui::menu::response::LAUNCH:
-			si.run();
+			si->run();
 			break;
 		case ae::ui::menu::response::SETTINGS:
 			std::cout << "Settings";

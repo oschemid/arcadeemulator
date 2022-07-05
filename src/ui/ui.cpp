@@ -109,6 +109,7 @@ bool ae::ui::refresh() {
 bool ae::ui::destroy() {
 	if (Display)
 		ae::ui::destroyDisplay();
+	nk_sdl_shutdown();
 	if (Renderer) {
 		SDL_DestroyRenderer(Renderer);
 		Renderer = NULL;
@@ -117,6 +118,6 @@ bool ae::ui::destroy() {
 		SDL_DestroyWindow(MainWindow);
 		MainWindow = NULL;
 	}
-	nk_sdl_shutdown();
+	SDL_Quit();
 	return true;
 }

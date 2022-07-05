@@ -79,7 +79,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <LibraryPath>$(LibraryPath)</LibraryPath>
-    <IncludePath>$(ProjectDir)external\nuklear-4.9.6;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)src\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -150,15 +150,18 @@
   <ItemGroup>
     <ClCompile Include="ArcadeEmulator.cpp" />
     <ClCompile Include="src\cpu\i8080.cpp" />
+    <ClCompile Include="src\machine\machine.cpp" />
     <ClCompile Include="src\memory.cpp" />
-    <ClCompile Include="src\spaceinvaders.cpp" />
+    <ClCompile Include="src\machine\spaceinvaders.cpp" />
     <ClCompile Include="src\ui\menu.cpp" />
     <ClCompile Include="src\ui\ui.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\cpu\i8080.h" />
+    <ClInclude Include="src\include\machine.h" />
+    <ClInclude Include="src\include\types.h" />
     <ClInclude Include="src\memory.h" />
-    <ClInclude Include="src\spaceinvaders.h" />
+    <ClInclude Include="src\machine\spaceinvaders.h" />
     <ClInclude Include="src\ui\nuklear_sdl_renderer.h" />
     <ClInclude Include="src\ui\ui.h" />
   </ItemGroup>
