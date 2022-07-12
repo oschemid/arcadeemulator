@@ -3,7 +3,7 @@
 ## References
 [Computer Archeology](http://computerarcheology.com/Arcade/SpaceInvaders/Hardware.html)
 
-## Version
+## Versions
 - Midway (MAME roms - invaders)
 - TV (MAME roms - sitv)
 

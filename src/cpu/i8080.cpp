@@ -22,65 +22,53 @@ namespace ae::cpu {
 		return (value & 0x80) != 0;
 	}
 
-	i8080::i8080(ae::memory* m) :
-		memory(m),
-		a(0),
-		b(0),
-		c(0),
-		d(0),
-		e(0),
-		h(0),
-		l(0),
-		interrupt_enabled(2),
-		interrupt_request(8),
-		shift0(0),
-		shift1(0)
-	{
+	Intel8080::Intel8080() {
+		reset();
 	}
-	uint16_t i8080::get_bc() const {
+	uint16_t Intel8080::get_bc() const {
 		return (b << 8) | c;
 	}
-	void i8080::set_bc(const uint16_t v) {
+	void Intel8080::set_bc(const uint16_t v) {
 		b = v >> 8;
 		c = v & 0xff;
 	}
-	uint16_t i8080::get_de() const {
+	uint16_t Intel8080::get_de() const {
 		return (d << 8) | e;
 	}
-	void i8080::set_de(const uint16_t v) {
+	void Intel8080::set_de(const uint16_t v) {
 		d = v >> 8;
 		e = v & 0xff;
 	}
-	uint16_t i8080::get_hl() const {
+	uint16_t Intel8080::get_hl() const {
 		return (h << 8) | l;
 	}
-	void i8080::set_hl(const uint16_t v) {
+	void Intel8080::set_hl(const uint16_t v) {
 		h = v >> 8;
 		l = v & 0xff;
 	}
-	uint8_t i8080::get_m() const {
+	uint8_t Intel8080::get_m() const {
 		return memory->read(get_hl());
 	}
 
-	uint8_t i8080::dcr(const uint8_t value) {
+	uint8_t Intel8080::dcr(const uint8_t value) {
 		uint8_t result = value - 1;
 
 		zeroBit = zero(result);
 		signBit = sign(result);
 		parityBit = parity(result);
-		auxCarryBit = (result & 0x0f) == 0x0f;
+		auxCarryBit = !((result & 0x0f) == 0x0f);
 		return result;
 	}
-	uint8_t i8080::inr(const uint8_t value) {
+	uint8_t Intel8080::inr(const uint8_t value) {
 		uint8_t result = value + 1;
 		zeroBit = zero(result);
 		signBit = sign(result);
 		parityBit = parity(result);
-		auxCarryBit = (result & 0x0f) == 0x0f;
+		auxCarryBit = (result & 0x0f) == 0;
 		return result;
 	}
 
-	void i8080::xra(const uint8_t value) {
+	void Intel8080::xra(const uint8_t value) {
 		a ^= value;
 		carryBit = 0;
 		auxCarryBit = 0;
@@ -88,7 +76,7 @@ namespace ae::cpu {
 		signBit = sign(a);
 		zeroBit = zero(a);
 	}
-	void i8080::ora(const uint8_t value) {
+	void Intel8080::ora(const uint8_t value) {
 		a |= value;
 		carryBit = 0;
 		auxCarryBit = 0;
@@ -96,49 +84,50 @@ namespace ae::cpu {
 		signBit = sign(a);
 		zeroBit = zero(a);
 	}
-	void i8080::ana(const uint8_t value) {
+	void Intel8080::ana(const uint8_t value) {
 		uint8_t result = a & value;
 		carryBit = 0;
 		parityBit = parity(result);
 		signBit = sign(result);
 		zeroBit = zero(result);
-		auxCarryBit = ((a | value) & 0x08) == 0;
+		auxCarryBit = ((a | value) & 0x08) != 0;
 		a = result;
 	}
-	void i8080::sub(const uint8_t value) {
-		carryBit = (value > a) ? 1 : 0;
-		auxCarryBit = (value & 0xf) > (a & 0xf) ? 1 : 0;
-		a -= value;
+	void Intel8080::sub(const uint8_t value, const uint8_t flag) {
+		carryBit = (value + flag > a) ? 1 : 0;
+//		auxCarryBit = ((value+flag) & 0xf) > (a & 0xf) ? 0 : 1;
+		auxCarryBit = (a & 0x0f) - (value & 0x0f) - flag >= 0;
+		a -= value + flag;
 		signBit = sign(a);
 		zeroBit = zero(a);
 		parityBit = parity(a);
 	}
-	void i8080::sbb(const uint8_t value) {
-		sub(value + carryBit);
+	void Intel8080::sbb(const uint8_t value) {
+		sub(value, carryBit);
 	}
-	void i8080::cmp(const uint8_t value) {
+	void Intel8080::cmp(const uint8_t value) {
 		carryBit = (value > a) ? 1 : 0;
-		auxCarryBit = (value & 0xf) > (a & 0xf) ? 1 : 0;
+		auxCarryBit = (value & 0xf) > (a & 0xf) ? 0 : 1;
 		uint8_t r = a - value;
 		signBit = sign(r);
 		zeroBit = zero(r);
 		parityBit = parity(r);
 	}
-	void i8080::add(const uint8_t value)
+	void Intel8080::add(const uint8_t value, const uint8_t flag)
 	{
-		uint16_t sum = a + value;
-		auxCarryBit = ((value & 0x0f) + (a & 0x0f)) > 0x0f;
+		uint16_t sum = a + value + flag;
+		auxCarryBit = ((value & 0x0f) + (a & 0x0f)+ flag) > 0x0f;
 		a = sum & 0xff;
 		zeroBit = zero(a);
 		signBit = sign(a);
 		parityBit = parity(a);
 		carryBit = (sum > 0xff);
 	}
-	void i8080::adc(const uint8_t value)
+	void Intel8080::adc(const uint8_t value)
 	{
-		add(value + carryBit);
+		add(value, carryBit);
 	}
-	void i8080::daa()
+	void Intel8080::daa()
 	{
 		uint16_t temp = a;
 		if (((a & 0xf) > 9) || (auxCarryBit)) {
@@ -147,11 +136,14 @@ namespace ae::cpu {
 		}
 		if ((temp >> 4 > 9) || (carryBit)) {
 			temp += 0x60;
-			carryBit = temp > 0xff;
+			carryBit = 1;
 		}
 		a = temp & 0xff;
+		signBit = sign(a);
+		parityBit = parity(a);
+		zeroBit = zero(a);
 	}
-	void i8080::dad(const uint16_t value)
+	void Intel8080::dad(const uint16_t value)
 	{
 		uint32_t res = get_hl() + value;
 		h = res >> 8;
@@ -159,7 +151,7 @@ namespace ae::cpu {
 		carryBit = (res & 0xffff0000) != 0;
 	}
 
-	const string i8080::disassemble() {
+	const string Intel8080::disassemble() {
 		std::stringstream stream;
 		stream << std::setfill('0') << std::setw(4) << std::hex << pc << ": ";
 
@@ -905,7 +897,7 @@ namespace ae::cpu {
 		return stream.str();
 	}
 
-	void i8080::unimplemented()
+	void Intel8080::unimplemented()
 	{
 		pc--;
 		auto opcode = readOpcode();
@@ -914,26 +906,25 @@ namespace ae::cpu {
 		std::cout << disassemble();
 		throw std::runtime_error("Instruction not implemented");
 	}
-	void i8080::illegal()
+	void Intel8080::illegal()
 	{
 		pc--;
 		auto opcode = readOpcode();
 		throw std::runtime_error("Illegal instruction " + opcode);
 	}
 
-	void i8080::pushToStack(const uint16_t value)
+	void Intel8080::pushToStack(const uint16_t value)
 	{
 		sp -= 2;
 		write(sp, value);
 	}
-	const uint16_t i8080::popOfStack()
+	const uint16_t Intel8080::popOfStack()
 	{
 		uint16_t value = memory->read(sp) | (memory->read(sp + 1) << 8);
 		sp += 2;
 		return value;
 	}
-	const uint8_t i8080::executeOne()
-	{
+	const uint8_t Intel8080::executeOne() {
 		if (interrupt_enabled == 0 && interrupt_request < 8) {
 			interrupt_enabled = 2;
 			pushToStack(pc);
@@ -956,7 +947,10 @@ namespace ae::cpu {
 			b = readArgument8();
 			cycle = 10;
 			break;
-//		case 0x02: /* STAX B */
+		case 0x02: /* STAX B */
+			memory->write(get_bc(), a);
+			cycle = 7;
+			break;
 		case 0x03: /* INX B */
 			c++;
 			if (c == 0)
@@ -1037,7 +1031,14 @@ namespace ae::cpu {
 			d = readArgument8();
 			cycle = 7;
 			break;
-//		case 0x17: /* RAL */
+		case 0x17: /* RAL */
+		{
+			uint8_t flag = carryBit;
+			carryBit = a >> 7;
+			a = (a << 1) | (flag);
+		}
+		cycle = 4;
+		break;
 		case 0x19: /* DAD D */
 			dad(get_de());
 			cycle = 10;
@@ -1063,13 +1064,13 @@ namespace ae::cpu {
 			cycle = 7;
 			break;
 		case 0x1F: /* RAR */
-			{
-				uint8_t flag = carryBit;
-				carryBit = a & 0x01;
-				a = (a >> 1) | (flag << 7);
-			}
-			cycle = 4;
-			break;
+		{
+			uint8_t flag = carryBit;
+			carryBit = a & 0x01;
+			a = (a >> 1) | (flag << 7);
+		}
+		cycle = 4;
+		break;
 		case 0x21: /* LXI H */
 			l = readArgument8();
 			h = readArgument8();
@@ -1144,7 +1145,10 @@ namespace ae::cpu {
 			memory->write(readArgument16(), a);
 			cycle = 13;
 			break;
-//		case 0x33: /* INX SP */
+		case 0x33: /* INX SP */
+			sp = sp + 1;
+			cycle = 5;
+			break;
 		case 0x34: /* INR M */
 			memory->write(get_hl(), inr(get_m()));
 			cycle = 10;
@@ -1161,12 +1165,18 @@ namespace ae::cpu {
 			carryBit = 1;
 			cycle = 4;
 			break;
-//		case 0x39: /* DAD SP */
+		case 0x39: /* DAD SP */
+			dad(sp);
+			cycle = 10;
+			break;
 		case 0x3A: /* LDA */
 			a = memory->read(readArgument16());
 			cycle = 13;
 			break;
-//		case 0x3B: /* DCX SP */
+		case 0x3B: /* DCX SP */
+			sp = sp - 1;
+			cycle = 5;
+			break;
 		case 0x3C: /* INR A */
 			a = inr(a);
 			cycle = 5;
@@ -1179,8 +1189,10 @@ namespace ae::cpu {
 			a = readArgument8();
 			cycle = 7;
 			break;
-//		case 0x3F: /* CMC */
-
+		case 0x3F: /* CMC */
+			carryBit = 1 - carryBit;
+			cycle = 4;
+			break;
 		case 0x40: /* MOV B,B */
 			b = b;
 			cycle = 5;
@@ -1392,9 +1404,15 @@ namespace ae::cpu {
 			memory->write(get_hl(), e);
 			cycle = 7;
 			break;
-//		case 0x74: /* MOV M,H */
-//		case 0x75: /* MOV M,L */
-//		case 0x76: /* HLT */
+		case 0x74: /* MOV M,H */
+			memory->write(get_hl(), h);
+			cycle = 7;
+			break;
+		case 0x75: /* MOV M,L */
+			memory->write(get_hl(), l);
+			cycle = 7;
+			break;
+			//		case 0x76: /* HLT */
 		case 0x77: /* MOV M,A */
 			memory->write(get_hl(), a);
 			cycle = 7;
@@ -1486,8 +1504,12 @@ namespace ae::cpu {
 			break;
 		case 0x8D: /* ADC L */
 			adc(l);
+			cycle = 4;
 			break;
-//		case 0x8E: /* ADC M */
+		case 0x8E: /* ADC M */
+			adc(get_m());
+			cycle = 7;
+			break;
 		case 0x8F: /* ADC A */
 			adc(a);
 			cycle = 4;
@@ -1517,19 +1539,46 @@ namespace ae::cpu {
 			sub(l);
 			cycle = 4;
 			break;
-//		case 0x96: /* SUB M */
+		case 0x96: /* SUB M */
+			sub(get_m());
+			cycle = 7;
+			break;
 		case 0x97: /* SUB A */
 			sub(a);
 			cycle = 4;
 			break;
-//		case 0x98: /* SBB B */
-//		case 0x99: /* SBB C */
-//		case 0x9A: /* SBB D */
-//		case 0x9B: /* SBB E */
-//		case 0x9C: /* SBB H */
-//		case 0x9D: /* SBB L */
-//		case 0x9E: /* SBB M */
-//		case 0x9F: /* SBB A */
+		case 0x98: /* SBB B */
+			sbb(b);
+			cycle = 4;
+			break;
+		case 0x99: /* SBB C */
+			sbb(c);
+			cycle = 4;
+			break;
+		case 0x9A: /* SBB D */
+			sbb(d);
+			cycle = 4;
+			break;
+		case 0x9B: /* SBB E */
+			sbb(e);
+			cycle = 4;
+			break;
+		case 0x9C: /* SBB H */
+			sbb(h);
+			cycle = 4;
+			break;
+		case 0x9D: /* SBB L */
+			sbb(l);
+			cycle = 4;
+			break;
+		case 0x9E: /* SBB M */
+			sbb(get_m());
+			cycle = 7;
+			break;
+		case 0x9F: /* SBB A */
+			sbb(a);
+			cycle = 4;
+			break;
 
 		case 0xA0: /* ANA B */
 			ana(b);
@@ -1697,7 +1746,10 @@ namespace ae::cpu {
 			add(readArgument8());
 			cycle = 7;
 			break;
-//		case 0xC7: /* RST 0 */
+		case 0xC7: /* RST 0 */
+			pushToStack(pc);
+			pc = 0;
+			break;
 		case 0xC8: /* RZ */
 			if (zeroBit) {
 				pc = popOfStack();
@@ -1726,8 +1778,11 @@ namespace ae::cpu {
 			}
 			break;
 		case 0xCD: /* CALL */ tmp16 = readArgument16(); pushToStack(pc); pc = tmp16; cycle = 17; break;
-//		case 0xCE: /* ACI */
-//		case 0xCF: /* RST 1 */
+		case 0xCE: /* ACI */
+			adc(readArgument8());
+			cycle = 7;
+			break;
+			//		case 0xCF: /* RST 1 */
 
 		case 0xD0: /* RNC */
 			if (!carryBit) {
@@ -1749,9 +1804,9 @@ namespace ae::cpu {
 			cycle = 10;
 			break;
 		case 0xD3: /* OUT */
-			out(readArgument8(), a);
+			handlerOut(readArgument8(), a);
 			cycle = 10;
-			break; // TEMPORAIRE
+			break;
 		case 0xD4: /* CNC */
 			tmp16 = readArgument16();
 			if (!carryBit) {
@@ -1771,7 +1826,7 @@ namespace ae::cpu {
 			sub(readArgument8());
 			cycle = 7;
 			break;
-//		case 0xD7: /* RST 2 */
+			//		case 0xD7: /* RST 2 */
 		case 0XD8: /* RC */
 			if (carryBit) {
 				pc = popOfStack();
@@ -1788,60 +1843,156 @@ namespace ae::cpu {
 			cycle = 10;
 			break;
 		case 0XDB: /* IN */
-			a = in(readArgument8());
+			a = handlerIn(readArgument8());
 			cycle = 10;
 			break;
-//		case 0xDC: /* CC */
+		case 0xDC: /* CC */
+			tmp16 = readArgument16();
+			if (carryBit) {
+				pushToStack(pc);
+				pc = tmp16;
+				cycle = 17;
+			}
+			else {
+				cycle = 11;
+			}
+			break;
 		case 0xDE: /* SBI */
 			sbb(readArgument8());
 			cycle = 7;
 			break;
-//		case 0xDF: /* RST 3 */
+			//		case 0xDF: /* RST 3 */
 
-//		case 0xE0: /* RPO */
+		case 0xE0: /* RPO */
+			if (!parityBit) {
+				pc = popOfStack();
+				cycle = 11;
+			}
+			else {
+				cycle = 5;
+			}
+			break;
 		case 0xE1: /* POP HL */
 			set_hl(popOfStack());
 			cycle = 10;
 			break;
-//		case 0xE2: /* JPO */
+		case 0xE2: /* JPO */
+			tmp16 = readArgument16();
+			if (!parityBit)
+				pc = tmp16;
+			cycle = 10;
+			break;
 		case 0xE3: /* XTHL */
-		   tmp16 = memory->read(sp) | (memory->read(sp+1)<<8);
-		   memory->write(sp, l);
-		   memory->write(sp + 1, h);
-		   set_hl(tmp16);
-		   cycle = 18;
-		   break;
-//		case 0xE4: /* CPO */
+			tmp16 = memory->read(sp) | (memory->read(sp + 1) << 8);
+			memory->write(sp, l);
+			memory->write(sp + 1, h);
+			set_hl(tmp16);
+			cycle = 18;
+			break;
+		case 0xE4: /* CPO */
+			tmp16 = readArgument16();
+			if (!parityBit) {
+				pushToStack(pc);
+				pc = tmp16;
+				cycle = 17;
+			}
+			else {
+				cycle = 11;
+			}
+			break;
 		case 0xE5: /* PUSH HL */ pushToStack((h << 8) | l); cycle = 11; break;
 		case 0xE6: /* ANI */
 			ana(readArgument8());
 			cycle = 7;
 			break;
-//		case 0XE7: /* RST 4 */
-//		case 0xE8: /* RPE */
+			//		case 0XE7: /* RST 4 */
+		case 0xE8: /* RPE */
+			if (parityBit) {
+				pc = popOfStack();
+				cycle = 11;
+			}
+			else {
+				cycle = 5;
+			}
+			break;
 		case 0xE9: /* PCHL */
 			pc = get_hl();
 			cycle = 5;
 			break;
-//		case 0xEA: /* JPE */
+		case 0xEA: /* JPE */
+			tmp16 = readArgument16();
+			if (parityBit)
+				pc = tmp16;
+			cycle = 10;
+			break;
 		case 0xEB: /* XCHG */ { uint8_t tmp = d; d = h; h = tmp; tmp = e; e = l; l = tmp; } cycle = 4; break;
-//		case 0xEC: /* CPE */
-//		case 0xEE: /* XRI */
-//		case 0xEF: /* RST 5 */
+		case 0xEC: /* CPE */
+			tmp16 = readArgument16();
+			if (parityBit) {
+				pushToStack(pc);
+				pc = tmp16;
+				cycle = 17;
+			}
+			else {
+				cycle = 11;
+			}
+			break;
+		case 0xEE: /* XRI */
+			xra(readArgument8());
+			cycle = 7;
+			break;
+			//		case 0xEF: /* RST 5 */
 
-//		case 0xF0: /* RP */
-		case 0xF1: /* POP PSW */ { uint16_t t = popOfStack(); a = t >> 8; parityBit = (t >> 7) & 0x1; zeroBit = (t >> 6) & 1; signBit = (t >> 5) & 1; carryBit = (t >> 4) & 1; auxCarryBit = (t >> 3) & 1; } cycle = 10; break;
-//		case 0xF2: /* JP */
-//		case 0xF3: /* DI */
-//		case 0xF4: /* CP */
-		case 0xF5: /* PUSH PSW */ pushToStack((a << 8) | (parityBit << 7) | (zeroBit << 6) | (signBit << 5) | (carryBit << 4) | (auxCarryBit << 3)); cycle = 11; break;
+		case 0xF0: /* RP */
+			if (!signBit) {
+				pc = popOfStack();
+				cycle = 11;
+			}
+			else {
+				cycle = 5;
+			}
+			break;
+		case 0xF1: /* POP PSW */ { uint16_t t = popOfStack(); a = t >> 8; parityBit = (t >> 2) & 1; zeroBit = (t >> 6) & 1; signBit = (t >> 7) & 1; carryBit = t & 1; auxCarryBit = (t >> 4) & 1; } cycle = 10; break;
+		case 0xF2: /* JP */
+			tmp16 = readArgument16();
+			if (!signBit)
+				pc = tmp16;
+			cycle = 10;
+			break;
+		case 0xF3: /* DI */
+			interrupt_enabled = 0;
+			cycle = 4;
+			break;
+		case 0xF4: /* CP */
+			tmp16 = readArgument16();
+			if (!signBit) {
+				pushToStack(pc);
+				pc = tmp16;
+				cycle = 17;
+			}
+			else {
+				cycle = 11;
+			}
+			break;
+		case 0xF5: /* PUSH PSW */ pushToStack((a << 8) | (signBit << 7) | (zeroBit << 6) | (auxCarryBit << 4) | (parityBit << 2) | 2 | (carryBit)); cycle = 11; break;
 		case 0xF6: /* ORI */
 			ora(readArgument8());
 			cycle = 7;
 			break;
-//		case 0xF7: /* RST 6 */
-//		case 0xF8: /* RM */
-//		case 0xF9: /* SPHL */
+			//		case 0xF7: /* RST 6 */
+		case 0xF8: /* RM */
+			if (signBit) {
+				pc = popOfStack();
+				cycle = 11;
+			}
+			else {
+				cycle = 5;
+			}
+			break;
+		case 0xF9: /* SPHL */
+			sp = get_hl();
+			cycle = 5;
+			break;
 		case 0xFA: /* JM */
 			tmp16 = readArgument16();
 			if (signBit)
@@ -1867,52 +2018,45 @@ namespace ae::cpu {
 			cmp(readArgument8());
 			cycle = 7;
 			break;
-//		case 0xFF: /* RST 7 */
+			//		case 0xFF: /* RST 7 */
 
 		default: unimplemented(); break;
 		}
 		return cycle;
 	}
-	
-	const uint8_t i8080::in(const uint8_t port)
-	{
-		uint8_t a=0;
-		switch (port)
-		{
-		case 1:
-			a = inPort[1];
-			break;
-		case 2:
-			a = inPort[2];
-			break;
-		case 3:
-		{
-			uint16_t v = (shift1 << 8) | shift0;
-			a = ((v >> (8 - shift_offset)) & 0xff);
-		}
-		break;
-		}
-		return a;
-	}
 
-	void i8080::out(const uint8_t port, const uint8_t value)
-	{
-		switch (port)
-		{
-		case 2:
-			shift_offset = value & 0x7;
-			break;
-		case 4:
-			shift0 = shift1;
-			shift1 = value;
-			break;
-		}
-	}
-
-	bool i8080::interrupt(const uint8_t inte) {
+	bool Intel8080::interrupt(const uint8_t inte) {
 		if (interrupt_enabled == 0)
 			interrupt_request = inte;
-		return (interrupt_enabled==0)?true:false;
+		return (interrupt_enabled == 0) ? true : false;
+	}
+
+	bool Intel8080::in(const ICpu::infn fn) {
+		handlerIn = fn;
+		return true;
+	}
+	bool Intel8080::out(const ICpu::outfn fn) {
+		handlerOut = fn;
+		return true;
+	}
+
+	bool Intel8080::link(ae::memory& mem) {
+		memory = &mem;
+		return true;
+	}
+
+	bool Intel8080::reset(const uint16_t address) {
+		pc = address;
+		a = 0;
+		b = 0;
+		c = 0;
+		d = 0;
+		e = 0;
+		h = 0;
+		l = 0;
+		interrupt_enabled = 2;
+		interrupt_request = 8;
+		return true;
 	}
 }
 

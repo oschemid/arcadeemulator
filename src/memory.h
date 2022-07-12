@@ -17,29 +17,33 @@ namespace ae
 	class memory
 	{
 	protected:
-		uint8_t data[0x4000];
+		uint8_t* data;
+		uint16_t size;
 
 	public:
 		memory();
+		~memory();
+		void allocate(const uint16_t);
 
 		bool load(const string&, const uint16_t);
 		const uint8_t read(const uint16_t address) const {
+		//	if (address <= size)
 			if (address < 0x4000)
 				return data[address];
-			if (address >= 0x6000)
-				return 0;
-			return data[address - 0x4000];
+						if (address >= 0x6000)
+							return 0;
+						return data[address - 0x4000];
 		}
 		void write(const uint16_t address,
 				   const uint8_t value) {
-			if (address < 0x2000)
-				throw std::runtime_error("Write into ROM");
-			if (address < 0x4000) {
-				data[address] = value;
-				return;
-			}
-			if (address < 0x6000)
-				data[address - 0x2000] = value;
+						if (address < 0x2000)
+							throw std::runtime_error("Write into ROM");
+						if (address < 0x4000) {
+			data[address] = value;
+							return;
+						}
+						if (address < 0x6000)
+							data[address - 0x2000] = value;
 		}
 	};
 }

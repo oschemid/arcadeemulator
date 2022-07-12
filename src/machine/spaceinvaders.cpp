@@ -7,30 +7,54 @@
 #include "../ui/ui.h"
 
 
-ae::machine::spaceinvaders::spaceinvaders(const string& version) :
-	version(version),
+ae::machine::SpaceInvaders::SpaceInvaders() :
 	memory(),
-	cpu(&memory)
+	cpu(nullptr),
+	shift0(0),
+	shift1(0)
 {
 }
 
 
-bool ae::machine::spaceinvaders::init()
-{
-	if (version == "Midway") {
-		memory.load("roms/spaceinvaders/invaders.h", 0);
-		memory.load("roms/spaceinvaders/invaders.g", 0x0800);
-		memory.load("roms/spaceinvaders/invaders.f", 0x1000);
-		memory.load("roms/spaceinvaders/invaders.e", 0x1800);
+const uint8_t ae::machine::SpaceInvaders::in(const uint8_t port) {
+	switch (port) {
+	case 1:
+		return port1;
+		break;
+	case 2:
+		return port2;
+	case 3: {
+		uint16_t v = (shift1 << 8) | shift0;
+		return (uint8_t)((v >> (8 - shift_offset)) & 0xff); }
+		  break;
+	default:
+		return (uint8_t)0;
+		break;
 	}
-	else if (version == "TV") {
-		memory.load("roms/spaceinvaders/tv0h.s1", 0);
-		memory.load("roms/spaceinvaders/tv02.rp1", 0x0800);
-		memory.load("roms/spaceinvaders/tv03.n1", 0x1000);
-		memory.load("roms/spaceinvaders/tv04.m1", 0x1800);
-	}
+}
 
+void ae::machine::SpaceInvaders::out(const uint8_t port, const uint8_t value) {
+	switch (port)
+	{
+	case 2:
+		shift_offset = value & 0x7;
+		break;
+	case 4:
+		shift0 = shift1;
+		shift1 = value;
+		break;
+	}
+}
+
+bool ae::machine::SpaceInvaders::init()
+{
+	cpu = newCpu("i8080");
+	memory.allocate(0x3fff);
+	cpu->link(memory);
+	loadMemory();
 	ae::ui::createDisplay(224, 256);
+	cpu->in([this](const uint8_t p) { return in(p); });
+	cpu->out([this](const uint8_t p, const uint8_t v) { out(p, v); });
 	return true;
 }
 
@@ -39,7 +63,7 @@ uint64_t getNanoSeconds(std::chrono::time_point<std::chrono::high_resolution_clo
 	return duration_cast<std::chrono::nanoseconds>(diff).count();
 }
 
-void ae::machine::spaceinvaders::updateDisplay() {
+void ae::machine::SpaceInvaders::updateDisplay() {
 	uint32_t ColorToDraw = 0xffff;
 
 	for (int x = 0; x < 224; x++) {
@@ -64,7 +88,7 @@ void ae::machine::spaceinvaders::updateDisplay() {
 	ae::ui::refresh();
 }
 
-bool ae::machine::spaceinvaders::run()
+bool ae::machine::SpaceInvaders::run()
 {
 	auto StartTime = std::chrono::high_resolution_clock::now();
 
@@ -79,13 +103,16 @@ bool ae::machine::spaceinvaders::run()
 	uint64_t ClockCount = 0;
 	SDL_Event ev;
 
+	port1 = 0b10001000;
+	port2 = 0b00000000;
+
 	const uint8_t* Keyboard = SDL_GetKeyboardState(NULL);
 
 	while (0 == 0) {
 		CurrentTime = getNanoSeconds(&StartTime);
 		if (CurrentTime - LastThrottle < 1000000) {		// 1ms
 			if (ClockCount < ClocksPerMS + ClockCompensation)
-				ClockCount += cpu.executeOne();
+				ClockCount += cpu->executeOne();
 		}
 		else {
 			ClockCompensation += ClocksPerMS * (CurrentTime - LastThrottle) / 1000000;
@@ -102,10 +129,10 @@ bool ae::machine::spaceinvaders::run()
 			bool interrupt = false;
 			if (DrawFull) {
 				updateDisplay();
-				interrupt = cpu.interrupt(2);
+				interrupt = cpu->interrupt(2);
 			}
 			else
-				interrupt = cpu.interrupt(1);
+				interrupt = cpu->interrupt(1);
 
 			if (interrupt)
 				DrawFull = 1 - DrawFull;
@@ -114,43 +141,74 @@ bool ae::machine::spaceinvaders::run()
 			LastInput = CurrentTime;
 			while (SDL_PollEvent(&ev)) {
 			}
-			cpu.inPort[1] &= 0b10001000;
-			cpu.inPort[2] &= 0b00000000;
+			port1 &= 0b10001000;
+			port2 &= 0b00000000;
+
 			switch (ships) {
 			case 3:
-				cpu.inPort[2] |= 0b00;
+				port2 |= 0b00;
 				break;
 			case 4:
-				cpu.inPort[2] |= 0b01;
+				port2 |= 0b01;
 				break;
 			case 5:
-				cpu.inPort[2] |= 0b10;
+				port2 |= 0b10;
 				break;
 			case 6:
-				cpu.inPort[2] |= 0b11;
+				port2 |= 0b11;
 				break;
 			}
 			if (Keyboard[SDL_SCANCODE_RETURN])
-				cpu.inPort[1] |= 1;
+				port1 |= 1;
 			if (Keyboard[SDL_SCANCODE_1])
-				cpu.inPort[1] |= 4;
+				port1 |= 4;
 			if (Keyboard[SDL_SCANCODE_2])
-				cpu.inPort[1] |= 2;
+				port1 |= 2;
 			if (Keyboard[SDL_SCANCODE_LEFT]) {
-				cpu.inPort[1] |= 0x20;
-				cpu.inPort[2] |= 0x20;
+				port1 |= 0x20;
+				port2 |= 0x20;
 			}
 			if (Keyboard[SDL_SCANCODE_RIGHT]) {
-				cpu.inPort[1] |= 0x40;
-				cpu.inPort[2] |= 0x40;
+				port1 |= 0x40;
+				port2 |= 0x40;
 			}
 			if (Keyboard[SDL_SCANCODE_SPACE]) {
-				cpu.inPort[1] |= 0x10;
-				cpu.inPort[2] |= 0x10;
+				port1 |= 0x10;
+				port2 |= 0x10;
 			}
 			if (Keyboard[SDL_SCANCODE_ESCAPE]) {
 				return true;
 			}
 		}
 	}
+}
+
+ae::machine::SpaceInvadersMidway::SpaceInvadersMidway() :
+	SpaceInvaders()
+{
+}
+
+void ae::machine::SpaceInvadersMidway::loadMemory() {
+	memory.load("roms/spaceinvaders/invaders.h", 0);
+	memory.load("roms/spaceinvaders/invaders.g", 0x0800);
+	memory.load("roms/spaceinvaders/invaders.f", 0x1000);
+	memory.load("roms/spaceinvaders/invaders.e", 0x1800);
+}
+
+ae::machine::SpaceInvadersTV::SpaceInvadersTV() :
+	SpaceInvaders()
+{
+}
+
+void ae::machine::SpaceInvadersTV::loadMemory() {
+	memory.load("roms/spaceinvaders/tv0h.s1", 0);
+	memory.load("roms/spaceinvaders/tv02.rp1", 0x0800);
+	memory.load("roms/spaceinvaders/tv03.n1", 0x1000);
+	memory.load("roms/spaceinvaders/tv04.m1", 0x1800);
+}
+
+const uint8_t ae::machine::SpaceInvadersTV::in(const uint8_t port) {
+	if (port == 0)
+		return 1;
+	return ae::machine::SpaceInvaders::in(port);
 }

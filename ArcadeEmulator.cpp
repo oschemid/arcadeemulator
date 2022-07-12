@@ -15,7 +15,7 @@ int main(int argc, char** argv)
 		return 1;
 
 	// Machine selection
-	ae::IMachine* si = ae::newMachine("SpaceInvaders");
+	ae::IMachine* si = ae::newMachine("SpaceInvadersTV");
 	si->init();
 
 	ae::ui::menu my_menu;
