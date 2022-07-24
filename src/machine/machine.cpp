@@ -7,7 +7,6 @@
 
 using namespace ae;
 
-typedef std::map<const string, std::function<IMachine* ()>> machinesList;
 
 static machinesList machines
 {
@@ -17,4 +16,8 @@ static machinesList machines
 
 IMachine* ae::newMachine(const string& name) {
 	return machines[name]();
+}
+
+machinesList ae::getMachines() {
+	return machines;
 }

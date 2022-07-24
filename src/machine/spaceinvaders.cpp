@@ -134,8 +134,8 @@ bool ae::machine::SpaceInvaders::run()
 			else
 				interrupt = cpu->interrupt(1);
 
-			if (interrupt)
-				DrawFull = 1 - DrawFull;
+			//			if (interrupt)
+			DrawFull = 1 - DrawFull;
 		}
 		if (CurrentTime - LastInput > 1000000000 / 30 || LastInput > CurrentTime) { // 30 Hz - Manage Events
 			LastInput = CurrentTime;

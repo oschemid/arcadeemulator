@@ -47,6 +47,10 @@ namespace ae
 			void loadMemory() override;
 
 		public:
+			const string getName() const override { return "Space Invaders (Midway)"; }
+			const string getID() const override { return "SpaceInvadersMidway"; }
+			const string getDescription() const override { return "1978 Taito"; }
+
 			SpaceInvadersMidway();
 		};
 		class SpaceInvadersTV : public SpaceInvaders
@@ -56,6 +60,10 @@ namespace ae
 			const uint8_t in(const uint8_t) override;
 
 		public:
+			const string getName() const override { return "Space Invaders (TV)"; }
+			const string getID() const override { return "SpaceInvadersTV"; }
+			const string getDescription() const override { return "1978 Taito"; }
+
 			SpaceInvadersTV();
 		};
 	}

@@ -32,7 +32,7 @@ void loadFont() {
 	struct nk_font* font;
 
 	nk_sdl_font_stash_begin(&atlas);
-	font = nk_font_atlas_add_from_file(atlas, "assets/arcadeclassic.ttf", 14, &config);
+	font = nk_font_atlas_add_from_file(atlas, "assets/HandoSoftTrial-Regular.ttf", 20, &config);
 	nk_sdl_font_stash_end();
 
 	nk_style_set_font(NkContext, &font->handle);

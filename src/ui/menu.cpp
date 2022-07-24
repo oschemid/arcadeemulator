@@ -4,7 +4,6 @@
 #define NK_INCLUDE_STANDARD_IO
 #define NK_INCLUDE_FONT_BAKING
 #define NK_INCLUDE_DEFAULT_FONT
-#define _CRT_SECURE_NO_WARNINGS
 #include "nuklear/nuklear.h"
 #include "nuklear_sdl_renderer.h"
 #include "ui.h"
@@ -28,12 +27,12 @@ static void setStyle() {
 	flou.r = 50;
 	flou.a = 150;
 
-	NkContext->style.window.header.normal = nk_style_item_color(transparent);
-	NkContext->style.window.header.active = nk_style_item_color(transparent);
-	NkContext->style.window.fixed_background = nk_style_item_color(flou);
+	//	NkContext->style.window.header.normal = nk_style_item_color(transparent);
+	//	NkContext->style.window.header.active = nk_style_item_color(transparent);
+	//	NkContext->style.window.fixed_background = nk_style_item_color(flou);
 }
 
-menu::response renderWindow() {
+menu::response renderWindow(ae::IMachine* si) {
 	int width, height;
 	SDL_GetWindowSize(MainWindow, &width, &height);
 
@@ -41,13 +40,19 @@ menu::response renderWindow() {
 				 NK_WINDOW_TITLE | NK_WINDOW_NO_SCROLLBAR))
 	{
 		nk_layout_row_dynamic(NkContext, 30, 1);
-		if (nk_button_label(NkContext, "Launch")) {
+		if (si) {
+			if (nk_button_label(NkContext, "Launch")) {
+				nk_end(NkContext);
+				return menu::response::LAUNCH;
+			}
+		}
+		if (nk_button_label(NkContext, "Game Selection")) {
 			nk_end(NkContext);
-			return menu::response::LAUNCH;
+			return menu::response::GAMESELECTION;
 		}
 		if (nk_button_label(NkContext, "Game Settings")) {
 			nk_end(NkContext);
-			return menu::response::SETTINGS;
+			return menu::response::GAMESETTINGS;
 		}
 		if (nk_button_label(NkContext, "Quit")) {
 			nk_end(NkContext);
@@ -62,7 +67,7 @@ menu::menu() {
 
 }
 
-menu::response menu::run() {
+menu::response menu::run(IMachine* si) {
 	setStyle();
 	response r = NOTHING;
 	while (r == NOTHING) {
@@ -74,7 +79,7 @@ menu::response menu::run() {
 		}
 		nk_input_end(NkContext);
 
-		r = renderWindow();
+		r = renderWindow(si);
 		nk_sdl_render(NK_ANTI_ALIASING_ON);
 
 		SDL_RenderPresent(Renderer);
