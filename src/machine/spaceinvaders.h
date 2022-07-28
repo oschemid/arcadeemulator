@@ -3,7 +3,7 @@
 #include <cstdint>
 
 #include "machine.h"
-#include "../memory.h"
+#include "memory.h"
 #include "cpu.h"
 
 
@@ -17,12 +17,12 @@ namespace ae
 			uint8_t ships;
 
 			virtual void loadMemory() = 0;
+			virtual const uint8_t in1();
+			virtual const uint8_t in2();
 
 		protected:
 			void updateDisplay();
 			uint16_t Pixels[224 * 256];
-			uint8_t port1;
-			uint8_t port2;
 			std::uint8_t shift0, shift1;
 			std::uint8_t shift_offset;
 
@@ -30,7 +30,7 @@ namespace ae
 			void out(const uint8_t, const uint8_t);
 
 		public:
-			ae::memory memory;
+			ae::IMemory* memory;
 			ae::ICpu* cpu;
 
 		public:
@@ -65,6 +65,21 @@ namespace ae
 			const string getDescription() const override { return "1978 Taito"; }
 
 			SpaceInvadersTV();
+		};
+		class SpaceChaserCV : public SpaceInvaders
+		{
+		protected:
+			void loadMemory() override;
+			const uint8_t in1() override;
+			const uint8_t in(const uint8_t) override;
+			bool init() override;
+
+		public:
+			const string getName() const override { return "Space Chaser (CV)"; }
+			const string getID() const override { return "SpaceChaserCV"; }
+			const string getDescription() const override { return "1979 Taito"; }
+
+			SpaceChaserCV();
 		};
 	}
 }

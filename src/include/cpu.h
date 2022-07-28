@@ -3,7 +3,7 @@
 #include "types.h"
 #include <functional>
 
-#include "../memory.h"
+#include "memory.h"
 
 
 namespace ae
@@ -14,7 +14,7 @@ namespace ae
 		typedef std::function<const uint8_t(const uint8_t)> infn;
 
 	public:
-		virtual bool link(memory&) = 0;
+		virtual bool link(IMemory*) = 0;
 		virtual bool reset(const uint16_t = 0) = 0;
 		virtual const string disassemble() = 0;
 		virtual const uint8_t executeOne() = 0;

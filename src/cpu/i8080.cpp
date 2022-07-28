@@ -5,7 +5,7 @@
 #include <iomanip>
 #include <format>
 
-using ae::memory;
+using ae::IMemory;
 
 namespace ae::cpu {
 	// Helpers
@@ -95,7 +95,7 @@ namespace ae::cpu {
 	}
 	void Intel8080::sub(const uint8_t value, const uint8_t flag) {
 		carryBit = (value + flag > a) ? 1 : 0;
-//		auxCarryBit = ((value+flag) & 0xf) > (a & 0xf) ? 0 : 1;
+		//		auxCarryBit = ((value+flag) & 0xf) > (a & 0xf) ? 0 : 1;
 		auxCarryBit = (a & 0x0f) - (value & 0x0f) - flag >= 0;
 		a -= value + flag;
 		signBit = sign(a);
@@ -116,7 +116,7 @@ namespace ae::cpu {
 	void Intel8080::add(const uint8_t value, const uint8_t flag)
 	{
 		uint16_t sum = a + value + flag;
-		auxCarryBit = ((value & 0x0f) + (a & 0x0f)+ flag) > 0x0f;
+		auxCarryBit = ((value & 0x0f) + (a & 0x0f) + flag) > 0x0f;
 		a = sum & 0xff;
 		zeroBit = zero(a);
 		signBit = sign(a);
@@ -2040,8 +2040,8 @@ namespace ae::cpu {
 		return true;
 	}
 
-	bool Intel8080::link(ae::memory& mem) {
-		memory = &mem;
+	bool Intel8080::link(ae::IMemory* mem) {
+		memory = mem;
 		return true;
 	}
 

@@ -11,7 +11,9 @@ using namespace ae;
 static machinesList machines
 {
 	{"SpaceInvadersMidway", [] { return new machine::SpaceInvadersMidway(); }},
-	{"SpaceInvadersTV", [] { return new machine::SpaceInvadersTV(); }}
+	{"SpaceInvadersTV", [] { return new machine::SpaceInvadersTV(); }},
+	{"SpaceChaserCV", [] { return new machine::SpaceChaserCV(); }}
+
 };
 
 IMachine* ae::newMachine(const string& name) {

@@ -10,7 +10,7 @@ namespace tests_ae
 		class i8080_tests {
 		protected:
 			ae::ICpu* cpu;
-			ae::memory memory;
+			ae::IMemory* memory;
 			bool finished;
 
 			void out(const uint8_t, const uint8_t);

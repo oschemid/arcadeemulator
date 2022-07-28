@@ -14,22 +14,26 @@ int main(int argc, char** argv)
 	if (!ae::ui::init())
 		return 1;
 
-	// Machine selection
-	ae::IMachine* si = ae::newMachine("SpaceInvadersTV");
-	si->init();
+	ae::IMachine* si = nullptr;
 
-	ae::ui::menu my_menu;
 	ae::ui::menu::response r = ae::ui::menu::response::NOTHING;
 
 	while (r != ae::ui::menu::response::QUIT) {
-		r = my_menu.run();
+		ae::ui::menu my_menu;
+		r = my_menu.run(si);
 		switch (r) {
 		case ae::ui::menu::response::LAUNCH:
+			si->init();
 			si->run();
 			break;
-		case ae::ui::menu::response::SETTINGS:
-			std::cout << "Settings";
-			break;
+		case ae::ui::menu::response::GAMESELECTION:
+		{
+			ae::ui::InterfaceGameSelection i((si == nullptr) ? "" : si->getID());
+			i.run();
+			if (i.getSelection() != "")
+				si = ae::newMachine(i.getSelection());
+		}
+		break;
 		}
 	}
 	ae::ui::destroy();

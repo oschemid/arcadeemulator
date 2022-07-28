@@ -23,20 +23,22 @@ void tests_ae::cpu::i8080_tests::out(const uint8_t p, const uint8_t v) {
 		else if (operation == 9) { // print from memory at (DE) until '$' char
 			uint16_t addr = (cpuc->d << 8) | cpuc->e;
 			do {
-				std::cout << (char)(memory.read(addr++));
-			} while (memory.read(addr) != '$');
+				std::cout << (char)(memory->read(addr++));
+			} while (memory->read(addr) != '$');
 		}
 
 	}
 }
 bool tests_ae::cpu::i8080_tests::runTest(const string& filename) {
-	memory.allocate(0xffff);
-	memory.load(filename, 0x100);
-	memory.write(0, 0xD3);
-	memory.write(1, 0x00);
-	memory.write(5, 0xD3);
-	memory.write(6, 0x01);
-	memory.write(7, 0xC9);
+	memory = ae::newMemory(0);
+	memory->map(0, 0xffff, ae::IMemory::type::RAM);
+	memory->load(0x100, filename);
+	memory->write(0, 0xD3);
+	memory->write(1, 0x00);
+	memory->write(5, 0xD3);
+	memory->write(6, 0x01);
+	memory->write(7, 0xC9);
+	cpu->link(memory);
 	cpu->reset(0x100);
 	cpu->in([](const uint8_t) { return 0; });
 	cpu->out([this](const uint8_t p, const uint8_t v) { out(p, v); });

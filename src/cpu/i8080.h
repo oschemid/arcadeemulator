@@ -2,8 +2,6 @@
 #include "types.h"
 #include "cpu.h"
 
-#include <cstdint>
-
 
 namespace ae
 {
@@ -23,13 +21,13 @@ namespace ae
 
 		public:
 			// Temporary access
-			std::uint16_t pc; // program counter
-			std::uint16_t sp; // stack pointer
-			std::uint8_t a; // accumulator
-			std::uint8_t b, c, d, e, h, l; // registers
+			uint16_t pc; // program counter
+			uint16_t sp; // stack pointer
+			uint8_t a; // accumulator
+			uint8_t b, c, d, e, h, l; // registers
 
 		protected:
-			ae::memory* memory;
+			ae::IMemory* memory;
 
 			ICpu::infn handlerIn;
 			ICpu::outfn handlerOut;
@@ -79,17 +77,13 @@ namespace ae
 		public:
 			Intel8080();
 			bool reset(const uint16_t = 0) override;
-			bool link(ae::memory&) override;
+			bool link(ae::IMemory*) override;
 
 			const string disassemble() override;
 			const uint8_t executeOne() override;
 			bool interrupt(const uint8_t) override;
 			virtual bool in(const ICpu::infn) override;
 			virtual bool out(const ICpu::outfn) override;
-
-
-			std::uint8_t outPort[8];
-			std::uint8_t inPort[8];
 		};
 	}
 }
