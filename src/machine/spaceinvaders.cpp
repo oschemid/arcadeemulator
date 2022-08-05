@@ -11,8 +11,16 @@ ae::machine::SpaceInvaders::SpaceInvaders() :
 	memory(nullptr),
 	cpu(nullptr),
 	shift0(0),
-	shift1(0)
+	shift1(0),
+	ships("Ships"),
+	extraShip("Extra ship")
 {
+	ships.addAlias(0, "3");
+	ships.addAlias(1, "4");
+	ships.addAlias(2, "5");
+	ships.addAlias(3, "6");
+	extraShip.addAlias(0, "at 1500");
+	extraShip.addAlias(1, "at 1000");
 }
 
 
@@ -36,25 +44,19 @@ const uint8_t ae::machine::SpaceInvaders::in1() {
 	return port;
 }
 
+std::list<ae::IParameter*> ae::machine::SpaceInvaders::getParameters() const {
+	return { (ae::IParameter*)&ships,
+			 (ae::IParameter*)&extraShip };
+}
+
 const uint8_t ae::machine::SpaceInvaders::in2() {
 	uint8_t port = 0b00000000;
 
 	const uint8_t* Keyboard = SDL_GetKeyboardState(NULL);
 
-	switch (ships) {
-	case 3:
-		port |= 0b00;
-		break;
-	case 4:
-		port |= 0b01;
-		break;
-	case 5:
-		port |= 0b10;
-		break;
-	case 6:
-		port |= 0b11;
-		break;
-	}
+	port |= ships.getValue();
+	port |= extraShip.getValue() << 3;
+
 	if (Keyboard[SDL_SCANCODE_LEFT])
 		port |= 0x20;
 	if (Keyboard[SDL_SCANCODE_RIGHT])
@@ -96,7 +98,7 @@ void ae::machine::SpaceInvaders::out(const uint8_t port, const uint8_t value) {
 
 bool ae::machine::SpaceInvaders::init()
 {
-	cpu = newCpu("i8080");
+	cpu = ICpu::create("i8080");
 	memory = newMemory(0x3fff);
 	cpu->link(memory);
 	loadMemory();
@@ -232,7 +234,7 @@ ae::machine::SpaceChaserCV::SpaceChaserCV() :
 
 bool ae::machine::SpaceChaserCV::init()
 {
-	cpu = newCpu("i8080");
+	cpu = ICpu::create("i8080");
 	memory = newMemory(0x5fff);
 	cpu->link(memory);
 	loadMemory();

@@ -50,9 +50,11 @@ menu::response renderWindow(ae::IMachine* si) {
 			nk_end(NkContext);
 			return menu::response::GAMESELECTION;
 		}
-		if (nk_button_label(NkContext, "Game Settings")) {
-			nk_end(NkContext);
-			return menu::response::GAMESETTINGS;
+		if (si) {
+			if (nk_button_label(NkContext, "Game Settings")) {
+				nk_end(NkContext);
+				return menu::response::GAMESETTINGS;
+			}
 		}
 		if (nk_button_label(NkContext, "Quit")) {
 			nk_end(NkContext);

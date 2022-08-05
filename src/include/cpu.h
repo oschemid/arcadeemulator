@@ -21,7 +21,8 @@ namespace ae
 		virtual bool interrupt(const uint8_t) = 0;
 		virtual bool in(const infn) = 0;
 		virtual bool out(const outfn) = 0;
-	};
 
-	ICpu* newCpu(const string&);
+	public:
+		static ICpu* create(const string&);
+	};
 }

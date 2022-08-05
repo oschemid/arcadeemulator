@@ -155,6 +155,7 @@
     <ClCompile Include="src\machine\spaceinvaders.cpp" />
     <ClCompile Include="src\memory\memory.cpp" />
     <ClCompile Include="src\ui\gameselection.cpp" />
+    <ClCompile Include="src\ui\gamesettings.cpp" />
     <ClCompile Include="src\ui\interface.cpp" />
     <ClCompile Include="src\ui\menu.cpp" />
     <ClCompile Include="src\ui\ui.cpp" />
@@ -164,6 +165,7 @@
     <ClInclude Include="src\include\cpu.h" />
     <ClInclude Include="src\include\machine.h" />
     <ClInclude Include="src\include\memory.h" />
+    <ClInclude Include="src\include\dipswitch.h" />
     <ClInclude Include="src\include\types.h" />
     <ClInclude Include="src\machine\spaceinvaders.h" />
     <ClInclude Include="src\ui\nuklear_sdl_renderer.h" />

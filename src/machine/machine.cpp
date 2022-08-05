@@ -16,7 +16,7 @@ static machinesList machines
 
 };
 
-IMachine* ae::newMachine(const string& name) {
+IMachine* IMachine::create(const string& name) {
 	return machines[name]();
 }
 

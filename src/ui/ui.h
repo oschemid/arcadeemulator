@@ -39,6 +39,17 @@ namespace ae
 			InterfaceGameSelection(const string&);
 			const string getSelection() const;
 		};
+		class InterfaceGameSettings : public IInterface
+		{
+		protected:
+			IMachine* _machine;
+
+		protected:
+			bool render() override;
+
+		public:
+			InterfaceGameSettings(IMachine*);
+		};
 
 		// Menu
 		class menu

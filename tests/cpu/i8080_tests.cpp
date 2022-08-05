@@ -4,7 +4,7 @@
 
 
 tests_ae::cpu::i8080_tests::i8080_tests() {
-	cpu = ae::newCpu("i8080");
+	cpu = ae::ICpu::create("i8080");
 	cpu->link(memory);
 }
 

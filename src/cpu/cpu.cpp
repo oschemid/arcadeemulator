@@ -16,6 +16,6 @@ static cpusList cpus
 	{"i8080", [] { return new cpu::Intel8080(); }},
 };
 
-ICpu* ae::newCpu(const string& name) {
+ICpu* ae::ICpu::create(const string& name) {
 	return cpus[name]();
 }

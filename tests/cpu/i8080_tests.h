@@ -2,6 +2,9 @@
 
 #include "cpu.h"
 
+using ae::string;
+using ae::uint8_t;
+
 
 namespace tests_ae
 {

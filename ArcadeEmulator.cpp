@@ -31,7 +31,13 @@ int main(int argc, char** argv)
 			ae::ui::InterfaceGameSelection i((si == nullptr) ? "" : si->getID());
 			i.run();
 			if (i.getSelection() != "")
-				si = ae::newMachine(i.getSelection());
+				si = ae::IMachine::create(i.getSelection());
+		}
+		break;
+		case ae::ui::menu::response::GAMESETTINGS:
+		{
+			ae::ui::InterfaceGameSettings i(si);
+			i.run();
 		}
 		break;
 		}

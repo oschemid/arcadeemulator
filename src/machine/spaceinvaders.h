@@ -3,6 +3,7 @@
 #include <cstdint>
 
 #include "machine.h"
+#include "dipswitch.h"
 #include "memory.h"
 #include "cpu.h"
 
@@ -14,7 +15,8 @@ namespace ae
 		class SpaceInvaders : public IMachine
 		{
 		protected:
-			uint8_t ships;
+			DIPSwitch<2> ships;
+			DIPSwitch<1> extraShip;
 
 			virtual void loadMemory() = 0;
 			virtual const uint8_t in1();
@@ -23,8 +25,8 @@ namespace ae
 		protected:
 			void updateDisplay();
 			uint16_t Pixels[224 * 256];
-			std::uint8_t shift0, shift1;
-			std::uint8_t shift_offset;
+			uint8_t shift0, shift1;
+			uint8_t shift_offset;
 
 			virtual const uint8_t in(const uint8_t);
 			void out(const uint8_t, const uint8_t);
@@ -36,10 +38,9 @@ namespace ae
 		public:
 			SpaceInvaders();
 
+			std::list<ae::IParameter*> getParameters() const override;
 			bool init() override;
 			bool run() override;
-
-
 		};
 		class SpaceInvadersMidway : public SpaceInvaders
 		{

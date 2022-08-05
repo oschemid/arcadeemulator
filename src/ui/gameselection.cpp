@@ -14,6 +14,8 @@ extern SDL_Renderer* Renderer;
 extern nk_context* NkContext;
 
 using namespace ae::ui;
+using ae::string;
+
 
 InterfaceGameSelection::InterfaceGameSelection(const string& current) :
 	selection(current)
