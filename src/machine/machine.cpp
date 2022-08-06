@@ -1,5 +1,6 @@
 #include "machine.h"
 #include "spaceinvaders.h"
+#include "spacechaser.h"
 
 #include <map>
 #include <functional>

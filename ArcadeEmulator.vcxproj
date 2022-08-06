@@ -152,7 +152,9 @@
     <ClCompile Include="src\cpu\cpu.cpp" />
     <ClCompile Include="src\cpu\i8080.cpp" />
     <ClCompile Include="src\machine\machine.cpp" />
+    <ClCompile Include="src\machine\spacechaser.cpp" />
     <ClCompile Include="src\machine\spaceinvaders.cpp" />
+    <ClCompile Include="src\machine\taito8080.cpp" />
     <ClCompile Include="src\memory\memory.cpp" />
     <ClCompile Include="src\ui\gameselection.cpp" />
     <ClCompile Include="src\ui\gamesettings.cpp" />
@@ -167,7 +169,9 @@
     <ClInclude Include="src\include\memory.h" />
     <ClInclude Include="src\include\dipswitch.h" />
     <ClInclude Include="src\include\types.h" />
+    <ClInclude Include="src\machine\spacechaser.h" />
     <ClInclude Include="src\machine\spaceinvaders.h" />
+    <ClInclude Include="src\machine\taito8080.h" />
     <ClInclude Include="src\ui\nuklear_sdl_renderer.h" />
     <ClInclude Include="src\ui\ui.h" />
   </ItemGroup>
