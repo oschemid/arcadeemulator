@@ -92,10 +92,10 @@ ae::machine::SpaceInvadersMidway::SpaceInvadersMidway() :
 void ae::machine::SpaceInvadersMidway::loadMemory() {
 	memory->map(0, 0x1fff, ae::IMemory::type::ROM);
 	memory->map(0x2000, 0x3fff, ae::IMemory::type::RAM);
-	memory->load(0, "roms/spaceinvaders/invaders.h");
-	memory->load(0x0800, "roms/spaceinvaders/invaders.g");
-	memory->load(0x1000, "roms/spaceinvaders/invaders.f");
-	memory->load(0x1800, "roms/spaceinvaders/invaders.e");
+	memory->load(0, "roms/spaceinvaders/invaders/invaders.h");
+	memory->load(0x0800, "roms/spaceinvaders/invaders/invaders.g");
+	memory->load(0x1000, "roms/spaceinvaders/invaders/invaders.f");
+	memory->load(0x1800, "roms/spaceinvaders/invaders/invaders.e");
 }
 
 ae::machine::SpaceInvadersTV::SpaceInvadersTV() :
@@ -106,14 +106,24 @@ ae::machine::SpaceInvadersTV::SpaceInvadersTV() :
 void ae::machine::SpaceInvadersTV::loadMemory() {
 	memory->map(0, 0x1fff, ae::IMemory::type::ROM);
 	memory->map(0x2000, 0x3fff, ae::IMemory::type::RAM);
-	memory->load(0, "roms/spaceinvaders/tv0h.s1");
-	memory->load(0x0800, "roms/spaceinvaders/tv02.rp1");
-	memory->load(0x1000, "roms/spaceinvaders/tv03.n1");
-	memory->load(0x1800, "roms/spaceinvaders/tv04.m1");
+	memory->load(0, "roms/spaceinvaders/sitv/tv0h.s1");
+	memory->load(0x0800, "roms/spaceinvaders/sitv/tv02.rp1");
+	memory->load(0x1000, "roms/spaceinvaders/sitv/tv03.n1");
+	memory->load(0x1800, "roms/spaceinvaders/sitv/tv04.m1");
 }
 
 const uint8_t ae::machine::SpaceInvadersTV::in(const uint8_t port) {
 	if (port == 0)
 		return 1;
 	return ae::machine::SpaceInvaders::in(port);
+}
+
+const uint8_t ae::machine::SpaceInvadersTV::in2() {
+	uint8_t port = SpaceInvaders::in2();
+
+	const uint8_t* Keyboard = SDL_GetKeyboardState(NULL);
+
+	if (Keyboard[SDL_SCANCODE_T])
+		port |= 0x04;
+	return port;
 }

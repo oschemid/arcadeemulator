@@ -81,7 +81,7 @@ bool ae::machine::Taito8080::run()
 	uint64_t LastInput = 0;
 	uint64_t LastThrottle = 0;
 	uint64_t LastDisplay = 0;
-	uint32_t ClocksPerMS = 2000;
+	uint32_t ClocksPerMS = 1997;
 	uint64_t ClockCompensation = 0;
 	uint64_t ClockCount = 0;
 	SDL_Event ev;

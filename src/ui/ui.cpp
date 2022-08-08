@@ -92,6 +92,10 @@ bool ae::ui::destroyDisplay() {
 	return true;
 }
 
+bool refreshBackground() {
+	SDL_RenderClear(Renderer);
+	return true;
+}
 bool ae::ui::refresh() {
 	int x, y;
 	SDL_GetWindowSize(MainWindow, &x, &y);
@@ -101,6 +105,7 @@ bool ae::ui::refresh() {
 	rect.w = DisplayWidth * 2;
 	rect.h = DisplayHeight * 2;
 
+	refreshBackground();
 	SDL_RenderCopy(Renderer, Display, NULL, &rect);
 	SDL_RenderPresent(Renderer);
 	return true;
@@ -120,4 +125,27 @@ bool ae::ui::destroy() {
 	}
 	SDL_Quit();
 	return true;
+}
+
+bool ae::ui::createButton(const string& label, bool is_active) {
+	nk_style_item button_hover = NkContext->style.button.hover;
+	nk_style_item button_active = NkContext->style.button.active;
+
+	if (!is_active) {
+		NkContext->style.button.hover = NkContext->style.button.normal;
+		NkContext->style.button.active = NkContext->style.button.normal;
+		NkContext->style.button.text_normal.a = 100;
+		NkContext->style.button.text_hover.a = 100;
+		NkContext->style.button.text_active.a = 100;
+	}
+	nk_bool res = nk_button_label(NkContext, label.c_str());
+	if (!is_active) {
+		NkContext->style.button.hover = button_hover;
+		NkContext->style.button.active = button_active;
+		NkContext->style.button.text_normal.a = 255;
+		NkContext->style.button.text_hover.a = 255;
+		NkContext->style.button.text_active.a = 255;
+		return false;
+	}
+	return (bool)res;
 }

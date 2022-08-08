@@ -5,23 +5,17 @@
 ae::machine::SpaceChaserCV::SpaceChaserCV() :
 	Taito8080(0x5fff),
 	ships("Ships"),
-	extraShip("Extra ship"),
-	coinInfo("Coin Info")
+	difficulty("Difficulty")
 {
 	ships.addAlias(0, "3");
 	ships.addAlias(1, "4");
-	ships.addAlias(2, "5");
-	ships.addAlias(3, "6");
-	extraShip.addAlias(0, "at 1500");
-	extraShip.addAlias(1, "at 1000");
-	coinInfo.addAlias(0, "On");
-	coinInfo.addAlias(1, "Off");
+	difficulty.addAlias(0, "Easy");
+	difficulty.addAlias(1, "Hard");
 }
 
 std::list<ae::IParameter*> ae::machine::SpaceChaserCV::getParameters() const {
 	return { (ae::IParameter*)&ships,
-			 (ae::IParameter*)&extraShip,
-			 (ae::IParameter*)&coinInfo };
+			 (ae::IParameter*)&difficulty };
 }
 
 const uint8_t ae::machine::SpaceChaserCV::in2() {
@@ -30,8 +24,13 @@ const uint8_t ae::machine::SpaceChaserCV::in2() {
 	const uint8_t* Keyboard = SDL_GetKeyboardState(NULL);
 
 	port |= ships.getValue();
-	port |= extraShip.getValue() << 3;
-	port |= coinInfo.getValue() << 7;
+
+	port |= difficulty.getValue() << 3;
+
+	if (Keyboard[SDL_SCANCODE_DOWN])
+		port |= 0x02;
+	if (Keyboard[SDL_SCANCODE_UP])
+		port |= 0x04;
 
 	if (Keyboard[SDL_SCANCODE_LEFT])
 		port |= 0x20;
@@ -45,7 +44,7 @@ const uint8_t ae::machine::SpaceChaserCV::in2() {
 const uint8_t ae::machine::SpaceChaserCV::in(const uint8_t port) {
 	switch (port) {
 	case 0:
-		return 1;
+		return 0xff;
 		break;
 	case 1:
 		return in1();
@@ -90,14 +89,14 @@ void ae::machine::SpaceChaserCV::loadMemory() {
 	memory->map(0, 0x1FFF, ae::IMemory::type::ROM);
 	memory->map(0x2000, 0x3FFF, ae::IMemory::type::RAM);
 	memory->map(0x4000, 0x5FFF, ae::IMemory::type::ROM);
-	memory->load(0, "roms/spacechaser/1");
-	memory->load(0x0400, "roms/spacechaser/2");
-	memory->load(0x0800, "roms/spacechaser/3");
-	memory->load(0x0C00, "roms/spacechaser/4");
-	memory->load(0x1000, "roms/spacechaser/5");
-	memory->load(0x1400, "roms/spacechaser/6");
-	memory->load(0x1800, "roms/spacechaser/7");
-	memory->load(0x1C00, "roms/spacechaser/8");
-	memory->load(0x4000, "roms/spacechaser/9");
-	memory->load(0x4400, "roms/spacechaser/10");
+	memory->load(0, "roms/spacechaser/schasercv/1");
+	memory->load(0x0400, "roms/spacechaser/schasercv/2");
+	memory->load(0x0800, "roms/spacechaser/schasercv/3");
+	memory->load(0x0C00, "roms/spacechaser/schasercv/4");
+	memory->load(0x1000, "roms/spacechaser/schasercv/5");
+	memory->load(0x1400, "roms/spacechaser/schasercv/6");
+	memory->load(0x1800, "roms/spacechaser/schasercv/7");
+	memory->load(0x1C00, "roms/spacechaser/schasercv/8");
+	memory->load(0x4000, "roms/spacechaser/schasercv/9");
+	memory->load(0x4400, "roms/spacechaser/schasercv/10");
 }

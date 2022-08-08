@@ -47,6 +47,7 @@ namespace ae
 		protected:
 			void loadMemory() override;
 			const uint8_t in(const uint8_t) override;
+			virtual const uint8_t in2() override;
 
 		public:
 			const string getName() const override { return "Space Invaders (TV)"; }

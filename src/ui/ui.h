@@ -19,6 +19,9 @@ namespace ae
 		bool updateDisplay(const std::uint16_t*);
 		bool destroyDisplay();
 
+		// Graphic
+		bool createButton(const string&, bool);
+
 		// Interfaces
 		class IInterface
 		{

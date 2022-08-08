@@ -12,9 +12,8 @@ namespace ae
 	{
 		class SpaceChaserCV : public Taito8080
 		{
-			DIPSwitch<2> ships;
-			DIPSwitch<1> extraShip;
-			DIPSwitch<1> coinInfo;
+			DIPSwitch<1> ships;
+			DIPSwitch<1> difficulty;
 
 			const uint8_t in1();
 			const uint8_t in2();

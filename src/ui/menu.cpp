@@ -16,52 +16,36 @@ extern nk_context* NkContext;
 
 using namespace ae::ui;
 
-static void setStyle() {
-	// Window
-	nk_color transparent = nk_color();
-	transparent.a = 255;
-
-	nk_color flou = nk_color();
-	flou.b = 50;
-	flou.g = 50;
-	flou.r = 50;
-	flou.a = 150;
-
-	//	NkContext->style.window.header.normal = nk_style_item_color(transparent);
-	//	NkContext->style.window.header.active = nk_style_item_color(transparent);
-	//	NkContext->style.window.fixed_background = nk_style_item_color(flou);
-}
-
 menu::response renderWindow(ae::IMachine* si) {
 	int width, height;
 	SDL_GetWindowSize(MainWindow, &width, &height);
 
-	if (nk_begin(NkContext, "Menu", nk_rect(50, 150, width - 100, height - 250),
-				 NK_WINDOW_TITLE | NK_WINDOW_NO_SCROLLBAR))
+	auto tmp = NkContext->style.window.fixed_background;
+	NkContext->style.window.fixed_background = nk_style_item_color(nk_color(0, 0, 0, 0));
+	if (nk_begin(NkContext, "Menu", nk_rect(50, height - 300, width - 100, 250),
+				 NK_WINDOW_NO_SCROLLBAR))
 	{
-		nk_layout_row_dynamic(NkContext, 30, 1);
-		if (si) {
-			if (nk_button_label(NkContext, "Launch")) {
-				nk_end(NkContext);
-				return menu::response::LAUNCH;
-			}
+		nk_layout_row_dynamic(NkContext, 60, 1);
+		if (createButton("Launch", (si != nullptr))) {
+			nk_end(NkContext);
+			NkContext->input.mouse.buttons[0].down = 0;
+			return menu::response::LAUNCH;
 		}
-		if (nk_button_label(NkContext, "Game Selection")) {
+		if (createButton("Game Selection", true)) {
 			nk_end(NkContext);
 			return menu::response::GAMESELECTION;
 		}
-		if (si) {
-			if (nk_button_label(NkContext, "Game Settings")) {
-				nk_end(NkContext);
-				return menu::response::GAMESETTINGS;
-			}
+		if (createButton("Game Settings", (si != nullptr))) {
+			nk_end(NkContext);
+			return menu::response::GAMESETTINGS;
 		}
-		if (nk_button_label(NkContext, "Quit")) {
+		if (createButton("Quit", true)) {
 			nk_end(NkContext);
 			return menu::response::QUIT;
 		}
 		nk_end(NkContext);
 	}
+	NkContext->style.window.fixed_background = tmp;
 	return menu::response::NOTHING;
 }
 
@@ -70,7 +54,6 @@ menu::menu() {
 }
 
 menu::response menu::run(IMachine* si) {
-	setStyle();
 	response r = NOTHING;
 	while (r == NOTHING) {
 		/* Input */
@@ -81,6 +64,7 @@ menu::response menu::run(IMachine* si) {
 		}
 		nk_input_end(NkContext);
 
+		SDL_RenderClear(Renderer);
 		r = renderWindow(si);
 		nk_sdl_render(NK_ANTI_ALIASING_ON);
 
