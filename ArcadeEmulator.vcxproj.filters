@@ -100,4 +100,7 @@
       <Filter>Fichiers d%27en-tête</Filter>
     </Xsd>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="README" />
+  </ItemGroup>
 </Project>
