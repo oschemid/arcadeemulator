@@ -1,0 +1,9 @@
+﻿################################################################################
+# Ce fichier .gitignore a été automatiquement créé par Microsoft(R) Visual Studio.
+################################################################################
+
+/Debug
+/x64/Debug
+/.vs
+/tests/x64/Debug
+/roms/spaceinvaders
