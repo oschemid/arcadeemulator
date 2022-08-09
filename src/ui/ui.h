@@ -2,8 +2,6 @@
 #include "types.h"
 #include "machine.h"
 
-#include <cstdint>
-
 
 namespace ae
 {
@@ -15,8 +13,8 @@ namespace ae
 		bool destroy();
 
 		// Console Display
-		bool createDisplay(const std::uint16_t, const std::uint16_t);
-		bool updateDisplay(const std::uint16_t*);
+		bool createDisplay(const uint16_t, const uint16_t);
+		bool updateDisplay(const uint16_t*);
 		bool destroyDisplay();
 
 		// Graphic

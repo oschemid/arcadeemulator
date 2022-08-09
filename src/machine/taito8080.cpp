@@ -10,6 +10,7 @@
 ae::machine::Taito8080::Taito8080(const size_t memSize) :
 	memory(nullptr),
 	cpu(nullptr),
+	display(nullptr),
 	shift0(0),
 	shift1(0),
 	_memorySize(memSize)
@@ -31,11 +32,19 @@ void ae::machine::Taito8080::out(const uint8_t port, const uint8_t value) {
 
 bool ae::machine::Taito8080::init()
 {
+	if (!display) {
+		display = Display::create();
+		display->setSize(224, 256);
+		display->registerCallback([this](uint16_t* p) { return this->updateDisplay(p); });
+		display->init();
+	}
+
 	cpu = ICpu::create("i8080");
 	memory = newMemory(_memorySize);
+
 	cpu->link(memory);
 	loadMemory();
-	ae::ui::createDisplay(224, 256);
+
 	cpu->in([this](const uint8_t p) { return in(p); });
 	cpu->out([this](const uint8_t p, const uint8_t v) { out(p, v); });
 	return true;
@@ -46,7 +55,7 @@ uint64_t getNanoSeconds(std::chrono::time_point<std::chrono::high_resolution_clo
 	return duration_cast<std::chrono::nanoseconds>(diff).count();
 }
 
-void ae::machine::Taito8080::updateDisplay() {
+void ae::machine::Taito8080::updateDisplay(uint16_t* pixels) {
 	uint32_t ColorToDraw = 0xffff;
 
 	for (int x = 0; x < 224; x++) {
@@ -62,13 +71,10 @@ void ae::machine::Taito8080::updateDisplay() {
 
 				uint8_t CoordX = x;
 				uint8_t CoordY = (256 - 1 - (y + bit));
-				Pixels[CoordY * 224 + CoordX] = ColorToDraw;
+				pixels[CoordY * 224 + CoordX] = ColorToDraw;
 			}
 		}
 	}
-
-	ae::ui::updateDisplay(Pixels);
-	ae::ui::refresh();
 }
 
 bool ae::machine::Taito8080::run()
@@ -108,7 +114,7 @@ bool ae::machine::Taito8080::run()
 
 			bool interrupt = false;
 			if (DrawFull) {
-				updateDisplay();
+				display->update();
 				interrupt = cpu->interrupt(2);
 			}
 			else
