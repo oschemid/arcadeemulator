@@ -1,5 +1,7 @@
 #pragma once
 #include "types.h"
+#include "SDL2/SDL.h"
+
 #include "machine.h"
 
 
@@ -7,15 +9,12 @@ namespace ae
 {
 	namespace ui
 	{
-		// UI creation
+		// UI management
 		bool init();
-		bool refresh();
 		bool destroy();
 
-		// Console Display
-		bool createDisplay(const uint16_t, const uint16_t);
-		bool updateDisplay(const uint16_t*);
-		bool destroyDisplay();
+		// Accessor
+		SDL_Renderer* getRenderer();
 
 		// Graphic
 		bool createButton(const string&, bool);

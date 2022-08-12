@@ -6,14 +6,24 @@
 #include "SDL2/SDL.h"
 #include "../ui/ui.h"
 
+const ae::Layout::zones ae::machine::Taito8080::invaders_layout = {
+		{{255,255,255}, {0,0,224,260}},
+		{{32, 255, 32}, {0,184,224,240}},
+		{{32,255,32}, {16,240,134,260}},
+		{{255,32,32}, {0,32,224,62}}
+};
 
-ae::machine::Taito8080::Taito8080(const size_t memSize) :
+
+ae::machine::Taito8080::Taito8080(const size_t memSize,
+								  const ae::Layout::zones zones) :
 	memory(nullptr),
 	cpu(nullptr),
 	display(nullptr),
+	layout(nullptr),
 	shift0(0),
 	shift1(0),
-	_memorySize(memSize)
+	_memorySize(memSize),
+	_zones(zones)
 {
 }
 
@@ -37,6 +47,12 @@ bool ae::machine::Taito8080::init()
 		display->setSize(224, 256);
 		display->registerCallback([this](uint16_t* p) { return this->updateDisplay(p); });
 		display->init();
+	}
+	if ((!layout) && (_zones.size() > 0)) {
+		layout = Layout::create();
+		layout->setSize(224, 256);
+		layout->setZones(_zones);
+		layout->init();
 	}
 
 	cpu = ICpu::create("i8080");
@@ -114,7 +130,20 @@ bool ae::machine::Taito8080::run()
 
 			bool interrupt = false;
 			if (DrawFull) {
-				display->update();
+				SDL_Renderer* renderer = ae::ui::getRenderer();
+				SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+				SDL_RenderClear(renderer);
+
+				SDL_Rect rect;
+				rect.x = 512 - 224;
+				rect.y = 384 - 256;
+				rect.w = 224 * 2;
+				rect.h = 256 * 2;
+
+				display->update(rect);
+				if (layout)
+					layout->update(rect);
+				SDL_RenderPresent(renderer);
 				interrupt = cpu->interrupt(2);
 			}
 			else

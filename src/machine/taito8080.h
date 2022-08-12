@@ -14,6 +14,9 @@ namespace ae
 	{
 		class Taito8080 : public IMachine
 		{
+		public:
+			static const ae::Layout::zones invaders_layout;
+
 		protected:
 			size_t _memorySize;
 			void updateDisplay(uint16_t*);
@@ -28,9 +31,12 @@ namespace ae
 			ae::IMemory* memory;
 			ae::ICpu* cpu;
 			ae::Display* display;
+			ae::Layout* layout;
+			ae::Layout::zones _zones;
 
 		public:
-			Taito8080(const size_t = 0x3fff);
+			Taito8080(const size_t = 0x3fff,
+					  const ae::Layout::zones = {});
 
 			bool init() override;
 			bool run() override;

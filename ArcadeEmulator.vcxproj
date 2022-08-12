@@ -151,6 +151,8 @@
     <ClCompile Include="ArcadeEmulator.cpp" />
     <ClCompile Include="src\cpu\cpu.cpp" />
     <ClCompile Include="src\cpu\i8080.cpp" />
+    <ClCompile Include="src\display\display.cpp" />
+    <ClCompile Include="src\display\rasterdisplay.cpp" />
     <ClCompile Include="src\machine\machine.cpp" />
     <ClCompile Include="src\machine\spacechaser.cpp" />
     <ClCompile Include="src\machine\spaceinvaders.cpp" />
@@ -164,7 +166,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\cpu\i8080.h" />
+    <ClInclude Include="src\display\rasterdisplay.h" />
     <ClInclude Include="src\include\cpu.h" />
+    <ClInclude Include="src\include\display.h" />
     <ClInclude Include="src\include\machine.h" />
     <ClInclude Include="src\include\memory.h" />
     <ClInclude Include="src\include\dipswitch.h" />
@@ -179,6 +183,7 @@
     <None Include=".gitignore" />
     <None Include="docs\cpu\8080-Programmers-Manual.pdf" />
     <None Include="LICENSE" />
+    <None Include="README.MD" />
   </ItemGroup>
   <ItemGroup>
     <Xsd Include="docs\machine\spaceinvaders.md">
@@ -187,9 +192,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </Xsd>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="README" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

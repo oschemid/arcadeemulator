@@ -21,11 +21,6 @@ SDL_Renderer* Renderer = NULL;
 nk_context* NkContext = NULL;
 
 
-SDL_Texture* Display = NULL;
-uint16_t DisplayWidth = 0;
-uint16_t DisplayHeight = 0;
-
-
 void loadFont() {
 	struct nk_font_atlas* atlas;
 	struct nk_font_config config = nk_font_config(0);
@@ -57,63 +52,24 @@ bool ae::ui::init() {
 		std::cout << "SDL Renderer could not be initialized: " << SDL_GetError();
 		return false;
 	}
+	SDL_SetRenderDrawBlendMode(Renderer, SDL_BLENDMODE_MOD);
 	NkContext = nk_sdl_init(MainWindow, Renderer);
 	loadFont();
 	return true;
 }
 
-
-bool ae::ui::createDisplay(const std::uint16_t width,
-						   const std::uint16_t height) {
-	Display = SDL_CreateTexture(Renderer,
-								SDL_PIXELFORMAT_ARGB4444, SDL_TEXTUREACCESS_STREAMING,
-								width, height);
-	if (!Display) {
-		std::cout << "SDL Display could not be initialized : " << SDL_GetError();
-		return false;
-	}
-	DisplayWidth = width;
-	DisplayHeight = height;
-	return true;
+SDL_Renderer* ae::ui::getRenderer() {
+	return Renderer;
 }
 
-bool ae::ui::updateDisplay(const uint16_t* pixels) {
-	SDL_UpdateTexture(Display, NULL, pixels, 2 * DisplayWidth);
-	return true;
-}
-
-bool ae::ui::destroyDisplay() {
-	if (Display) {
-		SDL_DestroyTexture(Display);
-		Display = NULL;
-		DisplayWidth = 0;
-		DisplayHeight = 0;
-	}
-	return true;
-}
 
 bool refreshBackground() {
+	SDL_SetRenderDrawColor(Renderer, 0, 0, 0, 0);
 	SDL_RenderClear(Renderer);
-	return true;
-}
-bool ae::ui::refresh() {
-	int x, y;
-	SDL_GetWindowSize(MainWindow, &x, &y);
-	SDL_Rect rect;
-	rect.x = x / 2 - DisplayWidth;
-	rect.y = y / 2 - DisplayHeight;
-	rect.w = DisplayWidth * 2;
-	rect.h = DisplayHeight * 2;
-
-	refreshBackground();
-	SDL_RenderCopy(Renderer, Display, NULL, &rect);
-	SDL_RenderPresent(Renderer);
 	return true;
 }
 
 bool ae::ui::destroy() {
-	if (Display)
-		ae::ui::destroyDisplay();
 	nk_sdl_shutdown();
 	if (Renderer) {
 		SDL_DestroyRenderer(Renderer);
