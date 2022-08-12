@@ -8,7 +8,7 @@
 
 
 ae::machine::SpaceInvaders::SpaceInvaders() :
-	Taito8080(),
+	Taito8080(0x3ffff, ae::machine::Taito8080::invaders_layout),
 	ships("Ships"),
 	extraShip("Extra ship"),
 	coinInfo("Coin Info")

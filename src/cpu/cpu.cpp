@@ -1,5 +1,3 @@
-#pragma once
-
 #include "cpu.h"
 #include "i8080.h"
 
@@ -16,6 +14,6 @@ static cpusList cpus
 	{"i8080", [] { return new cpu::Intel8080(); }},
 };
 
-ICpu* ae::ICpu::create(const string& name) {
+ICpu* ICpu::create(const string& name) {
 	return cpus[name]();
 }

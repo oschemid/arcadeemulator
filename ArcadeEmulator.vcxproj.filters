@@ -54,6 +54,12 @@
     <ClCompile Include="src\machine\spacechaser.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
+    <ClCompile Include="src\display\display.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\display\rasterdisplay.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\cpu\i8080.h">
@@ -89,18 +95,22 @@
     <ClInclude Include="src\machine\spacechaser.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
+    <ClInclude Include="src\include\display.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\display\rasterdisplay.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="LICENSE" />
     <None Include="docs\cpu\8080-Programmers-Manual.pdf" />
     <None Include=".gitignore" />
+    <None Include="README.MD" />
   </ItemGroup>
   <ItemGroup>
     <Xsd Include="docs\machine\spaceinvaders.md">
       <Filter>Fichiers d%27en-tête</Filter>
     </Xsd>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="README" />
   </ItemGroup>
 </Project>

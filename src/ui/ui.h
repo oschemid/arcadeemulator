@@ -1,23 +1,20 @@
 #pragma once
 #include "types.h"
-#include "machine.h"
+#include "SDL2/SDL.h"
 
-#include <cstdint>
+#include "machine.h"
 
 
 namespace ae
 {
 	namespace ui
 	{
-		// UI creation
+		// UI management
 		bool init();
-		bool refresh();
 		bool destroy();
 
-		// Console Display
-		bool createDisplay(const std::uint16_t, const std::uint16_t);
-		bool updateDisplay(const std::uint16_t*);
-		bool destroyDisplay();
+		// Accessor
+		SDL_Renderer* getRenderer();
 
 		// Graphic
 		bool createButton(const string&, bool);
