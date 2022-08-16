@@ -40,6 +40,10 @@ const uint8_t Memory::read(const uint16_t address) const {
 bool Memory::write(const uint16_t address, const uint8_t value) {
 	if (address >= size)
 		return false;
+	if (address >= 0xC000) {
+		data[0xC000 + (address & 0x1f) | (((address - 0xC400) & 0x1f80) >> 2)] = value;
+		return true;
+	}
 	for (const auto& [range, memoryType] : mapping) {
 		if ((address >= range.first) && (address <= range.second)) {
 			if (memoryType == IMemory::type::RAM) {
@@ -69,7 +73,7 @@ bool Memory::load(const uint16_t offset, const string filename) {
 	ifs.seekg(0, std::ios::beg);
 	auto filesize = std::size_t(end - ifs.tellg());
 
-	if (offset + filesize >= size)
+	if (offset + filesize > size)
 		throw std::runtime_error("Error in file size");
 
 	if (!ifs.read((char*)data + offset, filesize))

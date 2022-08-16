@@ -19,7 +19,7 @@ namespace ae
 
 		protected:
 			size_t _memorySize;
-			void updateDisplay(uint16_t*);
+			virtual void updateDisplay(uint16_t*);
 			uint8_t shift0, shift1;
 			uint8_t shift_offset;
 

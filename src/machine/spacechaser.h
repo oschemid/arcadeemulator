@@ -12,23 +12,25 @@ namespace ae
 	{
 		class SpaceChaserCV : public Taito8080
 		{
+		protected:
 			DIPSwitch<1> ships;
 			DIPSwitch<1> difficulty;
 
 			const uint8_t in1();
 			const uint8_t in2();
 
-			std::list<ae::IParameter*> getParameters() const override;
-
 		protected:
 			void loadMemory() override;
+			void updateDisplay(uint16_t*) override;
 			const uint8_t in(const uint8_t) override;
 
 		public:
 			const string getName() const override { return "Space Chaser (CV)"; }
 			const string getID() const override { return "SpaceChaserCV"; }
 			const string getDescription() const override { return "1979 Taito"; }
+			std::list<ae::IParameter*> getParameters() const override;
 
+			bool init() override;
 			SpaceChaserCV();
 		};
 	}

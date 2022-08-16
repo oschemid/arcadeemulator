@@ -76,7 +76,7 @@ void ae::machine::Taito8080::updateDisplay(uint16_t* pixels) {
 
 	for (int x = 0; x < 224; x++) {
 		for (int y = 0; y < 256; y += 8) {
-			uint8_t VRAMByte = memory->read(0x2400 + x * (256 >> 3) + (y >> 3));
+			uint8_t VRAMByte = memory->read(0x2400 + (x << 5) + (y >> 3));
 
 			for (int bit = 0; bit < 8; bit++) {
 				ColorToDraw = 0x0000;
