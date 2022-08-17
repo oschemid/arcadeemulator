@@ -57,12 +57,12 @@ bool ae::machine::Taito8080::init()
 
 	cpu = ICpu::create("i8080");
 	memory = newMemory(_memorySize);
-
-	cpu->link(memory);
 	loadMemory();
 
 	cpu->in([this](const uint8_t p) { return in(p); });
 	cpu->out([this](const uint8_t p, const uint8_t v) { out(p, v); });
+	cpu->read([this](const uint16_t p) { return memory->read(p); });
+	cpu->write([this](const uint16_t p, const uint8_t v) { return memory->write(p, v); });
 	return true;
 }
 

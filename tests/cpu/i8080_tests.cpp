@@ -5,7 +5,8 @@
 
 tests_ae::cpu::i8080_tests::i8080_tests() {
 	cpu = ae::ICpu::create("i8080");
-	cpu->link(memory);
+	cpu->read([this](const uint16_t p) { return memory->read(p); });
+	cpu->write([this](const uint16_t p, const uint8_t v) { return memory->write(p, v); });
 }
 
 void tests_ae::cpu::i8080_tests::out(const uint8_t p, const uint8_t v) {
@@ -38,7 +39,8 @@ bool tests_ae::cpu::i8080_tests::runTest(const string& filename) {
 	memory->write(5, 0xD3);
 	memory->write(6, 0x01);
 	memory->write(7, 0xC9);
-	cpu->link(memory);
+	cpu->read([this](const uint16_t p) { return memory->read(p); });
+	cpu->write([this](const uint16_t p, const uint8_t v) { return memory->write(p, v); });
 	cpu->reset(0x100);
 	cpu->in([](const uint8_t) { return 0; });
 	cpu->out([this](const uint8_t p, const uint8_t v) { out(p, v); });

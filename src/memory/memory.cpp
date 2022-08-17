@@ -40,10 +40,6 @@ const uint8_t Memory::read(const uint16_t address) const {
 bool Memory::write(const uint16_t address, const uint8_t value) {
 	if (address >= size)
 		return false;
-	if (address >= 0xC000) {
-		data[0xC000 + (address & 0x1f) | (((address - 0xC400) & 0x1f80) >> 2)] = value;
-		return true;
-	}
 	for (const auto& [range, memoryType] : mapping) {
 		if ((address >= range.first) && (address <= range.second)) {
 			if (memoryType == IMemory::type::RAM) {

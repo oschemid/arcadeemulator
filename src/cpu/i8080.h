@@ -27,10 +27,10 @@ namespace ae
 			uint8_t b, c, d, e, h, l; // registers
 
 		protected:
-			ae::IMemory* memory;
-
 			ICpu::infn handlerIn;
 			ICpu::outfn handlerOut;
+			ICpu::readfn handlerRead;
+			ICpu::writefn handlerWrite;
 
 		protected:
 			uint16_t get_bc() const;
@@ -61,29 +61,30 @@ namespace ae
 			const uint16_t popOfStack();
 
 			const uint8_t readOpcode() {
-				return memory->read(pc++);
+				return handlerRead(pc++);
 			}
 			const uint8_t readArgument8() {
-				return memory->read(pc++);
+				return handlerRead(pc++);
 			}
 			const uint16_t readArgument16() {
-				return memory->read(pc++) | (memory->read(pc++) << 8);
+				return handlerRead(pc++) | (handlerRead(pc++) << 8);
 			}
 			void write(const uint16_t address, const uint16_t value) {
-				memory->write(address, value & 0xFF);
-				memory->write(address + 1, value >> 8);
+				handlerWrite(address, value & 0xFF);
+				handlerWrite(address + 1, value >> 8);
 			}
 
 		public:
 			Intel8080();
 			bool reset(const uint16_t = 0) override;
-			bool link(ae::IMemory*) override;
 
 			const string disassemble() override;
 			const uint8_t executeOne() override;
 			bool interrupt(const uint8_t) override;
 			virtual bool in(const ICpu::infn) override;
 			virtual bool out(const ICpu::outfn) override;
+			virtual bool read(const ICpu::readfn) override;
+			virtual bool write(const ICpu::writefn) override;
 		};
 	}
 }
