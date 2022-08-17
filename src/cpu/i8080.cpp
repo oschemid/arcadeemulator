@@ -47,7 +47,7 @@ namespace ae::cpu {
 		l = v & 0xff;
 	}
 	uint8_t Intel8080::get_m() const {
-		return memory->read(get_hl());
+		return handlerRead(get_hl());
 	}
 
 	uint8_t Intel8080::dcr(const uint8_t value) {
@@ -920,7 +920,7 @@ namespace ae::cpu {
 	}
 	const uint16_t Intel8080::popOfStack()
 	{
-		uint16_t value = memory->read(sp) | (memory->read(sp + 1) << 8);
+		uint16_t value = handlerRead(sp) | (handlerRead(sp + 1) << 8);
 		sp += 2;
 		return value;
 	}
@@ -948,7 +948,7 @@ namespace ae::cpu {
 			cycle = 10;
 			break;
 		case 0x02: /* STAX B */
-			memory->write(get_bc(), a);
+			handlerWrite(get_bc(), a);
 			cycle = 7;
 			break;
 		case 0x03: /* INX B */
@@ -979,7 +979,7 @@ namespace ae::cpu {
 			cycle = 10;
 			break;
 		case 0x0A: /* LDAX B */
-			a = memory->read(get_bc());
+			a = handlerRead(get_bc());
 			cycle = 7;
 			break;
 		case 0x0B: /* DCX B */
@@ -1010,7 +1010,7 @@ namespace ae::cpu {
 			cycle = 10;
 			break;
 		case 0x12: /* STAX D */
-			memory->write(get_de(), a);
+			handlerWrite(get_de(), a);
 			cycle = 7;
 			break;
 		case 0x13: /* INX D */
@@ -1044,7 +1044,7 @@ namespace ae::cpu {
 			cycle = 10;
 			break;
 		case 0x1A: /* LDAX D */
-			a = memory->read(get_de());
+			a = handlerRead(get_de());
 			cycle = 7;
 			break;
 		case 0x1B: /* DCX D */
@@ -1078,8 +1078,8 @@ namespace ae::cpu {
 			break;
 		case 0x22: /* SHLD */
 			tmp16 = readArgument16();
-			memory->write(tmp16, l);
-			memory->write(tmp16 + 1, h);
+			handlerWrite(tmp16, l);
+			handlerWrite(tmp16 + 1, h);
 			cycle = 16;
 			break;
 		case 0x23: /* INX H */
@@ -1110,8 +1110,8 @@ namespace ae::cpu {
 			break;
 		case 0x2A: /* LHLD */
 			tmp16 = readArgument16();
-			l = memory->read(tmp16);
-			h = memory->read(tmp16 + 1);
+			l = handlerRead(tmp16);
+			h = handlerRead(tmp16 + 1);
 			cycle = 16;
 			break;
 		case 0x2B: /* DCX H */
@@ -1142,7 +1142,7 @@ namespace ae::cpu {
 			cycle = 10;
 			break;
 		case 0x32: /* STA */
-			memory->write(readArgument16(), a);
+			handlerWrite(readArgument16(), a);
 			cycle = 13;
 			break;
 		case 0x33: /* INX SP */
@@ -1150,15 +1150,15 @@ namespace ae::cpu {
 			cycle = 5;
 			break;
 		case 0x34: /* INR M */
-			memory->write(get_hl(), inr(get_m()));
+			handlerWrite(get_hl(), inr(get_m()));
 			cycle = 10;
 			break;
 		case 0x35: /* DCR M */
-			memory->write(get_hl(), dcr(get_m()));
+			handlerWrite(get_hl(), dcr(get_m()));
 			cycle = 10;
 			break;
 		case 0x36: /* MVI M */
-			memory->write(get_hl(), readArgument8());
+			handlerWrite(get_hl(), readArgument8());
 			cycle = 10;
 			break;
 		case 0x37: /* STC */
@@ -1170,7 +1170,7 @@ namespace ae::cpu {
 			cycle = 10;
 			break;
 		case 0x3A: /* LDA */
-			a = memory->read(readArgument16());
+			a = handlerRead(readArgument16());
 			cycle = 13;
 			break;
 		case 0x3B: /* DCX SP */
@@ -1389,32 +1389,32 @@ namespace ae::cpu {
 			break;
 
 		case 0x70: /* MOV M,B */
-			memory->write(get_hl(), b);
+			handlerWrite(get_hl(), b);
 			cycle = 7;
 			break;
 		case 0x71: /* MOV M,C */
-			memory->write(get_hl(), c);
+			handlerWrite(get_hl(), c);
 			cycle = 7;
 			break;
 		case 0x72: /* MOV M,D */
-			memory->write(get_hl(), d);
+			handlerWrite(get_hl(), d);
 			cycle = 7;
 			break;
 		case 0x73: /* MOV M,E */
-			memory->write(get_hl(), e);
+			handlerWrite(get_hl(), e);
 			cycle = 7;
 			break;
 		case 0x74: /* MOV M,H */
-			memory->write(get_hl(), h);
+			handlerWrite(get_hl(), h);
 			cycle = 7;
 			break;
 		case 0x75: /* MOV M,L */
-			memory->write(get_hl(), l);
+			handlerWrite(get_hl(), l);
 			cycle = 7;
 			break;
 			//		case 0x76: /* HLT */
 		case 0x77: /* MOV M,A */
-			memory->write(get_hl(), a);
+			handlerWrite(get_hl(), a);
 			cycle = 7;
 			break;
 		case 0x78: /* MOV A,B */
@@ -1883,9 +1883,9 @@ namespace ae::cpu {
 			cycle = 10;
 			break;
 		case 0xE3: /* XTHL */
-			tmp16 = memory->read(sp) | (memory->read(sp + 1) << 8);
-			memory->write(sp, l);
-			memory->write(sp + 1, h);
+			tmp16 = handlerRead(sp) | (handlerRead(sp + 1) << 8);
+			handlerWrite(sp, l);
+			handlerWrite(sp + 1, h);
 			set_hl(tmp16);
 			cycle = 18;
 			break;
@@ -2039,9 +2039,12 @@ namespace ae::cpu {
 		handlerOut = fn;
 		return true;
 	}
-
-	bool Intel8080::link(ae::IMemory* mem) {
-		memory = mem;
+	bool Intel8080::read(const ICpu::readfn fn) {
+		handlerRead = fn;
+		return true;
+	}
+	bool Intel8080::write(const ICpu::writefn fn) {
+		handlerWrite = fn;
 		return true;
 	}
 

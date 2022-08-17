@@ -69,7 +69,7 @@ bool Memory::load(const uint16_t offset, const string filename) {
 	ifs.seekg(0, std::ios::beg);
 	auto filesize = std::size_t(end - ifs.tellg());
 
-	if (offset + filesize >= size)
+	if (offset + filesize > size)
 		throw std::runtime_error("Error in file size");
 
 	if (!ifs.read((char*)data + offset, filesize))
