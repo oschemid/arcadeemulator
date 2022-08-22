@@ -29,7 +29,7 @@ namespace ae
 
 		public:
 			ae::IMemory* memory;
-			ae::ICpu* cpu;
+			ae::Cpu* cpu;
 			ae::Display* display;
 			ae::Layout* layout;
 			ae::Layout::zones _zones;

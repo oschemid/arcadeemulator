@@ -151,9 +151,11 @@
     <ClCompile Include="ArcadeEmulator.cpp" />
     <ClCompile Include="src\cpu\cpu.cpp" />
     <ClCompile Include="src\cpu\i8080.cpp" />
+    <ClCompile Include="src\cpu\z80.cpp" />
     <ClCompile Include="src\display\display.cpp" />
     <ClCompile Include="src\display\rasterdisplay.cpp" />
     <ClCompile Include="src\machine\machine.cpp" />
+    <ClCompile Include="src\machine\pacman.cpp" />
     <ClCompile Include="src\machine\spacechaser.cpp" />
     <ClCompile Include="src\machine\spaceinvaders.cpp" />
     <ClCompile Include="src\machine\taito8080.cpp" />
@@ -166,6 +168,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\cpu\i8080.h" />
+    <ClInclude Include="src\cpu\z80.h" />
     <ClInclude Include="src\display\rasterdisplay.h" />
     <ClInclude Include="src\include\cpu.h" />
     <ClInclude Include="src\include\display.h" />
@@ -173,6 +176,7 @@
     <ClInclude Include="src\include\memory.h" />
     <ClInclude Include="src\include\dipswitch.h" />
     <ClInclude Include="src\include\types.h" />
+    <ClInclude Include="src\machine\pacman.h" />
     <ClInclude Include="src\machine\spacechaser.h" />
     <ClInclude Include="src\machine\spaceinvaders.h" />
     <ClInclude Include="src\machine\taito8080.h" />

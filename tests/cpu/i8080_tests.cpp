@@ -4,7 +4,7 @@
 
 
 tests_ae::cpu::i8080_tests::i8080_tests() {
-	cpu = ae::ICpu::create("i8080");
+	cpu = ae::Cpu::create("i8080");
 	cpu->read([this](const uint16_t p) { return memory->read(p); });
 	cpu->write([this](const uint16_t p, const uint8_t v) { return memory->write(p, v); });
 }

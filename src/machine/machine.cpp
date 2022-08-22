@@ -1,6 +1,7 @@
 #include "machine.h"
 #include "spaceinvaders.h"
 #include "spacechaser.h"
+#include "pacman.h"
 
 #include <map>
 #include <functional>
@@ -13,7 +14,8 @@ static machinesList machines
 {
 	{"SpaceInvadersMidway", [] { return new machine::SpaceInvadersMidway(); }},
 	{"SpaceInvadersTV", [] { return new machine::SpaceInvadersTV(); }},
-	{"SpaceChaserCV", [] { return new machine::SpaceChaserCV(); }}
+	{"SpaceChaserCV", [] { return new machine::SpaceChaserCV(); }},
+	{"Pacman", [] { return new machine::Pacman(); }}
 
 };
 

@@ -7,26 +7,59 @@ namespace ae
 {
 	namespace cpu
 	{
-		class Intel8080 : public Cpu
+		class Z80 : public Cpu
 		{
 		protected:
-			uint8_t interrupt_enabled; // 0 ok, 1 wait one, 2 no
+			enum flags {
+				signFlag = 0x80,
+				zeroFlag = 0x40,
+				halfCarryFlag = 0x10,
+				parityFlag = 0x04,
+				addSubFlag = 0x02,
+				carryFlag = 0x01
+			};
+			typedef struct {
+				uint8_t a;
+				uint8_t f;
+				uint8_t b;
+				uint8_t c;
+				uint8_t d;
+				uint8_t e;
+				uint8_t h;
+				uint8_t l;
+			} registers_t;
+			bool iff1_waiting;
+			bool iff1;
+			bool iff2;
+			bool halted;
+
+			bool interrupt_waiting;
 			uint8_t interrupt_request;
 
-			uint8_t carryBit : 1; // carry bit
-			uint8_t auxCarryBit : 1; // auxiliary carry bit
-			uint8_t signBit : 1; // sign bit
-			uint8_t zeroBit : 1; // zero bit
-			uint8_t parityBit : 1; // parity bit
+			//			uint8_t carryBit : 1; // carry bit
+			//			uint8_t auxCarryBit : 1; // auxiliary carry bit
+			//			uint8_t signBit : 1; // sign bit
+			//			uint8_t zeroBit : 1; // zero bit
+			//			uint8_t parityBit : 1; // parity bit
 
+			registers_t main_registers;
+			registers_t alternative_registers;
 		public:
 			// Temporary access
 			uint16_t pc; // program counter
 			uint16_t sp; // stack pointer
-			uint8_t a; // accumulator
-			uint8_t b, c, d, e, h, l; // registers
+//			uint8_t a; // accumulator
+//			uint8_t b, c, d, e, h, l; // registers
+			uint8_t i;
+			enum class interrupt_mode {
+				mode_0,
+				mode_1,
+				mode_2
+			} im;
 
 		protected:
+			uint16_t decode_ed_prefix();
+
 			uint16_t get_bc() const;
 			void set_bc(const uint16_t);
 			uint16_t get_de() const;
@@ -69,7 +102,7 @@ namespace ae
 			}
 
 		public:
-			Intel8080();
+			Z80();
 			bool reset(const uint16_t = 0) override;
 
 			const string disassemble() override;

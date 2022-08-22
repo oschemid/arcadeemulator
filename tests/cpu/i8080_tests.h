@@ -12,7 +12,7 @@ namespace tests_ae
 	{
 		class i8080_tests {
 		protected:
-			ae::ICpu* cpu;
+			ae::Cpu* cpu;
 			ae::IMemory* memory;
 			bool finished;
 
