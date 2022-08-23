@@ -35,6 +35,7 @@ namespace ae
 
 			bool init() override;
 			SpaceChaserCV();
+			virtual ~SpaceChaserCV() = default;
 		};
 	}
 }

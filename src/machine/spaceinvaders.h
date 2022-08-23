@@ -27,6 +27,7 @@ namespace ae
 
 		public:
 			SpaceInvaders();
+			virtual ~SpaceInvaders() = default;
 
 			std::list<ae::IParameter*> getParameters() const override;
 		};
@@ -41,6 +42,7 @@ namespace ae
 			const string getDescription() const override { return "1978 Taito"; }
 
 			SpaceInvadersMidway();
+			virtual ~SpaceInvadersMidway() = default;
 		};
 		class SpaceInvadersTV : public SpaceInvaders
 		{
@@ -55,6 +57,7 @@ namespace ae
 			const string getDescription() const override { return "1978 Taito"; }
 
 			SpaceInvadersTV();
+			virtual ~SpaceInvadersTV() = default;
 		};
 	}
 }

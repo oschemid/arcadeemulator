@@ -30,8 +30,11 @@ int main(int argc, char** argv)
 		{
 			ae::ui::InterfaceGameSelection i((si == nullptr) ? "" : si->getID());
 			i.run();
-			if (i.getSelection() != "")
+			if (i.getSelection() != "") {
+				if (si)
+					delete si;
 				si = ae::IMachine::create(i.getSelection());
+			}
 		}
 		break;
 		case ae::ui::menu::response::GAMESETTINGS:
@@ -43,6 +46,7 @@ int main(int argc, char** argv)
 		}
 	}
 	ae::ui::destroy();
+	_CrtDumpMemoryLeaks();
 	return 0;
 }
 

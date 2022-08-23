@@ -22,6 +22,7 @@ namespace ae
 			DIPSwitch(const string name) :
 				_name(name),
 				_value(0) {}
+			~DIPSwitch() = default;
 			const string getName() const override { return _name; }
 			const uint8_t getValue() const override { return _value; }
 			const uint8_t getMaxValue() const override { return (1 << N) - 1; }

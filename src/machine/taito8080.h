@@ -37,6 +37,7 @@ namespace ae
 		public:
 			Taito8080(const size_t = 0x3fff,
 					  const ae::Layout::zones = {});
+			virtual ~Taito8080() = default;
 
 			bool init() override;
 			bool run() override;

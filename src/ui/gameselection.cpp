@@ -38,9 +38,10 @@ bool InterfaceGameSelection::render() {
 
 			machinesList machines = getMachines();
 			for (auto machine : machines) {
-				string name = machine.second()->getName();
+				auto machine2 = machine.second();
 				string ID = machine.first;
-				string description = machine.second()->getDescription();
+				string name = machine2->getName();
+				string description = machine2->getDescription();
 
 				nk_label(NkContext, "VIDE", NK_TEXT_CENTERED);
 
@@ -56,6 +57,7 @@ bool InterfaceGameSelection::render() {
 					nk_group_end(NkContext);
 				}
 				NkContext->style.window.fixed_background = tmp;
+				delete machine2;
 			}
 			nk_group_end(NkContext);
 		}

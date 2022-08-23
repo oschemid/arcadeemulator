@@ -23,7 +23,8 @@ ae::machine::Taito8080::Taito8080(const size_t memSize,
 	shift0(0),
 	shift1(0),
 	_memorySize(memSize),
-	_zones(zones)
+	_zones(zones),
+	shift_offset(0)
 {
 }
 
