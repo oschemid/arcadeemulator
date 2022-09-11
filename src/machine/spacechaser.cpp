@@ -123,7 +123,7 @@ bool ae::machine::SpaceChaserCV::init() {
 	return true;
 }
 
-void ae::machine::SpaceChaserCV::updateDisplay(uint16_t* pixels) {
+void ae::machine::SpaceChaserCV::updateDisplay(uint32_t* pixels) {
 	uint32_t ColorToDraw = 0xffff;
 	for (int x = 0; x < 224; x++) {
 		for (int y = 0; y < 256; y += 8) {
@@ -131,32 +131,32 @@ void ae::machine::SpaceChaserCV::updateDisplay(uint16_t* pixels) {
 			uint8_t VRAMByte = memory->read(0x2400 + offset);
 			uint8_t color = colorram->read((offset & 0x1f) | ((offset & 0x1f80) >> 2)) & 0x07;
 			for (int bit = 0; bit < 8; bit++) {
-				ColorToDraw = 0xf00f;
+				ColorToDraw = 0xff0000ff;
 				if (((VRAMByte >> bit) & 1)) {
 					switch (color) {
 					case 0:
-						ColorToDraw = 0x088f;
+						ColorToDraw = 0x008080ff;
 						break;
 					case 1:
-						ColorToDraw = 0xff00;
+						ColorToDraw = 0xffff0000;
 						break;
 					case 2:
-						ColorToDraw = 0xf00f;
+						ColorToDraw = 0xff0000ff;
 						break;
 					case 3:
-						ColorToDraw = 0xff0f;
+						ColorToDraw = 0xffff00ff;
 						break;
 					case 4:
-						ColorToDraw = 0xf0f0;
+						ColorToDraw = 0xff00ff00;
 						break;
 					case 5:
-						ColorToDraw = 0xfff0;
+						ColorToDraw = 0xffffff00;
 						break;
 					case 6:
-						ColorToDraw = 0xf0ff;
+						ColorToDraw = 0xff00ffff;
 						break;
 					case 7:
-						ColorToDraw = 0xffff;
+						ColorToDraw = 0xffffffff;
 						break;
 					}
 				}

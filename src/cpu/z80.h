@@ -1,7 +1,11 @@
 #pragma once
 #include "types.h"
 #include "cpu.h"
+#include "z80/z80state.h"
 
+#include <stdexcept>
+#include <array>
+#include <functional>
 
 namespace ae
 {
@@ -9,6 +13,38 @@ namespace ae
 	{
 		class Z80 : public Cpu
 		{
+		protected:
+			Z80State _state;
+
+			uint64_t _elapsed_cycles;
+
+			enum prefix {
+				NO = 0,
+				DD,
+				FD
+			};
+
+			// Decode registers from opcode
+			uint16_t decode16(const opcode_t, const prefix = NO) const;
+			uint16_t& decode16(const opcode_t, const prefix = NO);
+			uint8_t decode8(const opcode_t, const prefix = NO) const;
+			uint8_t& decode8(const opcode_t, const prefix = NO);
+
+			// Decode opcode
+			uint16_t decode_opcode(const uint8_t, const prefix = NO);
+			void decode_opcode_cb(const prefix);
+			uint16_t decode_opcode_ed();
+
+			// (HL) <- fn((HL))
+			void apply_hl(const fnuint8_t, const prefix, const int8_t = 0);
+			// r <- fn(r)
+			void apply_r(const fnuint8_t, const opcode_t, const prefix);
+			// (IXY+d) <- r <- fn((IXY+d))
+			void apply_ixy_r(const fnuint8_t, const opcode_t, const prefix, const int8_t = 0);
+
+			// Flags updater
+			void setZSP(const uint8_t);
+
 		protected:
 			enum flags {
 				signFlag = 0x80,
@@ -18,16 +54,6 @@ namespace ae
 				addSubFlag = 0x02,
 				carryFlag = 0x01
 			};
-			typedef struct {
-				uint8_t a;
-				uint8_t f;
-				uint8_t b;
-				uint8_t c;
-				uint8_t d;
-				uint8_t e;
-				uint8_t h;
-				uint8_t l;
-			} registers_t;
 			bool iff1_waiting;
 			bool iff1;
 			bool iff2;
@@ -35,21 +61,14 @@ namespace ae
 
 			bool interrupt_waiting;
 			uint8_t interrupt_request;
-
-			//			uint8_t carryBit : 1; // carry bit
-			//			uint8_t auxCarryBit : 1; // auxiliary carry bit
-			//			uint8_t signBit : 1; // sign bit
-			//			uint8_t zeroBit : 1; // zero bit
-			//			uint8_t parityBit : 1; // parity bit
-
-			registers_t main_registers;
-			registers_t alternative_registers;
 		public:
+			const uint64_t elapsed_cycles() const { return _elapsed_cycles; }
+
 			// Temporary access
 			uint16_t pc; // program counter
-			uint16_t sp; // stack pointer
-//			uint8_t a; // accumulator
-//			uint8_t b, c, d, e, h, l; // registers
+			uint8_t c() const { return _state.c(); }
+			uint8_t e() const { return _state.e(); }
+			uint16_t de() const { return _state.de(); }
 			uint8_t i;
 			enum class interrupt_mode {
 				mode_0,
@@ -58,28 +77,55 @@ namespace ae
 			} im;
 
 		protected:
-			uint16_t decode_ed_prefix();
+			/* opcodes */
 
-			uint16_t get_bc() const;
-			void set_bc(const uint16_t);
-			uint16_t get_de() const;
-			void set_de(const uint16_t);
-			uint16_t get_hl() const;
-			void set_hl(const uint16_t);
-			uint8_t get_m() const;
+			uint16_t ldd();
+			uint16_t ldi();
 
-			uint8_t dcr(const uint8_t);
-			uint8_t inr(const uint8_t);
-			void xra(const uint8_t);
+			/* opcodes */
+			void rla(const bool);
+			void rra(const bool);
+			void daa();
+			void add_ss(const opcode_t, const prefix);
+			void add(const uint8_t, const uint8_t = 0);
+			void sub(const uint8_t, const uint8_t = 0);
 			void ana(const uint8_t);
 			void ora(const uint8_t);
-			void sub(const uint8_t, const uint8_t = 0);
-			void sbb(const uint8_t);
-			void add(const uint8_t, const uint8_t = 0);
-			void adc(const uint8_t);
-			void cmp(const uint8_t);
-			void daa();
-			void dad(const uint16_t);
+			void xra(const uint8_t);
+			void cp(const uint8_t);
+			uint8_t inc(const uint8_t);
+			uint8_t dec(const uint8_t);
+
+			/* opcodes CB */
+			uint8_t rlc(const uint8_t);
+			uint8_t rl(const uint8_t);
+			uint8_t rrc(const uint8_t);
+			uint8_t rr(const uint8_t);
+			uint8_t sla(const uint8_t);
+			uint8_t sll(const uint8_t);
+			uint8_t sra(const uint8_t);
+			uint8_t srl(const uint8_t);
+			void bit(const uint8_t, const uint8_t);
+
+			/* opcodes ED */
+			void rrd();
+			void rld();
+			void adc_ss(const opcode_t);
+			void sbc_ss(const opcode_t);
+			void neg();
+			void cpd();
+			void cpi();
+
+			uint16_t decode_dd_opcode(const uint8_t);
+			uint16_t decode_ed_opcode(const uint8_t);
+			uint16_t decode_fd_opcode(const uint8_t);
+
+			const uint8_t decode_flags(const uint8_t) const;
+			uint8_t& decode_register(const uint8_t);
+
+			uint16_t execute_call(const uint16_t, const uint8_t);
+
+			uint8_t get_m() const;
 
 			void unimplemented();
 			void illegal();
@@ -88,13 +134,23 @@ namespace ae
 			const uint16_t popOfStack();
 
 			const uint8_t readOpcode() {
+				_elapsed_cycles += 4;
 				return _handlerRead(pc++);
 			}
 			const uint8_t readArgument8() {
+				_elapsed_cycles += 4;
 				return _handlerRead(pc++);
 			}
 			const uint16_t readArgument16() {
 				return _handlerRead(pc++) | (_handlerRead(pc++) << 8);
+			}
+			const uint8_t read(const uint16_t address) {
+				_elapsed_cycles += 4;
+				return _handlerRead(address);
+			}
+			void write(const uint16_t address, const uint8_t value) {
+				_elapsed_cycles += 3;
+				_handlerWrite(address, value);
 			}
 			void write(const uint16_t address, const uint16_t value) {
 				_handlerWrite(address, value & 0xFF);

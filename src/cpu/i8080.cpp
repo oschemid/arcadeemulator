@@ -82,7 +82,6 @@ namespace ae::cpu {
 	}
 	void Intel8080::sub(const uint8_t value, const uint8_t flag) {
 		carryBit = (value + flag > a) ? 1 : 0;
-		//		auxCarryBit = ((value+flag) & 0xf) > (a & 0xf) ? 0 : 1;
 		auxCarryBit = (a & 0x0f) - (value & 0x0f) - flag >= 0;
 		a -= value + flag;
 		signBit = sign(a);

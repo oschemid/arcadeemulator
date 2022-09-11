@@ -15,6 +15,8 @@ namespace ae
 		typedef std::function<void(const uint16_t, const uint8_t)> writefn;
 		typedef std::function<const uint8_t(const uint16_t)> readfn;
 
+		typedef uint8_t opcode_t;
+
 	protected:
 		outfn _handlerOut;
 		infn _handlerIn;
@@ -42,7 +44,7 @@ namespace ae
 			uint8_t t = v;
 			t ^= t >> 4;
 			t ^= t >> 2;
-			return ~((t ^= t >> 1) & 1);
+			return ((t ^= t >> 1) & 1) ? false : true;
 		}
 		static inline constexpr uint16_t make16(uint8_t hi, uint8_t lo) {
 			return (static_cast<uint16_t>(hi) << 8) | lo;

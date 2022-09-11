@@ -46,7 +46,7 @@ bool ae::machine::Taito8080::init()
 	if (!display) {
 		display = Display::create();
 		display->setSize(224, 256);
-		display->registerCallback([this](uint16_t* p) { return this->updateDisplay(p); });
+		display->registerCallback([this](uint32_t* p) { return this->updateDisplay(p); });
 		display->init();
 	}
 	if ((!layout) && (_zones.size() > 0)) {
@@ -72,18 +72,18 @@ uint64_t getNanoSeconds(std::chrono::time_point<std::chrono::high_resolution_clo
 	return duration_cast<std::chrono::nanoseconds>(diff).count();
 }
 
-void ae::machine::Taito8080::updateDisplay(uint16_t* pixels) {
-	uint32_t ColorToDraw = 0xffff;
+void ae::machine::Taito8080::updateDisplay(uint32_t* pixels) {
+	uint32_t ColorToDraw = 0xffffffff;
 
 	for (int x = 0; x < 224; x++) {
 		for (int y = 0; y < 256; y += 8) {
 			uint8_t VRAMByte = memory->read(0x2400 + (x << 5) + (y >> 3));
 
 			for (int bit = 0; bit < 8; bit++) {
-				ColorToDraw = 0x0000;
+				ColorToDraw = 0x00000000;
 
 				if (((VRAMByte >> bit) & 1)) {
-					ColorToDraw = 0xffff;
+					ColorToDraw = 0xffffffff;
 				}
 
 				uint8_t CoordX = x;

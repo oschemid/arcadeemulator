@@ -21,7 +21,7 @@ namespace ae
 
 		protected:
 			void loadMemory() override;
-			void updateDisplay(uint16_t*) override;
+			void updateDisplay(uint32_t*) override;
 			const uint8_t in(const uint8_t) override;
 
 			ae::IMemory* colorram;

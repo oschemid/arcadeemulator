@@ -2,12 +2,15 @@
 
 #include <string>
 #include <cstdint>
+#include <functional>
 
 namespace ae {
 	using std::string;
 	using std::uint8_t;
 	using std::uint16_t;
 	using std::size_t;
+
+	typedef std::function<uint8_t(const uint8_t)> fnuint8_t;
 
 	struct rgb_t {
 		uint8_t red;
