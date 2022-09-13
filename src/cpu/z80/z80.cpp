@@ -20,13 +20,13 @@ namespace ae::cpu {
 	void Z80::apply_hl(const fnuint8_t fn, const prefix p, const int8_t d) {
 		switch (p) {
 		case NO:
-			write8(_state.hl(), fn(read8(_state.hl())));
+			write(_state.hl(), fn(read(_state.hl())));
 			break;
 		case DD:
-			write8(_state.ix() + d, fn(read8(_state.ix() + d)));
+			write(_state.ix() + d, fn(read(_state.ix() + d)));
 			break;
 		case FD:
-			write8(_state.iy() + d, fn(read8(_state.iy() + d)));
+			write(_state.iy() + d, fn(read(_state.iy() + d)));
 			break;
 		}
 	}
@@ -41,17 +41,74 @@ namespace ae::cpu {
 			decode8(opcode) = fn(decode8(opcode));
 			break;
 		case DD:
-			decode8(opcode) = fn(read8(_state.ix() + d));
-			write8(_state.ix() + d, decode8(opcode));
+			decode8(opcode) = fn(read(_state.ix() + d));
+			write(_state.ix() + d, decode8(opcode));
 			break;
 		case FD:
-			decode8(opcode) = fn(read8(_state.iy() + d));
-			write8(_state.iy() + d, decode8(opcode));
+			decode8(opcode) = fn(read(_state.iy() + d));
+			write(_state.iy() + d, decode8(opcode));
 			break;
 		}
 	}
 
 	/******************************************************************************/
+	// OPCODES
+
+
+
+	void Z80::setZSP(const uint8_t value) {
+		_state.f() &= ~(flags::zeroFlag | flags::signFlag | flags::parityFlag);
+		_state.f() |= (zero(value)) ? flags::zeroFlag : 0;
+		_state.f() |= (sign(value)) ? flags::signFlag : 0;
+		_state.f() |= (parity(value)) ? flags::parityFlag : 0;
+	}
+
+	uint16_t Z80::ldd() {
+		uint8_t ml = _handlerRead(_state.hl());
+		_handlerWrite(de(), ml);
+		--_state.hl();
+		--_state.bc();
+		--_state.de();
+		_state.f() &= ~(flags::halfCarryFlag | flags::addSubFlag | flags::parityFlag);
+		_state.f() |= (_state.bc() == 0) ? 0 : flags::parityFlag;
+		return 12;
+	}
+	uint16_t Z80::ldi() {
+		uint8_t ml = _handlerRead(_state.hl());
+		_handlerWrite(de(), ml);
+		++_state.hl();
+		--_state.bc();
+		++_state.de();
+		_state.f() &= ~(flags::halfCarryFlag | flags::addSubFlag | flags::parityFlag);
+		_state.f() |= (_state.bc() == 0) ? 0 : flags::parityFlag;
+		return 12;
+	}
+	uint8_t Z80::get_m() const {
+		return _handlerRead(_state.hl());
+	}
+
+	const uint8_t Z80::decode_flags(const uint8_t opcode) const
+	{
+		switch (opcode) {
+		case 0b000:
+			return ~_state.f() & flags::zeroFlag;
+		case 0b001:
+			return _state.f() & flags::zeroFlag;
+		case 0b010:
+			return ~_state.f() & flags::carryFlag;
+		case 0b011:
+			return _state.f() & flags::carryFlag;
+		case 0b100:
+			return ~_state.f() & flags::parityFlag;
+		case 0b101:
+			return _state.f() & flags::parityFlag;
+		case 0b110:
+			return ~_state.f() & flags::signFlag;
+		case 0b111:
+			return _state.f() & flags::signFlag;
+		}
+		throw std::runtime_error("decode_flags : illegal value " + opcode);
+	}
 	uint8_t& Z80::decode_register(const uint8_t opcode)
 	{
 		switch (opcode) {
@@ -74,14 +131,14 @@ namespace ae::cpu {
 	}
 	const uint16_t Z80::popOfStack()
 	{
-		uint16_t value = read16(_state.sp());
+		uint16_t value = _handlerRead(_state.sp()) | (_handlerRead(_state.sp() + 1) << 8);
 		_state.sp() += 2;
 		return value;
 	}
 	void Z80::pushToStack(const uint16_t value)
 	{
 		_state.sp() -= 2;
-		write16(_state.sp(), value);
+		write(_state.sp(), value);
 	}
 	void Z80::unimplemented()
 	{
@@ -153,7 +210,7 @@ namespace ae::cpu {
 
 		const std::uint8_t opcode = (halted) ? 0x00 : readOpcode();
 		cycle = decode_opcode(opcode);
-		if ((pc >= 0x1d30) && (pc < 0x1d50))
+		if ((pc >= 0x2c5e) && (pc < 0x2cab))
 			return 0;
 		return cycle;
 	}
@@ -184,7 +241,7 @@ namespace ae::cpu {
 }
 
 
-uint16_t Z80::decode16(const opcode_t opcode, const prefix p, const bool stack) const
+uint16_t Z80::decode16(const opcode_t opcode, const prefix p) const
 {
 	switch ((opcode & 0x30) | p) {
 	case 0x00:
@@ -204,11 +261,11 @@ uint16_t Z80::decode16(const opcode_t opcode, const prefix p, const bool stack) 
 	case 0x30:
 	case 0x31:
 	case 0x32:
-		return (stack)? _state.af() : _state.sp();
+		return _state.sp();
 	}
 	throw std::runtime_error("Unexpected opcode in decode16 " + opcode);
 }
-uint16_t& Z80::decode16(const opcode_t opcode, const prefix p, const bool stack)
+uint16_t& Z80::decode16(const opcode_t opcode, const prefix p)
 {
 	switch ((opcode & 0x30) | p) {
 	case 0x00:
@@ -228,7 +285,7 @@ uint16_t& Z80::decode16(const opcode_t opcode, const prefix p, const bool stack)
 	case 0x30:
 	case 0x31:
 	case 0x32:
-		return (stack)? _state.af() : _state.sp();
+		return _state.sp();
 	}
 	throw std::runtime_error("Unexpected opcode in decode16 " + opcode);
 }
@@ -309,42 +366,4 @@ uint8_t& Z80::decode8(const opcode_t opcode, const prefix p)
 		return _state.a();
 	}
 	throw std::runtime_error("Unexpected opcode in decode8 " + opcode);
-}
-
-bool Z80::checkCondition3(const opcode_t opcode) const
-{
-	switch (opcode & 0b00111000) {
-	case 0b00000000:
-		return !_state.zeroFlag();
-	case 0b00001000:
-		return _state.zeroFlag();
-	case 0b00010000:
-		return !_state.carryFlag();
-	case 0b00011000:
-		return _state.carryFlag();
-	case 0b00100000:
-		return !_state.parityFlag();
-	case 0b00101000:
-		return _state.parityFlag();
-	case 0b00110000:
-		return !_state.signFlag();
-	case 0b00111000:
-		return _state.signFlag();
-	}
-	throw std::runtime_error("checkCondition3 : illegal value " + opcode);
-}
-
-bool Z80::checkCondition2(const opcode_t opcode) const
-{
-	switch (opcode & 0b00011000) {
-	case 0b00000000:
-		return !_state.zeroFlag();
-	case 0b00001000:
-		return _state.zeroFlag();
-	case 0b00010000:
-		return !_state.carryFlag();
-	case 0b00011000:
-		return _state.carryFlag();
-	}
-	throw std::runtime_error("checkCondition2 : illegal value " + opcode);
 }

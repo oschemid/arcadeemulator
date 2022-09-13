@@ -63,25 +63,7 @@
     <ClCompile Include="src\machine\pacman.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\cpu\z80\z80.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="tests\cpu\z80_tests.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\cpu\z80\z80opcodes_dd.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\cpu\z80\z80opcodes_fd.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\cpu\z80\z80opcodes.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\cpu\z80\z80opcodes_cb.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\cpu\z80\z80opcodes_ed.cpp">
+    <ClCompile Include="src\cpu\z80.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>
@@ -131,26 +113,12 @@
     <ClInclude Include="src\machine\pacman.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="tests\cpu\z80_tests.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="src\cpu\z80\z80state.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="LICENSE" />
     <None Include="docs\cpu\8080-Programmers-Manual.pdf" />
     <None Include=".gitignore" />
     <None Include="README.MD" />
-    <None Include="tests\data\cpu\Z80\prelim.src" />
-    <None Include="tests\data\cpu\Intel8080\TST8080.ASM">
-      <Filter>Fichiers sources</Filter>
-    </None>
-    <None Include="tests\data\cpu\Z80\zexdoc.src" />
-    <None Include="docs\cpu\Z80-User-Manual.pdf" />
-    <None Include="docs\cpu\z80-documented.pdf" />
-    <None Include="docs\machine\Pacman.pdf" />
   </ItemGroup>
   <ItemGroup>
     <Xsd Include="docs\machine\spaceinvaders.md">

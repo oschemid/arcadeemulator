@@ -25,17 +25,15 @@ namespace ae
 			};
 
 			// Decode registers from opcode
-			uint16_t decode16(const opcode_t, const prefix = NO, const bool stack = false) const;
-			uint16_t& decode16(const opcode_t, const prefix = NO, const bool stack = false);
+			uint16_t decode16(const opcode_t, const prefix = NO) const;
+			uint16_t& decode16(const opcode_t, const prefix = NO);
 			uint8_t decode8(const opcode_t, const prefix = NO) const;
 			uint8_t& decode8(const opcode_t, const prefix = NO);
-			bool checkCondition3(const opcode_t) const;
-			bool checkCondition2(const opcode_t) const;
 
 			// Decode opcode
 			uint16_t decode_opcode(const uint8_t, const prefix = NO);
 			void decode_opcode_cb(const prefix);
-			void decode_opcode_ed();
+			uint16_t decode_opcode_ed();
 
 			// (HL) <- fn((HL))
 			void apply_hl(const fnuint8_t, const prefix, const int8_t = 0);
@@ -43,6 +41,9 @@ namespace ae
 			void apply_r(const fnuint8_t, const opcode_t, const prefix);
 			// (IXY+d) <- r <- fn((IXY+d))
 			void apply_ixy_r(const fnuint8_t, const opcode_t, const prefix, const int8_t = 0);
+
+			// Flags updater
+			void setZSP(const uint8_t);
 
 		protected:
 			enum flags {
@@ -77,6 +78,11 @@ namespace ae
 
 		protected:
 			/* opcodes */
+
+			uint16_t ldd();
+			uint16_t ldi();
+
+			/* opcodes */
 			void rla(const bool);
 			void rra(const bool);
 			void daa();
@@ -89,8 +95,6 @@ namespace ae
 			void cp(const uint8_t);
 			uint8_t inc(const uint8_t);
 			uint8_t dec(const uint8_t);
-			void exchange_de_hl();
-			uint16_t exchange_sp(const uint16_t);
 
 			/* opcodes CB */
 			uint8_t rlc(const uint8_t);
@@ -111,16 +115,17 @@ namespace ae
 			void neg();
 			void cpd();
 			void cpi();
-			void ldd();
-			void ldi();
-
 
 			uint16_t decode_dd_opcode(const uint8_t);
+			uint16_t decode_ed_opcode(const uint8_t);
 			uint16_t decode_fd_opcode(const uint8_t);
 
+			const uint8_t decode_flags(const uint8_t) const;
 			uint8_t& decode_register(const uint8_t);
 
 			uint16_t execute_call(const uint16_t, const uint8_t);
+
+			uint8_t get_m() const;
 
 			void unimplemented();
 			void illegal();
@@ -137,23 +142,17 @@ namespace ae
 				return _handlerRead(pc++);
 			}
 			const uint16_t readArgument16() {
-				_elapsed_cycles += 6;
 				return _handlerRead(pc++) | (_handlerRead(pc++) << 8);
 			}
-			const uint8_t read8(const uint16_t address) {
+			const uint8_t read(const uint16_t address) {
 				_elapsed_cycles += 4;
 				return _handlerRead(address);
 			}
-			const uint16_t read16(const uint16_t address) {
-				_elapsed_cycles += 6;
-				return _handlerRead(address) | (_handlerRead(address + 1) << 8);
-			}
-			void write8(const uint16_t address, const uint8_t value) {
+			void write(const uint16_t address, const uint8_t value) {
 				_elapsed_cycles += 3;
 				_handlerWrite(address, value);
 			}
-			void write16(const uint16_t address, const uint16_t value) {
-				_elapsed_cycles += 6;
+			void write(const uint16_t address, const uint16_t value) {
 				_handlerWrite(address, value & 0xFF);
 				_handlerWrite(address + 1, value >> 8);
 			}

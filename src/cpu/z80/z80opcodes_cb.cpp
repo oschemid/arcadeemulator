@@ -123,11 +123,11 @@ void Z80::decode_opcode_cb(const prefix p) {
 		break;
 	case opcode::BIT_HL:
 		if (p == DD)
-			bit(read8(_state.ix() + delta), (opcode & 0b00111000) >> 3);
+			bit(read(_state.ix() + delta), (opcode & 0b00111000) >> 3);
 		else if (p == FD)
-			bit(read8(_state.ix() + delta), (opcode & 0b00111000) >> 3);
+			bit(read(_state.ix() + delta), (opcode & 0b00111000) >> 3);
 		else
-			bit(read8(_state.hl()), (opcode & 0b00111000) >> 3);
+			bit(read(_state.hl()), (opcode & 0b00111000) >> 3);
 		break;
 	case opcode::SET_R:
 		apply_ixy_r([this, opcode](const uint8_t r) { return r | (1 << ((opcode & 0b00111000) >> 3)); }, opcode, p, delta);

@@ -13,28 +13,6 @@ tests_ae::cpu::z80_tests::z80_tests() :
 
 bool tests_ae::cpu::z80_tests::runTestCycles() {
 	const std::pair<uint64_t, uint64_t> opcodes[] = {
-		// Group 1 - 8-Bit Load Group
-		{ 0x40000000, 4 }, { 0xdd400000, 8 }, { 0xfd400000, 8 }, // LD r,r
-		{ 0x06000000, 7 }, { 0xdd060000, 11 }, { 0xfd060000, 11 }, // LD r,n
-		{ 0x46000000, 7 }, { 0xdd460100, 19 }, { 0xfd460100, 19 }, // LD r,(hl)
-		{ 0x70000000, 7 }, { 0xdd700300, 19 }, { 0xfd700300, 19 }, // LD (hl),r
-		{ 0x36300000, 10 }, { 0xdd360000, 19 }, { 0xfd361010, 19 }, // LD (hl),n
-		{ 0x0a000000, 7 }, { 0x1a000000, 7 }, { 0x3A345600, 13 }, // LD A,(dd)
-		{ 0x02000000, 7 }, { 0x12000000, 7 }, { 0x32000000, 13 }, // LD (dd),A
-		{ 0xed570000, 9 }, { 0xed5f0000, 9 }, { 0xed470000, 9 }, { 0xed4f0000, 9 }, // LD A,I LD A,R
-
-		// Group 2 - 16-Bit Load Group
-		{ 0x01000000, 10 }, { 0xdd210000, 14 }, { 0xfd210000, 14 }, // LD ss, nn
-		{ 0x2a000000, 16 }, { 0xed4b0000, 20 }, { 0xdd2a0000, 20 }, { 0xfd2a0000, 20 }, // Ld ss, (nn)
-		{ 0x22000000, 16 }, { 0xed430000, 20 }, { 0xdd220000, 20 }, { 0xfd220000, 20 }, // LD (nn), ss
-		{ 0xf9000000, 6 }, { 0xddf90000, 10 }, { 0xfdf90000, 10 }, // LD SP, HL
-		{ 0xe5000000, 11 }, { 0xdde50000, 15 }, { 0xfde50000, 15 }, // PUSH
-		{ 0xe1000000, 10 }, { 0xdde10000, 14 }, { 0xfde10000, 14 }, // POP
-
-		// Group 3 - Exchange, Block Transfer, Search Group
-		{ 0xeb000000, 4 }, { 0x08000000, 4 }, { 0xd9000000, 4 }, {0xe3000000, 19 }, { 0xdde30000, 23 }, { 0xfde30000, 23 }, // EX
-		{ 0xeda00000, 16 }, {0xedb00000, 21 }, { 0xeda80000, 16 }, {0xedb80000, 21 }, { 0xeda10000, 16 }, {0xedb10000, 21 }, { 0xeda90000, 16 }, { 0xedb90000, 21 }, // LDI, LDD, CPI, CPD
-
 		// Group 4 - 8-Bit Arithmetic and Logical Group
 		{ 0x80000000, 4 }, { 0x86000000, 7 }, { 0xdd800000, 8 }, {0xfd800000, 8 }, {0xc6000000, 7 }, { 0xdd860000, 19 }, { 0xfd860000, 19 }, // ADD
 		{ 0x88000000, 4 }, { 0x8e000000, 7 }, { 0xdd880000, 8 }, {0xfd880000, 8 }, {0xce000000, 7 }, { 0xdd8e0000, 19 }, { 0xfd8e0000, 19 }, // ADC
@@ -74,13 +52,6 @@ bool tests_ae::cpu::z80_tests::runTestCycles() {
 		{ 0xcb400000, 8 }, { 0xcb460000, 12 }, { 0xddcb0046, 20 }, { 0xfdcb0046, 20 }, // BIT
 		{ 0xcbc00000, 8 }, { 0xcbc60000, 15 }, { 0xddcb00c6, 23 }, { 0xfdcb00c6, 23 }, { 0xddcb00c1, 23 }, { 0xfdcb00c2, 23 }, // SET
 		{ 0xcb800000, 8 }, { 0xcb860000, 15 }, { 0xddcb0086, 23 }, { 0xfdcb0086, 23 }, { 0xddcb0081, 23 }, { 0xfdcb0082, 23 }, // RES
-
-		// Group 9 - Jump Group
-		{ 0xc3100000, 10 }, { 0xe9000000, 4 }, { 0xdde90000, 8 }, { 0xfde90000, 8 }, { 0xf2100000, 10 }, // JP
-		{ 0x18010000, 12 }, { 0x20010000, 12 }, { 0x28010000, 7 }, { 0x10010000, 13 }, // JR, DJNZ
-
-		// Group 10 - Call and Return Group
-
 	};
 
 	memory = ae::newMemory(0xff);
@@ -156,13 +127,13 @@ bool tests_ae::cpu::z80_tests::runTest(const string& filename, const uint64_t cy
 
 bool tests_ae::cpu::z80_tests::run() {
 	std::cout << "check cycles" << std::endl;
-	//	runTestCycles();
+	runTestCycles();
 	std::cout << std::endl;
 	std::cout << "prelim.com" << std::endl;
 	runTest("data/cpu/Z80/prelim.com", 8721Ui64);
 	std::cout << std::endl;
 	std::cout << "zexdoc.com" << std::endl;
-	runTest("data/cpu/Z80/zexdoc.com", 46734978649Ui64);
+	runTest("data/cpu/Z80/zexdoc.com", 8721Ui64);
 	std::cout << std::endl;
 	//	std::cout << "zexall.com" << std::endl;
 	//	runTest("data/cpu/Z80/zexall.com", 8721Ui64);

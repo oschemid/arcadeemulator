@@ -67,19 +67,6 @@ enum class opcode {
 	RRCA,
 	RLA,
 	RRA,
-	EX_DE,
-	EX_AF,
-	EXX,
-	EX_SP,
-	LD_SP_HL,
-	JP,
-	JP_CC,
-	JP_HL,
-	JR,
-	JR_C,
-	DJNZ,
-	PUSH,
-	POP,
 };
 
 
@@ -126,139 +113,104 @@ constexpr auto opcodes{ []() constexpr {
 			result[i] = ((i & 0x07) == 0x06) ? opcode::OR_HL : opcode::OR_R;
 		if ((i & 0b11111000) == 0b10111000)
 			result[i] = ((i & 0x07) == 0x06) ? opcode::CP_HL : opcode::CP_R;
-		if ((i & 0b11000111) == 0b11000010)
-			result[i] = opcode::JP_CC;
-		if ((i & 0b11100111) == 0b00100000)
-			result[i] = opcode::JR_C;
-		if ((i & 0b11001111) == 0b11000101)
-			result[i] = opcode::PUSH;
-		if ((i & 0b11001111) == 0b11000001)
-			result[i] = opcode::POP;
-				switch (i) {
-				case 0x00:
-					result[i] = opcode::NOP;
-					break;
-				case 0x02:
-					result[i] = opcode::LD_BC_A;
-					break;
-				case 0x07:
-					result[i] = opcode::RLCA;
-					break;
-									case 0x08:
-										result[i] = opcode::EX_AF;
-										break;
-									case 0x0A:
-										result[i] = opcode::LD_A_BC;
-										break;
-									case 0x0F:
-										result[i] = opcode::RRCA;
-										break;
-										//		case 0x10:
-										//			result[i] = opcode::DJNZ;
-										//			break;
-							case 0x12:
-								result[i] = opcode::LD_DE_A;
-								break;
-							case 0x17:
-								result[i] = opcode::RLA;
-								break;
-										case 0x18:
-											result[i] = opcode::JR;
-											break;
-										case 0x1A:
-											result[i] = opcode::LD_A_DE;
-											break;
-										case 0x1F:
-											result[i] = opcode::RRA;
-											break;
-										case 0x22:
-											result[i] = opcode::LD_NNNN_HL;
-											break;
-										case 0x27:
-											result[i] = opcode::DAA;
-											break;
-										case 0x2A:
-											result[i] = opcode::LD_HL_NNNN;
-											break;
-										case 0x2F:
-											result[i] = opcode::CPL;
-											break;
-										case 0x32:
-											result[i] = opcode::LD_NNNN_A;
-											break;
-										case 0x37:
-											result[i] = opcode::SCF;
-											break;
-										case 0x3A:
-											result[i] = opcode::LD_A_NNNN;
-											break;
-										case 0x3F:
-											result[i] = opcode::CCF;
-											break;
-													case 0xC3:
-														result[i] = opcode::JP;
-														break;
-													case 0xC6:
-														result[i] = opcode::ADD_N;
-														break;
-													case 0xCB:
-														result[i] = opcode::DECODE_CB;
-														break;
-													case 0xCE:
-														result[i] = opcode::ADC_N;
-														break;
-													case 0xD6:
-														result[i] = opcode::SUB_N;
-														break;
-																case 0xD9:
-																	result[i] = opcode::EXX;
-																	break;
-																case 0xDD:
-																	result[i] = opcode::DECODE_DD;
-																	break;
-																case 0xDE:
-																	result[i] = opcode::SBC_N;
-																	break;
-																			case 0xE3:
-																				result[i] = opcode::EX_SP;
-																				break;
-																			case 0xE6:
-																				result[i] = opcode::AND_N;
-																				break;
-																				//		case 0xE9:
-																				//			result[i] = opcode::JP_HL;
-																				//			break;
-																						case 0xEB:
-																							result[i] = opcode::EX_DE;
-																							break;
-																						case 0xED:
-																							result[i] = opcode::DECODE_ED;
-																							break;
-																						case 0xEE:
-																							result[i] = opcode::XOR_N;
-																							break;
-																						case 0xF3:
-																							result[i] = opcode::DI;
-																							break;
-																						case 0xF6:
-																							result[i] = opcode::OR_N;
-																							break;
-																							//		case 0xF9:
-																							//			result[i] = opcode::LD_SP_HL;
-																							//			break;
-																									case 0xFB:
-																										result[i] = opcode::EI;
-																										break;
-																									case 0xFD:
-																										result[i] = opcode::DECODE_FD;
-																										break;
-																									case 0xFE:
-																										result[i] = opcode::CP_N;
-																										break;
-																									}
-																									}
-																									return result;
-																									}()
+		switch (i) {
+		case 0x00:
+			result[i] = opcode::NOP;
+			break;
+		case 0x02:
+			result[i] = opcode::LD_BC_A;
+			break;
+		case 0x07:
+			result[i] = opcode::RLCA;
+			break;
+		case 0x0A:
+			result[i] = opcode::LD_A_BC;
+			break;
+		case 0x0F:
+			result[i] = opcode::RRCA;
+			break;
+		case 0x12:
+			result[i] = opcode::LD_DE_A;
+			break;
+		case 0x17:
+			result[i] = opcode::RLA;
+			break;
+		case 0x1A:
+			result[i] = opcode::LD_A_DE;
+			break;
+		case 0x1F:
+			result[i] = opcode::RRA;
+			break;
+		case 0x22:
+			result[i] = opcode::LD_NNNN_HL;
+			break;
+		case 0x27:
+			result[i] = opcode::DAA;
+			break;
+		case 0x2A:
+			result[i] = opcode::LD_HL_NNNN;
+			break;
+		case 0x2F:
+			result[i] = opcode::CPL;
+			break;
+		case 0x32:
+			result[i] = opcode::LD_NNNN_A;
+			break;
+		case 0x37:
+			result[i] = opcode::SCF;
+			break;
+		case 0x3A:
+			result[i] = opcode::LD_A_NNNN;
+			break;
+		case 0x3F:
+			result[i] = opcode::CCF;
+			break;
+		case 0xC6:
+			result[i] = opcode::ADD_N;
+			break;
+		case 0xCB:
+			result[i] = opcode::DECODE_CB;
+			break;
+		case 0xCE:
+			result[i] = opcode::ADC_N;
+			break;
+		case 0xD6:
+			result[i] = opcode::SUB_N;
+			break;
+		case 0xDD:
+			result[i] = opcode::DECODE_DD;
+			break;
+		case 0xDE:
+			result[i] = opcode::SBC_N;
+			break;
+		case 0xE6:
+			result[i] = opcode::AND_N;
+			break;
+		case 0xED:
+			result[i] = opcode::DECODE_ED;
+			break;
+		case 0xEE:
+			result[i] = opcode::XOR_N;
+			break;
+		case 0xF3:
+			result[i] = opcode::DI;
+			break;
+		case 0xF6:
+			result[i] = opcode::OR_N;
+			break;
+		case 0xFB:
+			result[i] = opcode::EI;
+			break;
+		case 0xFD:
+			result[i] = opcode::DECODE_FD;
+			break;
+		case 0xFE:
+			result[i] = opcode::CP_N;
+			break;
+		}
+	}
+	return result;
+}()
 };
 
 
@@ -314,8 +266,7 @@ uint16_t Z80::decode_opcode(const uint8_t opcode,
 					((opcode2 & 0b11000000) == 0b01000000) ||
 					(opcode2 == 0x22) ||
 					(opcode2 == 0x2A) ||
-					(opcode2 == 0xcb) //||
-					//					(opcode2 == 0xf9)
+					(opcode2 == 0xcb)
 					) {
 					cycle += decode_opcode(opcode2, DD);
 				}
@@ -325,7 +276,7 @@ uint16_t Z80::decode_opcode(const uint8_t opcode,
 			}
 			break;
 		case opcode::DECODE_ED:
-			decode_opcode_ed();
+			cycle += decode_opcode_ed();
 			break;
 		case opcode::DECODE_FD:
 			if (p != NO)
@@ -364,82 +315,63 @@ uint16_t Z80::decode_opcode(const uint8_t opcode,
 			decode8(opcode >> 3, p) = decode8(opcode, p);
 			break;
 		case opcode::LD_HL_R:
-			apply_hl([this, opcode](const uint8_t) { return decode8(opcode); }, p, (p != NO) ? readArgument8() : 0);
-			if (p == NO)
-				_elapsed_cycles -= 4;
-			break;
-		case opcode::LD_SP_HL:
-			if (p == NO)
-				_state.sp() = _state.hl();
-			else if (p == DD)
-				_state.sp() = _state.ix();
-			else
-				_state.sp() = _state.iy();
-			_elapsed_cycles += 2;
-			break;
+		{
+			int8_t delta = (p != NO) ? readArgument8() : 0;
+			apply_hl([this, opcode](const uint8_t) { return decode8(opcode); }, p, delta);
+		}
+		break;
 		case opcode::LD_R_N:
 			decode8(opcode >> 3, p) = readArgument8();
-			_elapsed_cycles--;
 			break;
 		case opcode::LD_R_HL:
-			if (p == NO) {
-				decode8(opcode >> 3) = read8(_state.hl());
-				_elapsed_cycles--;
-			}
-			else if (p == DD) {
-				decode8(opcode >> 3) = read8(_state.ix() + static_cast<int8_t>(readArgument8()));
-				_elapsed_cycles += 3;
-			}
-			else if (p == FD) {
-				decode8(opcode >> 3) = read8(_state.iy() + static_cast<int8_t>(readArgument8()));
-				_elapsed_cycles += 3;
-			}
+			if (p == NO)
+				decode8(opcode >> 3) = _handlerRead(_state.hl());
+			else if (p == DD)
+				decode8(opcode >> 3) = _handlerRead(_state.ix() + static_cast<int8_t>(readArgument8()));
+			else if (p == FD)
+				decode8(opcode >> 3) = _handlerRead(_state.iy() + static_cast<int8_t>(readArgument8()));
 			break;
 		case opcode::LD_HL_N:
 		{
 			int8_t delta = (p != NO) ? readArgument8() : 0;
 			apply_hl([this](const uint8_t) { return readArgument8(); }, p, delta);
-			_elapsed_cycles -= 4;
-			if (p == NO)
-				_elapsed_cycles--;
 		}
 		break;
 		case opcode::LD_A_BC:
-			_state.a() = read8(_state.bc());
-			_elapsed_cycles--;
+			_state.a() = _handlerRead(_state.bc());
 			break;
 		case opcode::LD_A_DE:
-			_state.a() = read8(_state.de());
-			_elapsed_cycles--;
+			_state.a() = _handlerRead(_state.de());
 			break;
 		case opcode::LD_BC_A:
-			write8(_state.bc(), _state.a());
+			_handlerWrite(_state.bc(), _state.a());
 			break;
 		case opcode::LD_DE_A:
-			write8(_state.de(), _state.a());
+			_handlerWrite(_state.de(), _state.a());
 			break;
 		case opcode::LD_SS_NN:
 			decode16(opcode, p) = readArgument16();
 			break;
 		case opcode::LD_A_NNNN:
-			_state.a() = read8(readArgument16());
-			_elapsed_cycles--;
+			_state.a() = _handlerRead(readArgument16());
 			break;
 		case opcode::LD_NNNN_A:
-			write8(readArgument16(), _state.a());
+			_handlerWrite(readArgument16(), _state.a());
 			break;
 		case opcode::LD_HL_NNNN:
 			tmp16 = readArgument16();
 			if (p == NO)
-				_state.hl() = read16(tmp16);
+				_state.hl() = make16(_handlerRead(tmp16 + 1), _handlerRead(tmp16));
 			else if (p == DD)
-				_state.ix() = read16(tmp16);
+				_state.ix() = make16(_handlerRead(tmp16 + 1), _handlerRead(tmp16));
 			else if (p == FD)
-				_state.iy() = read16(tmp16);
+				_state.iy() = make16(_handlerRead(tmp16 + 1), _handlerRead(tmp16));
 			break;
 
 		case opcode::LD_NNNN_HL:
-			write16(readArgument16(), decode16(opcode, p));
+			tmp16 = readArgument16();
+			_handlerWrite(tmp16, decode16(opcode, p) & 0xff);
+			_handlerWrite(tmp16 + 1, decode16(opcode, p) >> 8);
 			break;
 
 		case opcode::ADD_HL_SS:
@@ -454,15 +386,15 @@ uint16_t Z80::decode_opcode(const uint8_t opcode,
 			break;
 		case opcode::ADD_HL:
 			if (p == DD) {
-				add(read8(_state.ix() + static_cast<signed char>(readArgument8())));
+				add(read(_state.ix() + static_cast<signed char>(readArgument8())));
 				_elapsed_cycles += 3;
 			}
 			else if (p == FD) {
-				add(read8(_state.iy() + static_cast<signed char>(readArgument8())));
+				add(read(_state.iy() + static_cast<signed char>(readArgument8())));
 				_elapsed_cycles += 3;
 			}
 			else {
-				add(read8(_state.hl()));
+				add(read(_state.hl()));
 				_elapsed_cycles--;
 			}
 			break;
@@ -475,15 +407,15 @@ uint16_t Z80::decode_opcode(const uint8_t opcode,
 			break;
 		case opcode::ADC_HL:
 			if (p == DD) {
-				add(read8(_state.ix() + static_cast<signed char>(readArgument8())), (_state.carryFlag()) ? 1 : 0);
+				add(read(_state.ix() + static_cast<signed char>(readArgument8())), (_state.carryFlag()) ? 1 : 0);
 				_elapsed_cycles += 3;
 			}
 			else if (p == FD) {
-				add(read8(_state.iy() + static_cast<signed char>(readArgument8())), (_state.carryFlag()) ? 1 : 0);
+				add(read(_state.iy() + static_cast<signed char>(readArgument8())), (_state.carryFlag()) ? 1 : 0);
 				_elapsed_cycles += 3;
 			}
 			else {
-				add(read8(_state.hl()), (_state.carryFlag()) ? 1 : 0);
+				add(read(_state.hl()), (_state.carryFlag()) ? 1 : 0);
 				_elapsed_cycles--;
 			}
 			break;
@@ -496,15 +428,15 @@ uint16_t Z80::decode_opcode(const uint8_t opcode,
 			break;
 		case opcode::SUB_HL:
 			if (p == DD) {
-				sub(read8(_state.ix() + static_cast<signed char>(readArgument8())));
+				sub(read(_state.ix() + static_cast<signed char>(readArgument8())));
 				_elapsed_cycles += 3;
 			}
 			else if (p == FD) {
-				sub(read8(_state.iy() + static_cast<signed char>(readArgument8())));
+				sub(read(_state.iy() + static_cast<signed char>(readArgument8())));
 				_elapsed_cycles += 3;
 			}
 			else {
-				sub(read8(_state.hl()));
+				sub(read(_state.hl()));
 				_elapsed_cycles--;
 			}
 			break;
@@ -517,15 +449,15 @@ uint16_t Z80::decode_opcode(const uint8_t opcode,
 			break;
 		case opcode::SBC_HL:
 			if (p == DD) {
-				sub(read8(_state.ix() + static_cast<signed char>(readArgument8())), (_state.carryFlag()) ? 1 : 0);
+				sub(read(_state.ix() + static_cast<signed char>(readArgument8())), (_state.carryFlag()) ? 1 : 0);
 				_elapsed_cycles += 3;
 			}
 			else if (p == FD) {
-				sub(read8(_state.iy() + static_cast<signed char>(readArgument8())), (_state.carryFlag()) ? 1 : 0);
+				sub(read(_state.iy() + static_cast<signed char>(readArgument8())), (_state.carryFlag()) ? 1 : 0);
 				_elapsed_cycles += 3;
 			}
 			else {
-				sub(read8(_state.hl()), (_state.carryFlag()) ? 1 : 0);
+				sub(read(_state.hl()), (_state.carryFlag()) ? 1 : 0);
 				_elapsed_cycles--;
 			}
 			break;
@@ -538,15 +470,15 @@ uint16_t Z80::decode_opcode(const uint8_t opcode,
 			break;
 		case opcode::AND_HL:
 			if (p == DD) {
-				ana(read8(_state.ix() + static_cast<signed char>(readArgument8())));
+				ana(read(_state.ix() + static_cast<signed char>(readArgument8())));
 				_elapsed_cycles += 3;
 			}
 			else if (p == FD) {
-				ana(read8(_state.iy() + static_cast<signed char>(readArgument8())));
+				ana(read(_state.iy() + static_cast<signed char>(readArgument8())));
 				_elapsed_cycles += 3;
 			}
 			else {
-				ana(read8(_state.hl()));
+				ana(read(_state.hl()));
 				_elapsed_cycles--;
 			}
 			break;
@@ -559,15 +491,15 @@ uint16_t Z80::decode_opcode(const uint8_t opcode,
 			break;
 		case opcode::XOR_HL:
 			if (p == DD) {
-				xra(read8(_state.ix() + static_cast<signed char>(readArgument8())));
+				xra(read(_state.ix() + static_cast<signed char>(readArgument8())));
 				_elapsed_cycles += 3;
 			}
 			else if (p == FD) {
-				xra(read8(_state.iy() + static_cast<signed char>(readArgument8())));
+				xra(read(_state.iy() + static_cast<signed char>(readArgument8())));
 				_elapsed_cycles += 3;
 			}
 			else {
-				xra(read8(_state.hl()));
+				xra(read(_state.hl()));
 				_elapsed_cycles--;
 			}
 			break;
@@ -580,15 +512,15 @@ uint16_t Z80::decode_opcode(const uint8_t opcode,
 			break;
 		case opcode::OR_HL:
 			if (p == DD) {
-				ora(read8(_state.ix() + static_cast<signed char>(readArgument8())));
+				ora(read(_state.ix() + static_cast<signed char>(readArgument8())));
 				_elapsed_cycles += 3;
 			}
 			else if (p == FD) {
-				ora(read8(_state.iy() + static_cast<signed char>(readArgument8())));
+				ora(read(_state.iy() + static_cast<signed char>(readArgument8())));
 				_elapsed_cycles += 3;
 			}
 			else {
-				ora(read8(_state.hl()));
+				ora(read(_state.hl()));
 				_elapsed_cycles--;
 			}
 			break;
@@ -601,15 +533,15 @@ uint16_t Z80::decode_opcode(const uint8_t opcode,
 			break;
 		case opcode::CP_HL:
 			if (p == DD) {
-				cp(read8(_state.ix() + static_cast<signed char>(readArgument8())));
+				cp(read(_state.ix() + static_cast<signed char>(readArgument8())));
 				_elapsed_cycles += 3;
 			}
 			else if (p == 2) {
-				cp(read8(_state.iy() + static_cast<signed char>(readArgument8())));
+				cp(read(_state.iy() + static_cast<signed char>(readArgument8())));
 				_elapsed_cycles += 3;
 			}
 			else {
-				cp(read8(_state.hl()));
+				cp(read(_state.hl()));
 				_elapsed_cycles--;
 			}
 			break;
@@ -653,16 +585,12 @@ uint16_t Z80::decode_opcode(const uint8_t opcode,
 			break;
 		case opcode::INC_HL:
 			apply_hl([this](const uint8_t r) { return inc(r); }, p, (p == NO) ? 0 : static_cast<int8_t>(readArgument8()));
-			if (p != NO)
-				_elapsed_cycles += 4;
 			break;
 		case opcode::DEC_R:
 			apply_r([this](const uint8_t r) { return dec(r); }, opcode >> 3, p);
 			break;
 		case opcode::DEC_HL:
 			apply_hl([this](const uint8_t r) { return dec(r); }, p, (p == NO) ? 0 : static_cast<int8_t>(readArgument8()));
-			if (p != NO)
-				_elapsed_cycles += 4;
 			break;
 		case opcode::INC_SS:
 			++decode16(opcode, p);
@@ -671,70 +599,6 @@ uint16_t Z80::decode_opcode(const uint8_t opcode,
 		case opcode::DEC_SS:
 			--decode16(opcode, p);
 			_elapsed_cycles += 2;
-			break;
-		case opcode::EX_AF:
-			_state.exchange(Z80State::AF);
-			break;
-		case opcode::EXX:
-			_state.exchange(Z80State::BC);
-			_state.exchange(Z80State::DE);
-			_state.exchange(Z80State::HL);
-			break;
-		case opcode::EX_DE:
-			exchange_de_hl();
-			break;
-		case opcode::EX_SP:
-			if (p == NO)
-				_state.hl() = exchange_sp(_state.hl());
-			else if (p == DD)
-				_state.ix() = exchange_sp(_state.ix());
-			else
-				_state.iy() = exchange_sp(_state.iy());
-			_elapsed_cycles += 3;
-			break;
-		case opcode::JP:
-			pc = readArgument16();
-			break;
-		case opcode::JP_CC:
-			tmp16 = readArgument16();
-			if (checkCondition3(opcode)) {
-				pc = tmp16;
-			}
-			break;
-		case opcode::JP_HL:
-			pc = decode16(0x20, p);
-			break;
-		case opcode::JR:
-			pc = pc + static_cast<signed char>(readArgument8());
-			_elapsed_cycles += 4;
-			break;
-		case opcode::JR_C:
-			if (checkCondition2(opcode)) {
-				pc = pc + static_cast<signed char>(readArgument8());
-				_elapsed_cycles += 4;
-			}
-			else {
-				readArgument8();
-				_elapsed_cycles--;
-			}
-			break;
-		case opcode::DJNZ:
-			if (--_state.b() == 0) {
-				readArgument8();
-			}
-			else {
-				pc = pc + static_cast<signed char>(readArgument8());
-				_elapsed_cycles += 5;
-			}
-			break;
-		case opcode::PUSH:
-			pushToStack(decode16(opcode, p, true));
-			break;
-		case opcode::POP:
-			decode16(opcode, p, true) = popOfStack();
-			break;
-		default:
-			unimplemented();
 			break;
 		}
 		return cycle;
@@ -752,7 +616,7 @@ uint16_t Z80::decode_opcode(const uint8_t opcode,
 		switch (opcode3) {
 		case 0b000: /* RET cc */
 			cycle += 5;
-			if (checkCondition3(opcode)) {
+			if (decode_flags(opcode2)) {
 				pc = popOfStack();
 				cycle += 6;
 			}
@@ -760,14 +624,14 @@ uint16_t Z80::decode_opcode(const uint8_t opcode,
 		case 0b010: /* JP cc, nn */
 			tmp16 = readArgument16();
 			cycle += 10;
-			if (checkCondition3(opcode)) {
+			if (decode_flags(opcode2)) {
 				pc = tmp16;
 			}
 			break;
 		case 0b100: /* CALL cc, nn */
 			tmp16 = readArgument16();
 			cycle += 10;
-			if (checkCondition3(opcode)) {
+			if (decode_flags(opcode2)) {
 				pushToStack(pc);
 				pc = tmp16;
 				cycle += 7;
@@ -1114,15 +978,4 @@ uint8_t Z80::dec(const uint8_t value) {
 	if ((result & 0x0f) == 0x0f)
 		_state.setFlags(Z80State::HF);
 	return result;
-}
-
-void Z80::exchange_de_hl() {
-	const uint16_t t = _state.de();
-	_state.de() = _state.hl();
-	_state.hl() = t;
-}
-uint16_t Z80::exchange_sp(const uint16_t hl) {
-	const uint16_t sp = read16(_state.sp());
-	write16(_state.sp(), hl);
-	return sp;
 }
