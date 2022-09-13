@@ -31,7 +31,9 @@ namespace ae {
 				IXl,
 				IXh,
 				IYl,
-				IYh
+				IYh,
+				R,
+				I
 			};
 
 			enum register16 {
@@ -40,13 +42,14 @@ namespace ae {
 				DE,
 				HL,
 				IX,
-				IY
+				IY,
+				IR
 			};
 
 		protected:
 			union {
-				uint16_t word[10];	// AF, BC, DE, HL, IX, IY, AF', BC', DE', HL'
-				uint8_t byte[20];
+				uint16_t word[11];	// AF, BC, DE, HL, IX, IY, AF', BC', DE', HL', IR
+				uint8_t byte[22];
 			} _pairs;
 			uint16_t _sp;
 			bool _alternative[4];
@@ -77,6 +80,10 @@ namespace ae {
 			uint8_t& iyh() { return _pairs.byte[register8::IYh]; }
 			uint8_t iyl() const { return _pairs.byte[register8::IYl]; }
 			uint8_t& iyl() { return _pairs.byte[register8::IYl]; }
+			uint8_t i() const { return _pairs.byte[register8::I]; }
+			uint8_t& i() { return _pairs.byte[register8::I]; }
+			uint8_t r() const { return _pairs.byte[register8::R]; }
+			uint8_t& r() { return _pairs.byte[register8::R]; }
 
 			// Registers 16 bits
 			uint16_t af() const { return (_alternative[0]) ? _pairs.word[register16::AF + 6] : _pairs.word[register16::AF]; }
@@ -93,8 +100,11 @@ namespace ae {
 			uint16_t& ix() { return _pairs.word[register16::IX]; }
 			uint16_t iy() const { return _pairs.word[register16::IY]; }
 			uint16_t& iy() { return _pairs.word[register16::IY]; }
+			uint16_t ir() const { return _pairs.word[register16::IR]; }
+			uint16_t& ir() { return _pairs.word[register16::IR]; }
 
 			// Flags
+			bool parityFlag() const { return (f() & flags::PF) ? true : false; }
 			bool carryFlag() const { return (f() & flags::CF) ? true : false; }
 			bool signFlag() const { return (f() & flags::SF) ? true : false; }
 			bool zeroFlag() const { return (f() & flags::ZF) ? true : false; }
@@ -135,7 +145,7 @@ namespace ae {
 				reset();
 			}
 			void reset() {
-				for (int i = 0; i < 11; _pairs.word[i++] = 0);
+				for (int i = 0; i < 12; _pairs.word[i++] = 0);
 				for (int i = 0; i < 4; _alternative[i++] = false);
 				_sp = 0;
 			}
