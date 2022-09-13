@@ -84,6 +84,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <LibraryPath>$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)src\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -151,7 +152,12 @@
     <ClCompile Include="ArcadeEmulator.cpp" />
     <ClCompile Include="src\cpu\cpu.cpp" />
     <ClCompile Include="src\cpu\i8080.cpp" />
-    <ClCompile Include="src\cpu\z80.cpp" />
+    <ClCompile Include="src\cpu\z80\z80.cpp" />
+    <ClCompile Include="src\cpu\z80\z80opcodes.cpp" />
+    <ClCompile Include="src\cpu\z80\z80opcodes_cb.cpp" />
+    <ClCompile Include="src\cpu\z80\z80opcodes_dd.cpp" />
+    <ClCompile Include="src\cpu\z80\z80opcodes_ed.cpp" />
+    <ClCompile Include="src\cpu\z80\z80opcodes_fd.cpp" />
     <ClCompile Include="src\display\display.cpp" />
     <ClCompile Include="src\display\rasterdisplay.cpp" />
     <ClCompile Include="src\machine\machine.cpp" />
@@ -165,10 +171,12 @@
     <ClCompile Include="src\ui\interface.cpp" />
     <ClCompile Include="src\ui\menu.cpp" />
     <ClCompile Include="src\ui\ui.cpp" />
+    <ClCompile Include="tests\cpu\z80_tests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\cpu\i8080.h" />
     <ClInclude Include="src\cpu\z80.h" />
+    <ClInclude Include="src\cpu\z80\z80state.h" />
     <ClInclude Include="src\display\rasterdisplay.h" />
     <ClInclude Include="src\include\cpu.h" />
     <ClInclude Include="src\include\display.h" />
@@ -182,12 +190,19 @@
     <ClInclude Include="src\machine\taito8080.h" />
     <ClInclude Include="src\ui\nuklear_sdl_renderer.h" />
     <ClInclude Include="src\ui\ui.h" />
+    <ClInclude Include="tests\cpu\z80_tests.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
     <None Include="docs\cpu\8080-Programmers-Manual.pdf" />
+    <None Include="docs\cpu\z80-documented.pdf" />
+    <None Include="docs\cpu\Z80-User-Manual.pdf" />
+    <None Include="docs\machine\Pacman.pdf" />
     <None Include="LICENSE" />
     <None Include="README.MD" />
+    <None Include="tests\data\cpu\Intel8080\TST8080.ASM" />
+    <None Include="tests\data\cpu\Z80\prelim.src" />
+    <None Include="tests\data\cpu\Z80\zexdoc.src" />
   </ItemGroup>
   <ItemGroup>
     <Xsd Include="docs\machine\spaceinvaders.md">

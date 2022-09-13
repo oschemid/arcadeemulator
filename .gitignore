@@ -7,3 +7,5 @@
 /.vs
 /tests/x64/Debug
 /roms/spaceinvaders
+/x64/Release
+/tests/x64/Release
