@@ -68,7 +68,7 @@ namespace ae
 			uint8_t c() const { return _state.c(); }
 			uint8_t e() const { return _state.e(); }
 			uint16_t de() const { return _state.de(); }
-			uint8_t i;
+			//			uint8_t i;
 			enum class interrupt_mode {
 				mode_0,
 				mode_1,
@@ -91,6 +91,7 @@ namespace ae
 			uint8_t dec(const uint8_t);
 			void exchange_de_hl();
 			uint16_t exchange_sp(const uint16_t);
+			void call(const uint16_t, const uint8_t = true);
 
 			/* opcodes CB */
 			uint8_t rlc(const uint8_t);
@@ -119,8 +120,6 @@ namespace ae
 			uint16_t decode_fd_opcode(const uint8_t);
 
 			uint8_t& decode_register(const uint8_t);
-
-			uint16_t execute_call(const uint16_t, const uint8_t);
 
 			void unimplemented();
 			void illegal();

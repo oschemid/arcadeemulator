@@ -80,7 +80,8 @@ bool tests_ae::cpu::z80_tests::runTestCycles() {
 		{ 0x18010000, 12 }, { 0x20010000, 12 }, { 0x28010000, 7 }, { 0x10010000, 13 }, // JR, DJNZ
 
 		// Group 10 - Call and Return Group
-
+		{ 0xcd145000, 17 }, { 0xc4145000, 17 }, { 0xcc145000, 10 }, // CALL
+		{ 0xc9000000, 10 }, { 0xc0000000, 11 }, { 0xc8000000, 5 }, // RET
 	};
 
 	memory = ae::newMemory(0xff);
@@ -156,7 +157,7 @@ bool tests_ae::cpu::z80_tests::runTest(const string& filename, const uint64_t cy
 
 bool tests_ae::cpu::z80_tests::run() {
 	std::cout << "check cycles" << std::endl;
-	//	runTestCycles();
+	runTestCycles();
 	std::cout << std::endl;
 	std::cout << "prelim.com" << std::endl;
 	runTest("data/cpu/Z80/prelim.com", 8721Ui64);

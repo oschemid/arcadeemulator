@@ -28,14 +28,6 @@ uint16_t Z80::decode_dd_opcode(const uint8_t opcode) {
 		_state.ix() = popOfStack();
 		cycle = 14;
 		break;
-	case 0xE5: /* PUSH IX */
-		pushToStack(_state.ix());
-		cycle = 11;
-		break;
-	case 0xE9: /* JP (IX) */
-		pc = _state.ix();
-		cycle = 8;
-		break;
 	default: unimplemented(); break;
 	}
 	return cycle;

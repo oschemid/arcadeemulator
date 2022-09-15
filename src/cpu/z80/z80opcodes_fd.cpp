@@ -23,14 +23,6 @@ uint16_t Z80::decode_fd_opcode(const uint8_t opcode) {
 		_state.iy() = popOfStack();
 		cycle = 14;
 		break;
-	case 0xE5: /* PUSH IY */
-		pushToStack(_state.iy());
-		cycle = 11;
-		break;
-	case 0xE9: /* JP (IY) */
-		pc = _state.iy();
-		cycle = 8;
-		break;
 	default: unimplemented(); break;
 	}
 	return cycle;

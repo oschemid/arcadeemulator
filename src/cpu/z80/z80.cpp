@@ -98,16 +98,6 @@ namespace ae::cpu {
 		auto opcode = readOpcode();
 		throw std::runtime_error("Illegal instruction " + opcode);
 	}
-
-	uint16_t Z80::execute_call(const uint16_t address, const uint8_t condition)
-	{
-		if (condition) {
-			pushToStack(pc);
-			pc = address;
-			return 17;
-		}
-		return 10;
-	}
 	const string Z80::disassemble() {
 		std::stringstream stream;
 		stream << std::setfill('0') << std::setw(4) << std::hex << pc << ": ";
@@ -139,7 +129,7 @@ namespace ae::cpu {
 					switch (im) {
 					case interrupt_mode::mode_2:
 						pushToStack(pc);
-						pc = (i << 8) | interrupt_request;
+						pc = (_state.i() << 8) | interrupt_request;
 						pc = readArgument16();
 						cycle = 19;
 						break;
@@ -153,8 +143,6 @@ namespace ae::cpu {
 
 		const std::uint8_t opcode = (halted) ? 0x00 : readOpcode();
 		cycle = decode_opcode(opcode);
-		if ((pc >= 0x1d30) && (pc < 0x1d50))
-			return 0;
 		return cycle;
 	}
 
@@ -175,7 +163,7 @@ namespace ae::cpu {
 		iff2 = false;
 		iff1_waiting = false;
 		im = interrupt_mode::mode_0;
-		i = 0;
+		//i = 0;
 		halted = false;
 		pc = address;
 		interrupt_waiting = false;
@@ -204,7 +192,7 @@ uint16_t Z80::decode16(const opcode_t opcode, const prefix p, const bool stack) 
 	case 0x30:
 	case 0x31:
 	case 0x32:
-		return (stack)? _state.af() : _state.sp();
+		return (stack) ? _state.af() : _state.sp();
 	}
 	throw std::runtime_error("Unexpected opcode in decode16 " + opcode);
 }
@@ -228,7 +216,7 @@ uint16_t& Z80::decode16(const opcode_t opcode, const prefix p, const bool stack)
 	case 0x30:
 	case 0x31:
 	case 0x32:
-		return (stack)? _state.af() : _state.sp();
+		return (stack) ? _state.af() : _state.sp();
 	}
 	throw std::runtime_error("Unexpected opcode in decode16 " + opcode);
 }

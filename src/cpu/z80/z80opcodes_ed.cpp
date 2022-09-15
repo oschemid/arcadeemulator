@@ -50,58 +50,58 @@ constexpr auto opcodes{ []() constexpr {
 		case 0x46:
 			result[i] = opcode::IM0;
 			break;
-			//		case 0x47:
-			//			result[i] = opcode::LD_I_A;
-			//			break;
-			//		case 0x4F:
-			//			result[i] = opcode::LD_R_A;
-			//			break;
-					case 0x56:
-						result[i] = opcode::IM1;
-						break;
-						//		case 0x57:
-						//			result[i] = opcode::LD_A_I;
-						//			break;
-								case 0x5E:
-									result[i] = opcode::IM2;
-									break;
-									//		case 0x5F:
-									//			result[i] = opcode::LD_A_R;
-									//			break;
-											case 0x67:
-												result[i] = opcode::RRD;
-												break;
-											case 0x6F:
-												result[i] = opcode::RLD;
-												break;
-											case 0xA9:
-												result[i] = opcode::CPD;
-												break;
-											case 0xB9:
-												result[i] = opcode::CPDR;
-												break;
-											case 0xA0:
-												result[i] = opcode::LDI;
-												break;
-											case 0xA1:
-												result[i] = opcode::CPI;
-												break;
-											case 0xA8:
-												result[i] = opcode::LDD;
-												break;
-											case 0xB0:
-												result[i] = opcode::LDIR;
-												break;
-											case 0xB1:
-												result[i] = opcode::CPIR;
-												break;
-											case 0xB8:
-												result[i] = opcode::LDDR;
-												break;
-											}
-										}
-										return result;
-									}()
+		case 0x47:
+			result[i] = opcode::LD_I_A;
+			break;
+		case 0x4F:
+			result[i] = opcode::LD_R_A;
+			break;
+		case 0x56:
+			result[i] = opcode::IM1;
+			break;
+		case 0x57:
+			result[i] = opcode::LD_A_I;
+			break;
+		case 0x5E:
+			result[i] = opcode::IM2;
+			break;
+		case 0x5F:
+			result[i] = opcode::LD_A_R;
+			break;
+		case 0x67:
+			result[i] = opcode::RRD;
+			break;
+		case 0x6F:
+			result[i] = opcode::RLD;
+			break;
+		case 0xA9:
+			result[i] = opcode::CPD;
+			break;
+		case 0xB9:
+			result[i] = opcode::CPDR;
+			break;
+		case 0xA0:
+			result[i] = opcode::LDI;
+			break;
+		case 0xA1:
+			result[i] = opcode::CPI;
+			break;
+		case 0xA8:
+			result[i] = opcode::LDD;
+			break;
+		case 0xB0:
+			result[i] = opcode::LDIR;
+			break;
+		case 0xB1:
+			result[i] = opcode::CPIR;
+			break;
+		case 0xB8:
+			result[i] = opcode::LDDR;
+			break;
+		}
+	}
+	return result;
+}()
 };
 
 using namespace ae::cpu;
@@ -222,19 +222,6 @@ void Z80::decode_opcode_ed() {
 			break;
 		}
 		return;
-	}
-
-	switch (opcode) {
-	case 0x47: /* LD I,A */
-		i = _state.a();
-		break;
-	case 0x73: { /* LD (NN), SP */
-		uint16_t tmp16 = readArgument16();
-		_handlerWrite(tmp16, _state.sp() & 0x00ff);
-		_handlerWrite(tmp16 + 1, _state.sp() >> 8);
-	}
-			 break;
-	default: unimplemented(); break;
 	}
 }
 

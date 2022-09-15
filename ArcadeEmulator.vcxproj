@@ -171,7 +171,6 @@
     <ClCompile Include="src\ui\interface.cpp" />
     <ClCompile Include="src\ui\menu.cpp" />
     <ClCompile Include="src\ui\ui.cpp" />
-    <ClCompile Include="tests\cpu\z80_tests.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\cpu\i8080.h" />
@@ -190,7 +189,6 @@
     <ClInclude Include="src\machine\taito8080.h" />
     <ClInclude Include="src\ui\nuklear_sdl_renderer.h" />
     <ClInclude Include="src\ui\ui.h" />
-    <ClInclude Include="tests\cpu\z80_tests.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
