@@ -84,6 +84,9 @@ enum class opcode {
 	CALL_CC,
 	RET,
 	RET_CC,
+	RST,
+	IN_N,
+	OUT_N,
 };
 
 
@@ -95,10 +98,8 @@ constexpr auto opcodes{ []() constexpr {
 		if ((i & 0b11000000) == 0b01000000) {
 			if ((i & 0b11000111) == 0b01000110)
 				result[i] = (i == 0b01110110) ? opcode::HALT : opcode::LD_R_HL;
-			else if ((i & 0b11111000) == 0b01110000)
-				result[i] = opcode::LD_HL_R;
 			else
-				result[i] = opcode::LD_R_R;
+				result[i] = ((i & 0b11111000) == 0b01110000) ? opcode::LD_HL_R : opcode::LD_R_R;
 		}
 		if ((i & 0b11000111) == 0b00000110)
 			result[i] = (i == 0b00110110) ? opcode::LD_HL_N : opcode::LD_R_N;
@@ -142,6 +143,8 @@ constexpr auto opcodes{ []() constexpr {
 			result[i] = opcode::CALL_CC;
 		if ((i & 0b11000111) == 0b11000000)
 			result[i] = opcode::RET_CC;
+		if ((i & 0b11000111) == 0b11000111)
+			result[i] = opcode::RST;
 		switch (i) {
 		case 0x00:
 			result[i] = opcode::NOP;
@@ -221,11 +224,17 @@ constexpr auto opcodes{ []() constexpr {
 		case 0xCE:
 			result[i] = opcode::ADC_N;
 			break;
+		case 0xD3:
+			result[i] = opcode::OUT_N;
+			break;
 		case 0xD6:
 			result[i] = opcode::SUB_N;
 			break;
 		case 0xD9:
 			result[i] = opcode::EXX;
+			break;
+		case 0xDB:
+			result[i] = opcode::IN_N;
 			break;
 		case 0xDD:
 			result[i] = opcode::DECODE_DD;
@@ -279,14 +288,12 @@ constexpr auto opcodes{ []() constexpr {
 using namespace ae::cpu;
 
 /*********************************************************************************************************************/
-uint16_t Z80::decode_opcode(const uint8_t opcode,
-							const prefix p) {
-	uint16_t cycle = 0;
+void Z80::decode_opcode(const uint8_t opcode,
+						const prefix p) {
 	uint16_t tmp16;
 	uint8_t tmp8;
 
 	if (opcodes[opcode] != opcode::UNIMPLEMENTED) {
-		cycle += 4;
 		switch (opcodes[opcode]) {
 		case opcode::NOP:
 			break;
@@ -309,37 +316,7 @@ uint16_t Z80::decode_opcode(const uint8_t opcode,
 			if (p != NO)
 				unimplemented();
 			else {
-				uint8_t opcode2 = readOpcode();
-				if (((opcode2 & 0b11001111) == 0b00001001) ||
-					((opcode2 & 0b11111000) == 0b10000000) ||
-					((opcode2 & 0b11111000) == 0b10001000) ||
-					((opcode2 & 0b11111000) == 0b10010000) ||
-					((opcode2 & 0b11111000) == 0b10011000) ||
-					((opcode2 & 0b11111000) == 0b10100000) ||
-					((opcode2 & 0b11111000) == 0b10101000) ||
-					((opcode2 & 0b11111000) == 0b10110000) ||
-					((opcode2 & 0b11111000) == 0b10111000) ||
-					((opcode2 & 0b11001111) == 0b00000011) ||
-					((opcode2 & 0b11001111) == 0b00000001) ||
-					((opcode2 & 0b11001111) == 0b00001011) ||
-					((opcode2 & 0b11000111) == 0b00000101) ||
-					((opcode2 & 0b11000111) == 0b00000100) ||
-					((opcode2 & 0b11000111) == 0b01000110) ||
-					((opcode2 & 0b11000111) == 0b00000110) ||
-					((opcode2 & 0b11000000) == 0b01000000) ||
-					(opcode2 == 0x22) ||
-					(opcode2 == 0x2A) ||
-					(opcode2 == 0xcb) ||
-					(opcode2 == 0xf9) ||
-					(opcode2 == 0xe3) ||
-					(opcode2 == 0xe5) ||
-					(opcode2 == 0xe9)
-					) {
-					cycle += decode_opcode(opcode2, DD);
-				}
-				else {
-					cycle += decode_dd_opcode(opcode2);
-				}
+				decode_opcode(readOpcode(), DD);
 			}
 			break;
 		case opcode::DECODE_ED:
@@ -349,37 +326,7 @@ uint16_t Z80::decode_opcode(const uint8_t opcode,
 			if (p != NO)
 				unimplemented();
 			else {
-				uint8_t opcode2 = readOpcode();
-				if (((opcode2 & 0b11001111) == 0b00001001) ||
-					((opcode2 & 0b11111000) == 0b10000000) ||
-					((opcode2 & 0b11111000) == 0b10001000) ||
-					((opcode2 & 0b11111000) == 0b10010000) ||
-					((opcode2 & 0b11111000) == 0b10011000) ||
-					((opcode2 & 0b11111000) == 0b10100000) ||
-					((opcode2 & 0b11111000) == 0b10101000) ||
-					((opcode2 & 0b11111000) == 0b10110000) ||
-					((opcode2 & 0b11111000) == 0b10111000) ||
-					((opcode2 & 0b11001111) == 0b00000011) ||
-					((opcode2 & 0b11001111) == 0b00000001) ||
-					((opcode2 & 0b11001111) == 0b00001011) ||
-					((opcode2 & 0b11000111) == 0b00000101) ||
-					((opcode2 & 0b11000111) == 0b00000100) ||
-					((opcode2 & 0b11000111) == 0b01000110) ||
-					((opcode2 & 0b11000111) == 0b00000110) ||
-					((opcode2 & 0b11000000) == 0b01000000) ||
-					(opcode2 == 0x22) ||
-					(opcode2 == 0x2A) ||
-					(opcode2 == 0xcb) ||
-					(opcode2 == 0xf9) ||
-					(opcode2 == 0xe3) ||
-					(opcode2 == 0xe5) ||
-					(opcode2 == 0xe9)
-					) {
-					cycle += decode_opcode(opcode2, FD);
-				}
-				else {
-					cycle += decode_fd_opcode(opcode2);
-				}
+				decode_opcode(readOpcode(), FD);
 			}
 			break;
 		case opcode::LD_R_R:
@@ -771,57 +718,24 @@ uint16_t Z80::decode_opcode(const uint8_t opcode,
 				pc = popOfStack();
 			_elapsed_cycles++;
 			break;
+		case opcode::RST:
+			pushToStack(pc);
+			pc = opcode - 0xc7;
+			_elapsed_cycles++;
+			break;
+		case opcode::IN_N:
+			_state.a() = _handlerIn(readArgument8());
+			_elapsed_cycles += 3;
+			break;
+		case opcode::OUT_N:
+			_handlerOut(readArgument8(), _state.a());
+			_elapsed_cycles += 3;
+			break;
 		default:
 			unimplemented();
 			break;
 		}
-		return cycle;
 	}
-
-	uint8_t opcode1 = opcode >> 6;
-	uint8_t opcode2 = (opcode >> 3) & 0x07;
-	uint8_t opcode3 = opcode & 0x07;
-
-	if (cycle == 0) {
-		switch (opcode) {
-		case 0xCF: /* RST 08 */
-			pushToStack(pc);
-			pc = 0x08;
-			cycle = 11;
-			break;
-		case 0xD3: /* OUT (N), A */
-			_handlerOut(readArgument8(), _state.a());
-			cycle = 11;
-			break;
-		case 0xD7: /* RST 10 */
-			pushToStack(pc);
-			pc = 0x10;
-			cycle = 11;
-			break;
-		case 0xDF: /* RST 18 */
-			pushToStack(pc);
-			pc = 0x18;
-			cycle = 11;
-			break;
-		case 0xE7: /* RST 20 */
-			pushToStack(pc);
-			pc = 0x20;
-			cycle = 11;
-			break;
-		case 0xEF: /* RST 28 */
-			pushToStack(pc);
-			pc = 0x28;
-			cycle = 11;
-			break;
-		case 0xF7: /* RST 30 */
-			pushToStack(pc);
-			pc = 0x30;
-			cycle = 11;
-			break;
-		default: unimplemented(); break;
-		}
-	}
-	return cycle;
 }
 
 /**********************************************************************************************************************/

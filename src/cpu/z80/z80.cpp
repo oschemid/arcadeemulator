@@ -52,26 +52,6 @@ namespace ae::cpu {
 	}
 
 	/******************************************************************************/
-	uint8_t& Z80::decode_register(const uint8_t opcode)
-	{
-		switch (opcode) {
-		case 0b000:
-			return _state.b();
-		case 0b001:
-			return _state.c();
-		case 0b010:
-			return _state.d();
-		case 0b011:
-			return _state.e();
-		case 0b100:
-			return _state.h();
-		case 0b101:
-			return _state.l();
-		case 0b111:
-			return _state.a();
-		}
-		throw std::runtime_error("decode_register : illegal value " + opcode);
-	}
 	const uint16_t Z80::popOfStack()
 	{
 		uint16_t value = read16(_state.sp());
@@ -142,7 +122,7 @@ namespace ae::cpu {
 		}
 
 		const std::uint8_t opcode = (halted) ? 0x00 : readOpcode();
-		cycle = decode_opcode(opcode);
+		decode_opcode(opcode);
 		return cycle;
 	}
 
@@ -163,7 +143,6 @@ namespace ae::cpu {
 		iff2 = false;
 		iff1_waiting = false;
 		im = interrupt_mode::mode_0;
-		//i = 0;
 		halted = false;
 		pc = address;
 		interrupt_waiting = false;
@@ -220,7 +199,6 @@ uint16_t& Z80::decode16(const opcode_t opcode, const prefix p, const bool stack)
 	}
 	throw std::runtime_error("Unexpected opcode in decode16 " + opcode);
 }
-
 uint8_t Z80::decode8(const opcode_t opcode, const prefix p) const
 {
 	switch ((opcode & 0x07) | (p << 4)) {
@@ -259,7 +237,6 @@ uint8_t Z80::decode8(const opcode_t opcode, const prefix p) const
 	}
 	throw std::runtime_error("Unexpected opcode in decode8 " + opcode);
 }
-
 uint8_t& Z80::decode8(const opcode_t opcode, const prefix p)
 {
 	switch ((opcode & 0x07) | (p << 4)) {
@@ -298,7 +275,6 @@ uint8_t& Z80::decode8(const opcode_t opcode, const prefix p)
 	}
 	throw std::runtime_error("Unexpected opcode in decode8 " + opcode);
 }
-
 bool Z80::checkCondition3(const opcode_t opcode) const
 {
 	switch (opcode & 0b00111000) {
@@ -321,7 +297,6 @@ bool Z80::checkCondition3(const opcode_t opcode) const
 	}
 	throw std::runtime_error("checkCondition3 : illegal value " + opcode);
 }
-
 bool Z80::checkCondition2(const opcode_t opcode) const
 {
 	switch (opcode & 0b00011000) {

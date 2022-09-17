@@ -81,13 +81,24 @@ bool tests_ae::cpu::z80_tests::runTestCycles() {
 
 		// Group 10 - Call and Return Group
 		{ 0xcd145000, 17 }, { 0xc4145000, 17 }, { 0xcc145000, 10 }, // CALL
-		{ 0xc9000000, 10 }, { 0xc0000000, 11 }, { 0xc8000000, 5 }, // RET
+		{ 0xc9000000, 10 }, { 0xc0000000, 11 }, { 0xc8000000, 5 }, { 0xed450000, 14 }, { 0xed4d0000, 14 }, // RET
+		{ 0xc7000000, 11 }, // RST
+
+		// Group 11 -  Input and Output Group
+		{ 0xdb010000, 11 }, { 0xed400000, 12 }, { 0xed700000, 12 }, // IN
+		{ 0xeda20000, 16 }, { 0xedb20000, 21 }, // INI
+		{ 0xedaa0000, 16 }, { 0xedba0000, 21 }, // IND
+		{ 0xd3010000, 11 }, { 0xed410000, 12 }, { 0xed710000, 12 }, // OUT
+		{ 0xeda30000, 16 }, { 0xedb30000, 21 }, // OUTI
+		{ 0xedab0000, 16 }, { 0xedbb0000, 21 }, // OUTD
 	};
 
 	memory = ae::newMemory(0xff);
 	memory->map(0, 0xff, ae::IMemory::type::RAM);
 	cpu->read([this](const uint16_t p) { return memory->read(p); });
 	cpu->write([this](const uint16_t p, const uint8_t v) { return true; });
+	cpu->in([this](const uint8_t) { return 0; });
+	cpu->out([this](const uint8_t, const uint8_t) { });
 	ae::cpu::Z80* cpuc = (ae::cpu::Z80*)cpu;
 
 	for (auto pair : opcodes) {

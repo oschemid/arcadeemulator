@@ -33,7 +33,7 @@ namespace ae
 			bool checkCondition2(const opcode_t) const;
 
 			// Decode opcode
-			uint16_t decode_opcode(const uint8_t, const prefix = NO);
+			void decode_opcode(const uint8_t, const prefix = NO);
 			void decode_opcode_cb(const prefix);
 			void decode_opcode_ed();
 
@@ -46,12 +46,8 @@ namespace ae
 
 		protected:
 			enum flags {
-				signFlag = 0x80,
 				zeroFlag = 0x40,
-				halfCarryFlag = 0x10,
 				parityFlag = 0x04,
-				addSubFlag = 0x02,
-				carryFlag = 0x01
 			};
 			bool iff1_waiting;
 			bool iff1;
@@ -114,12 +110,12 @@ namespace ae
 			void cpi();
 			void ldd();
 			void ldi();
-
-
-			uint16_t decode_dd_opcode(const uint8_t);
-			uint16_t decode_fd_opcode(const uint8_t);
-
-			uint8_t& decode_register(const uint8_t);
+			void in_c(const opcode_t);
+			void ini();
+			void ind();
+			void out_c(const opcode_t);
+			void outi();
+			void outd();
 
 			void unimplemented();
 			void illegal();

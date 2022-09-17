@@ -155,9 +155,7 @@
     <ClCompile Include="src\cpu\z80\z80.cpp" />
     <ClCompile Include="src\cpu\z80\z80opcodes.cpp" />
     <ClCompile Include="src\cpu\z80\z80opcodes_cb.cpp" />
-    <ClCompile Include="src\cpu\z80\z80opcodes_dd.cpp" />
     <ClCompile Include="src\cpu\z80\z80opcodes_ed.cpp" />
-    <ClCompile Include="src\cpu\z80\z80opcodes_fd.cpp" />
     <ClCompile Include="src\display\display.cpp" />
     <ClCompile Include="src\display\rasterdisplay.cpp" />
     <ClCompile Include="src\machine\machine.cpp" />

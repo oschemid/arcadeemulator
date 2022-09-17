@@ -27,6 +27,17 @@ enum class opcode {
 	LD_A_R,
 	LD_I_A,
 	LD_R_A,
+	RETI_N,
+	IN_R,
+	INI,
+	INIR,
+	IND,
+	INDR,
+	OUT_R,
+	OUTI,
+	OUTIR,
+	OUTD,
+	OUTDR,
 };
 
 
@@ -43,9 +54,17 @@ constexpr auto opcodes{ []() constexpr {
 			result[i] = opcode::LD_SS_NNNN;
 		if ((i & 0b11001111) == 0b01000011)
 			result[i] = opcode::LD_NNNN_SS;
+		if ((i & 0b11000111) == 0b01000000)
+			result[i] = opcode::IN_R;
+		if ((i & 0b11000111) == 0b01000001)
+			result[i] = opcode::OUT_R;
 		switch (i) {
 		case 0X44:
 			result[i] = opcode::NEG;
+			break;
+		case 0x45:
+		case 0x4d:
+			result[i] = opcode::RETI_N;
 			break;
 		case 0x46:
 			result[i] = opcode::IM0;
@@ -74,20 +93,29 @@ constexpr auto opcodes{ []() constexpr {
 		case 0x6F:
 			result[i] = opcode::RLD;
 			break;
-		case 0xA9:
-			result[i] = opcode::CPD;
-			break;
-		case 0xB9:
-			result[i] = opcode::CPDR;
-			break;
 		case 0xA0:
 			result[i] = opcode::LDI;
 			break;
 		case 0xA1:
 			result[i] = opcode::CPI;
 			break;
+		case 0xA2:
+			result[i] = opcode::INI;
+			break;
+		case 0xA3:
+			result[i] = opcode::OUTI;
+			break;
 		case 0xA8:
 			result[i] = opcode::LDD;
+			break;
+		case 0xA9:
+			result[i] = opcode::CPD;
+			break;
+		case 0xAA:
+			result[i] = opcode::IND;
+			break;
+		case 0xAB:
+			result[i] = opcode::OUTD;
 			break;
 		case 0xB0:
 			result[i] = opcode::LDIR;
@@ -95,8 +123,23 @@ constexpr auto opcodes{ []() constexpr {
 		case 0xB1:
 			result[i] = opcode::CPIR;
 			break;
+		case 0xB2:
+			result[i] = opcode::INIR;
+			break;
+		case 0xB3:
+			result[i] = opcode::OUTIR;
+			break;
 		case 0xB8:
 			result[i] = opcode::LDDR;
+			break;
+		case 0xB9:
+			result[i] = opcode::CPDR;
+			break;
+		case 0xBA:
+			result[i] = opcode::INDR;
+			break;
+		case 0xBB:
+			result[i] = opcode::OUTDR;
 			break;
 		}
 	}
@@ -216,6 +259,58 @@ void Z80::decode_opcode_ed() {
 			break;
 		case opcode::LD_NNNN_SS:
 			write16(readArgument16(), decode16(opcode));
+			break;
+		case opcode::RETI_N:
+			pc = popOfStack();
+			iff1 = iff2;
+			break;
+		case opcode::IN_R:
+			in_c(opcode);
+			_elapsed_cycles += 4;
+			break;
+		case opcode::INI:
+			ini();
+			break;
+		case opcode::INIR:
+			ini();
+			if (_state.b() != 0) {
+				pc -= 2;
+				_elapsed_cycles += 5;
+			}
+			break;
+		case opcode::IND:
+			ind();
+			break;
+		case opcode::INDR:
+			ind();
+			if (_state.b() != 0) {
+				pc -= 2;
+				_elapsed_cycles += 5;
+			}
+			break;
+		case opcode::OUT_R:
+			out_c(opcode);
+			_elapsed_cycles += 4;
+			break;
+		case opcode::OUTI:
+			outi();
+			break;
+		case opcode::OUTIR:
+			outi();
+			if (_state.b() != 0) {
+				pc -= 2;
+				_elapsed_cycles += 5;
+			}
+			break;
+		case opcode::OUTD:
+			outd();
+			break;
+		case opcode::OUTDR:
+			outd();
+			if (_state.b() != 0) {
+				pc -= 2;
+				_elapsed_cycles += 5;
+			}
 			break;
 		default:
 			unimplemented();
@@ -359,4 +454,49 @@ void Z80::ldi() {
 	_state.resetFlags(Z80State::HF | Z80State::NF | Z80State::PF);
 	if (_state.bc() != 0)
 		_state.setFlags(Z80State::PF);
+}
+void Z80::in_c(const opcode_t opcode) {
+	uint8_t val = _handlerIn(_state.c());
+
+	if (opcode != 0x70)
+		decode8(opcode) = val;
+	_state.resetFlags(Z80State::NF | Z80State::HF);
+	_state.setSZXY(val);
+	_state.setP(val);
+}
+void Z80::ini() {
+	write8(_state.hl(), _handlerIn(_state.c()));
+	++_state.hl();
+	--_state.b();
+	_state.setSZXY(_state.b());
+	_state.setFlags(Z80State::NF);
+	_elapsed_cycles += 5;
+}
+void Z80::ind() {
+	write8(_state.hl(), _handlerIn(_state.c()));
+	--_state.hl();
+	--_state.b();
+	_state.setSZXY(_state.b());
+	_state.setFlags(Z80State::NF);
+	_elapsed_cycles += 5;
+}
+void Z80::out_c(const opcode_t opcode) {
+	uint8_t val = (opcode == 0x70) ? 0 : decode8(opcode);
+	_handlerOut(_state.c(), val);
+}
+void Z80::outi() {
+	_handlerOut(_state.c(), read8(_state.hl()));
+	++_state.hl();
+	--_state.b();
+	_state.setSZXY(_state.b());
+	_state.setFlags(Z80State::NF);
+	_elapsed_cycles += 4;
+}
+void Z80::outd() {
+	_handlerOut(_state.c(), read8(_state.hl()));
+	--_state.hl();
+	--_state.b();
+	_state.setSZXY(_state.b());
+	_state.setFlags(Z80State::NF);
+	_elapsed_cycles += 4;
 }

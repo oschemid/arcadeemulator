@@ -124,7 +124,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)$(IntDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>memory.obj;cpu.obj;i8080.obj;z80.obj;z80opcodes_dd.obj;z80opcodes_fd.obj;z80opcodes.obj;z80opcodes_cb.obj;z80opcodes_ed.obj;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>memory.obj;cpu.obj;i8080.obj;z80.obj;z80opcodes.obj;z80opcodes_cb.obj;z80opcodes_ed.obj;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -142,7 +142,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)$(IntDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>memory.obj;cpu.obj;i8080.obj;z80.obj;z80opcodes_dd.obj;z80opcodes_fd.obj;z80opcodes.obj;z80opcodes_cb.obj;z80opcodes_ed.obj;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>memory.obj;cpu.obj;i8080.obj;z80.obj;z80opcodes.obj;z80opcodes_cb.obj;z80opcodes_ed.obj;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

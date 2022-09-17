@@ -66,12 +66,6 @@
     <ClCompile Include="src\cpu\z80\z80.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\cpu\z80\z80opcodes_dd.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\cpu\z80\z80opcodes_fd.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
     <ClCompile Include="src\cpu\z80\z80opcodes.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
