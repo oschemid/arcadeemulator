@@ -16,8 +16,6 @@ namespace ae
 		protected:
 			Z80State _state;
 
-			uint64_t _elapsed_cycles;
-
 			enum prefix {
 				NO = 0,
 				DD,
@@ -57,14 +55,11 @@ namespace ae
 			bool interrupt_waiting;
 			uint8_t interrupt_request;
 		public:
-			const uint64_t elapsed_cycles() const { return _elapsed_cycles; }
-
 			// Temporary access
 			uint16_t pc; // program counter
 			uint8_t c() const { return _state.c(); }
 			uint8_t e() const { return _state.e(); }
 			uint16_t de() const { return _state.de(); }
-			//			uint8_t i;
 			enum class interrupt_mode {
 				mode_0,
 				mode_1,

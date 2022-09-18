@@ -15,24 +15,64 @@ ae::machine::Pacman::Pacman() :
 	display(nullptr),
 	interrupt_enabled(false),
 	sound_enabled(false),
-	flip_screen(false)
+	flip_screen(false),
+	coinage("Coinage"),
+	lives("Lives"),
+	bonus("Bonus"),
+	difficulty("Difficulty"),
+	ghostname("Ghost Name"),
+	rackadvance("Rack Advance (Cheat)")
 {
+	coinage.addAlias(0, "Free play");
+	coinage.addAlias(1, "1 coin / 1 credit");
+	coinage.addAlias(2, "1 coin / 2 credits");
+	coinage.addAlias(3, "2 coins / 1 credit");
+	coinage.setValue(1);
+	lives.addAlias(0, "1");
+	lives.addAlias(1, "2");
+	lives.addAlias(2, "3");
+	lives.addAlias(3, "5");
+	lives.setValue(2);
+	bonus.addAlias(0, "10000 points");
+	bonus.addAlias(1, "15000 points");
+	bonus.addAlias(2, "20000 points");
+	bonus.addAlias(3, "no");
+	bonus.setValue(0);
+	difficulty.addAlias(0, "Hard");
+	difficulty.addAlias(1, "Normal");
+	difficulty.setValue(1);
+	ghostname.addAlias(0, "Alternate");
+	ghostname.addAlias(1, "Normal");
+	ghostname.setValue(1);
+	rackadvance.addAlias(0, "On");
+	rackadvance.addAlias(1, "Off");
+	rackadvance.setValue(1);
 }
 
 uint8_t ae::machine::Pacman::readMemory(const uint16_t p) const {
-	if (p == 0x5000)
+	const uint16_t p_mirror = p & 0x7fff;
+	if (p_mirror == 0x5000)
 		return in0();
-	if (p == 0x5040)
+	if (p_mirror == 0x5040)
 		return in1();
-	if (p == 0x5080)
-		return 0xcd;
-	if ((p >= 0x5060) && (p <= 0x506F))
-		return spritesxy[p - 0x5060];
-	return memory->read(p);
+	if (p_mirror == 0x5080)
+		return dip();
+	if ((p_mirror >= 0x5060) && (p_mirror <= 0x506F))
+		return spritesxy[p_mirror - 0x5060];
+	return memory->read(p_mirror);
 }
 
+const uint8_t ae::machine::Pacman::dip() const {
+	return (coinage.getValue() |
+			lives.getValue() << 2 |
+			bonus.getValue() << 4 |
+			difficulty.getValue() << 6 |
+			ghostname.getValue() << 7);
+}
 const uint8_t ae::machine::Pacman::in0() const {
 	uint8_t port = 0xff;
+	if (rackadvance.getValue() == 0)
+		port &= 0b11101111;
 
 	const uint8_t* Keyboard = SDL_GetKeyboardState(NULL);
 
@@ -68,19 +108,20 @@ const uint8_t ae::machine::Pacman::in1() const {
 }
 
 bool ae::machine::Pacman::writeMemory(const uint16_t p, const uint8_t v) {
-	if (p < 0x5000)
-		return memory->write(p, v);
-	if ((p >= 0x50C0) && (p <= 0x50FF))
+	const uint16_t p_mirror = p & 0x7fff;
+	if (p_mirror < 0x5000)
+		return memory->write(p_mirror, v);
+	if ((p_mirror >= 0x50C0) && (p_mirror <= 0x50FF))
 		// Watchdog
 		return true;
-	if ((p >= 0x5040) && (p <= 0x505F))
+	if ((p_mirror >= 0x5040) && (p_mirror <= 0x505F))
 		// Sound
 		return true;
-	if ((p >= 0x5060) && (p <= 0x506F)) {
-		spritesxy[p - 0x5060] = v;
+	if ((p_mirror >= 0x5060) && (p_mirror <= 0x506F)) {
+		spritesxy[p_mirror - 0x5060] = v;
 		return true;
 	}
-	switch (p) {
+	switch (p_mirror) {
 	case 0x5000:
 		interrupt_enabled = ((v & 1) == 1) ? true : false;
 		break;
@@ -295,18 +336,19 @@ bool ae::machine::Pacman::run()
 		CurrentTime = getNanoSeconds(&StartTime);
 		if (CurrentTime - LastThrottle < 1000000) {		// 1ms
 			if (ClockCount < ClocksPerMS + ClockCompensation) {
-				ClockCount += cpu->executeOne();
+				cpu->executeOne();
+				ClockCount = cpu->elapsed_cycles();
 			}
 		}
 		else {
 			ClockCompensation += ClocksPerMS * (CurrentTime - LastThrottle) / 1000000;
 			LastThrottle = CurrentTime;
 		}
-		//		if (CurrentTime - LastDisplay > 1000000000) {
-		//			float a = (float)ClockCount / (CurrentTime / 1000);
-		//			std::cout << a << std::endl;
-		//			LastDisplay = CurrentTime;
-		//		}
+		if (CurrentTime - LastDisplay > 1000000000) {
+			float a = (float)ClockCount / (CurrentTime / 1000);
+			std::cout << a << std::endl;
+			LastDisplay = CurrentTime;
+		}
 		if (CurrentTime - LastDraw > 1000000000 / 60 || LastDraw > CurrentTime) {
 			LastDraw = CurrentTime;
 

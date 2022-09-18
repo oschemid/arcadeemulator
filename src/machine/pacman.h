@@ -6,6 +6,7 @@
 #include "memory.h"
 #include "cpu.h"
 #include "display.h"
+#include "dipswitch.h"
 
 
 namespace ae
@@ -15,6 +16,13 @@ namespace ae
 		class Pacman : public IMachine
 		{
 		protected:
+			DIPSwitch<2> coinage;
+			DIPSwitch<2> lives;
+			DIPSwitch<2> bonus;
+			DIPSwitch<1> difficulty;
+			DIPSwitch<1> ghostname;
+			DIPSwitch<1> rackadvance;
+
 			void load_palettes();
 			void draw();
 			void draw_tile(uint32_t*, const uint8_t, const uint8_t, const uint8_t, const uint8_t) const;
@@ -26,6 +34,7 @@ namespace ae
 			uint8_t readMemory(const uint16_t) const;
 			const uint8_t in0() const;
 			const uint8_t in1() const;
+			const uint8_t dip() const;
 
 			bool interrupt_enabled;
 			uint8_t interrupt_vector;
@@ -51,7 +60,14 @@ namespace ae
 			const string getName() const override { return "Pacman"; }
 			const string getID() const override { return "Pacman"; }
 			const string getDescription() const override { return "Namco"; }
-			std::list<ae::IParameter*> getParameters() const override { return {}; }
+			std::list<ae::IParameter*> getParameters() const override {
+				return { (ae::IParameter*)&coinage,
+						 (ae::IParameter*)&lives,
+						 (ae::IParameter*)&bonus,
+						 (ae::IParameter*)&difficulty,
+						 (ae::IParameter*)&ghostname,
+						 (ae::IParameter*)&rackadvance };
+			}
 
 			bool init() override;
 			bool run() override;

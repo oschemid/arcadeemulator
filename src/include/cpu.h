@@ -18,6 +18,8 @@ namespace ae
 		typedef uint8_t opcode_t;
 
 	protected:
+		uint64_t _elapsed_cycles;
+
 		outfn _handlerOut;
 		infn _handlerIn;
 		readfn _handlerRead;
@@ -26,6 +28,8 @@ namespace ae
 		Cpu();
 
 	public:
+		const uint64_t elapsed_cycles() const { return _elapsed_cycles; }
+
 		virtual bool reset(const uint16_t = 0) = 0;
 		virtual const string disassemble() = 0;
 		virtual const uint8_t executeOne() = 0;
@@ -45,9 +49,6 @@ namespace ae
 			t ^= t >> 4;
 			t ^= t >> 2;
 			return ((t ^= t >> 1) & 1) ? false : true;
-		}
-		static inline constexpr uint16_t make16(uint8_t hi, uint8_t lo) {
-			return (static_cast<uint16_t>(hi) << 8) | lo;
 		}
 	};
 }
