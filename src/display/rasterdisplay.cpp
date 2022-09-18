@@ -25,15 +25,15 @@ bool display::RasterDisplay::registerCallback(updatefn fn) {
 	_callback = fn;
 	return true;
 }
-bool display::RasterDisplay::setPixel(const uint16_t x, const uint16_t y, const uint16_t c) {
+bool display::RasterDisplay::setPixel(const uint16_t x, const uint16_t y, const uint32_t c) {
 	_pixels[y * _width + x] = c;
 	return true;
 }
 
 bool display::RasterDisplay::init() {
-	_pixels = new uint16_t[_width * _height];
+	_pixels = new uint32_t[_width * _height];
 	_texture = SDL_CreateTexture(ae::ui::getRenderer(),
-								 SDL_PIXELFORMAT_ARGB4444, SDL_TEXTUREACCESS_STREAMING,
+								 SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING,
 								 _width, _height);
 	if (!_texture) {
 		return false;
@@ -43,7 +43,7 @@ bool display::RasterDisplay::init() {
 }
 bool display::RasterDisplay::update(const SDL_Rect rect) {
 	_callback(_pixels);
-	SDL_UpdateTexture(_texture, NULL, _pixels, 2 * _width);
+	SDL_UpdateTexture(_texture, NULL, _pixels, 4 * _width);
 	SDL_RenderCopy(ae::ui::getRenderer(), _texture, NULL, &rect);
 	return true;
 }

@@ -7,7 +7,7 @@ namespace ae
 {
 	namespace cpu
 	{
-		class Intel8080 : public ICpu
+		class Intel8080 : public Cpu
 		{
 		protected:
 			uint8_t interrupt_enabled; // 0 ok, 1 wait one, 2 no
@@ -25,12 +25,6 @@ namespace ae
 			uint16_t sp; // stack pointer
 			uint8_t a; // accumulator
 			uint8_t b, c, d, e, h, l; // registers
-
-		protected:
-			ICpu::infn handlerIn;
-			ICpu::outfn handlerOut;
-			ICpu::readfn handlerRead;
-			ICpu::writefn handlerWrite;
 
 		protected:
 			uint16_t get_bc() const;
@@ -61,17 +55,17 @@ namespace ae
 			const uint16_t popOfStack();
 
 			const uint8_t readOpcode() {
-				return handlerRead(pc++);
+				return _handlerRead(pc++);
 			}
 			const uint8_t readArgument8() {
-				return handlerRead(pc++);
+				return _handlerRead(pc++);
 			}
 			const uint16_t readArgument16() {
-				return handlerRead(pc++) | (handlerRead(pc++) << 8);
+				return _handlerRead(pc++) | (_handlerRead(pc++) << 8);
 			}
 			void write(const uint16_t address, const uint16_t value) {
-				handlerWrite(address, value & 0xFF);
-				handlerWrite(address + 1, value >> 8);
+				_handlerWrite(address, value & 0xFF);
+				_handlerWrite(address + 1, value >> 8);
 			}
 
 		public:
@@ -81,10 +75,6 @@ namespace ae
 			const string disassemble() override;
 			const uint8_t executeOne() override;
 			bool interrupt(const uint8_t) override;
-			virtual bool in(const ICpu::infn) override;
-			virtual bool out(const ICpu::outfn) override;
-			virtual bool read(const ICpu::readfn) override;
-			virtual bool write(const ICpu::writefn) override;
 		};
 	}
 }

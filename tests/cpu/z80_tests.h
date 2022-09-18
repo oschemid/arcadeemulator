@@ -10,7 +10,7 @@ namespace tests_ae
 {
 	namespace cpu
 	{
-		class i8080_tests {
+		class z80_tests {
 		protected:
 			ae::Cpu* cpu;
 			ae::IMemory* memory;
@@ -18,9 +18,10 @@ namespace tests_ae
 
 			void out(const uint8_t, const uint8_t);
 			bool runTest(const string&, const uint64_t = 0);
+			bool runTestCycles();
 
 		public:
-			i8080_tests();
+			z80_tests();
 
 			bool run();
 		};

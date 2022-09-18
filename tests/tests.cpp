@@ -3,9 +3,10 @@
 
 #include <iostream>
 #include "cpu/i8080_tests.h"
+#include "cpu/z80_tests.h"
 
 int main()
 {
-	tests_ae::cpu::i8080_tests test;
+	tests_ae::cpu::z80_tests test;
 	test.run();
 }

@@ -9,13 +9,13 @@ namespace ae
 {
 	class Display {
 	public:
-		typedef std::function<void(uint16_t*)> updatefn;
+		typedef std::function<void(uint32_t*)> updatefn;
 
 	public:
 		virtual bool setSize(const uint16_t, const uint16_t) = 0;
 		virtual bool registerCallback(updatefn) = 0;
 
-		virtual bool setPixel(const uint16_t, const uint16_t, const uint16_t) = 0;
+		virtual bool setPixel(const uint16_t, const uint16_t, const uint32_t) = 0;
 		virtual bool init() = 0;
 		virtual bool update(const SDL_Rect) = 0;
 
