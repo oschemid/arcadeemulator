@@ -20,18 +20,6 @@ Cpu* Cpu::create(const string& name) {
 	return cpus[name]();
 }
 
-Cpu::Cpu() {
-
-}
-
-bool Cpu::in(const infn fn) {
-	_handlerIn = fn;
-	return true;
-}
-bool Cpu::out(const outfn fn) {
-	_handlerOut = fn;
-	return true;
-}
 bool Cpu::read(const Cpu::readfn fn) {
 	_handlerRead = fn;
 	return true;

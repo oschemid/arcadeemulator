@@ -7,6 +7,8 @@
 
 int main()
 {
-	tests_ae::cpu::z80_tests test;
+	tests_ae::cpu::i8080_tests test;
 	test.run();
+	tests_ae::cpu::z80_tests test2;
+	test2.run();
 }

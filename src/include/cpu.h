@@ -25,7 +25,7 @@ namespace ae
 		readfn _handlerRead;
 		writefn _handlerWrite;
 
-		Cpu();
+		Cpu() {};
 
 	public:
 		const uint64_t elapsed_cycles() const { return _elapsed_cycles; }
@@ -34,8 +34,10 @@ namespace ae
 		virtual const string disassemble() = 0;
 		virtual const uint8_t executeOne() = 0;
 		virtual bool interrupt(const uint8_t) = 0;
-		bool in(const infn);
-		bool out(const outfn);
+
+		// Handlers
+		bool in(const infn fn) { _handlerIn = fn; return true; }
+		bool out(const outfn fn) { _handlerOut = fn; return true; }
 		bool read(const readfn);
 		bool write(const writefn);
 

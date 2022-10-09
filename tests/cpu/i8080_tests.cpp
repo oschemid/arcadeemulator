@@ -16,13 +16,13 @@ void tests_ae::cpu::i8080_tests::out(const uint8_t p, const uint8_t v) {
 	}
 	ae::cpu::Intel8080* cpuc = (ae::cpu::Intel8080*)cpu;
 	if (p == 1) {
-		uint8_t operation = cpuc->c;
+		uint8_t operation = cpuc->c();
 
 		if (operation == 2) { // print a character stored in E
-			std::cout << (char)(cpuc->e);
+			std::cout << (char)(cpuc->e());
 		}
 		else if (operation == 9) { // print from memory at (DE) until '$' char
-			uint16_t addr = (cpuc->d << 8) | cpuc->e;
+			uint16_t addr = cpuc->de();
 			do {
 				std::cout << (char)(memory->read(addr++));
 			} while (memory->read(addr) != '$');

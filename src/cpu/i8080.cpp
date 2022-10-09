@@ -12,29 +12,8 @@ namespace ae::cpu {
 		Cpu() {
 		reset();
 	}
-	uint16_t Intel8080::get_bc() const {
-		return (b << 8) | c;
-	}
-	void Intel8080::set_bc(const uint16_t v) {
-		b = v >> 8;
-		c = v & 0xff;
-	}
-	uint16_t Intel8080::get_de() const {
-		return (d << 8) | e;
-	}
-	void Intel8080::set_de(const uint16_t v) {
-		d = v >> 8;
-		e = v & 0xff;
-	}
-	uint16_t Intel8080::get_hl() const {
-		return (h << 8) | l;
-	}
-	void Intel8080::set_hl(const uint16_t v) {
-		h = v >> 8;
-		l = v & 0xff;
-	}
 	uint8_t Intel8080::get_m() const {
-		return _handlerRead(get_hl());
+		return _handlerRead(_state.hl());
 	}
 
 	uint8_t Intel8080::dcr(const uint8_t value) {
@@ -56,85 +35,104 @@ namespace ae::cpu {
 	}
 
 	void Intel8080::xra(const uint8_t value) {
-		a ^= value;
-		carryBit = 0;
+		_state.a() ^= value;
+		_state.resetFlags(Intel8080Flags::CF);
+		//		carryBit = 0;
 		auxCarryBit = 0;
-		parityBit = parity(a);
-		signBit = sign(a);
-		zeroBit = zero(a);
+		parityBit = parity(_state.a());
+		signBit = sign(_state.a());
+		zeroBit = zero(_state.a());
 	}
 	void Intel8080::ora(const uint8_t value) {
-		a |= value;
-		carryBit = 0;
+		_state.a() |= value;
+		_state.resetFlags(Intel8080Flags::CF);
+		//		carryBit = 0;
 		auxCarryBit = 0;
-		parityBit = parity(a);
-		signBit = sign(a);
-		zeroBit = zero(a);
+		parityBit = parity(_state.a());
+		signBit = sign(_state.a());
+		zeroBit = zero(_state.a());
 	}
 	void Intel8080::ana(const uint8_t value) {
-		uint8_t result = a & value;
-		carryBit = 0;
+		uint8_t result = _state.a() & value;
+		_state.resetFlags(Intel8080Flags::CF);
+		//		carryBit = 0;
 		parityBit = parity(result);
 		signBit = sign(result);
 		zeroBit = zero(result);
-		auxCarryBit = ((a | value) & 0x08) != 0;
-		a = result;
+		auxCarryBit = ((_state.a() | value) & 0x08) != 0;
+		_state.a() = result;
 	}
 	void Intel8080::sub(const uint8_t value, const uint8_t flag) {
-		carryBit = (value + flag > a) ? 1 : 0;
-		auxCarryBit = (a & 0x0f) - (value & 0x0f) - flag >= 0;
-		a -= value + flag;
-		signBit = sign(a);
-		zeroBit = zero(a);
-		parityBit = parity(a);
+		if (value + flag > _state.a())
+			_state.setFlags(Intel8080Flags::CF);
+		else
+			_state.resetFlags(Intel8080Flags::CF);
+		//		carryBit = (value + flag > _state.a()) ? 1 : 0;
+		auxCarryBit = (_state.a() & 0x0f) - (value & 0x0f) - flag >= 0;
+		_state.a() -= value + flag;
+		signBit = sign(_state.a());
+		zeroBit = zero(_state.a());
+		parityBit = parity(_state.a());
 	}
 	void Intel8080::sbb(const uint8_t value) {
-		sub(value, carryBit);
+		sub(value, _state.carryFlag() ? 1 : 0);
 	}
 	void Intel8080::cmp(const uint8_t value) {
-		carryBit = (value > a) ? 1 : 0;
-		auxCarryBit = (value & 0xf) > (a & 0xf) ? 0 : 1;
-		uint8_t r = a - value;
+		if (value > _state.a())
+			_state.setFlags(Intel8080Flags::CF);
+		else
+			_state.resetFlags(Intel8080Flags::CF);
+		//		carryBit = (value > _state.a()) ? 1 : 0;
+		auxCarryBit = (value & 0xf) > (_state.a() & 0xf) ? 0 : 1;
+		uint8_t r = _state.a() - value;
 		signBit = sign(r);
 		zeroBit = zero(r);
 		parityBit = parity(r);
 	}
 	void Intel8080::add(const uint8_t value, const uint8_t flag)
 	{
-		uint16_t sum = a + value + flag;
-		auxCarryBit = ((value & 0x0f) + (a & 0x0f) + flag) > 0x0f;
-		a = sum & 0xff;
-		zeroBit = zero(a);
-		signBit = sign(a);
-		parityBit = parity(a);
-		carryBit = (sum > 0xff);
+		uint16_t sum = _state.a() + value + flag;
+		auxCarryBit = ((value & 0x0f) + (_state.a() & 0x0f) + flag) > 0x0f;
+		_state.a() = sum & 0xff;
+		zeroBit = zero(_state.a());
+		signBit = sign(_state.a());
+		parityBit = parity(_state.a());
+		if (sum > 0xff)
+			_state.setFlags(Intel8080Flags::CF);
+		else
+			_state.resetFlags(Intel8080Flags::CF);
+		//		carryBit = (sum > 0xff);
 	}
 	void Intel8080::adc(const uint8_t value)
 	{
-		add(value, carryBit);
+		add(value, _state.carryFlag() ? 1 : 0);
 	}
 	void Intel8080::daa()
 	{
-		uint16_t temp = a;
-		if (((a & 0xf) > 9) || (auxCarryBit)) {
+		uint16_t temp = _state.a();
+		if (((_state.a() & 0xf) > 9) || (auxCarryBit)) {
 			temp += 6;
-			auxCarryBit = ((a & 0xf) > 9) ? 1 : 0;
+			auxCarryBit = ((_state.a() & 0xf) > 9) ? 1 : 0;
 		}
-		if ((temp >> 4 > 9) || (carryBit)) {
+		if ((temp >> 4 > 9) || (_state.carryFlag())) {
 			temp += 0x60;
-			carryBit = 1;
+			_state.setFlags(Intel8080Flags::CF);
 		}
-		a = temp & 0xff;
-		signBit = sign(a);
-		parityBit = parity(a);
-		zeroBit = zero(a);
+		_state.a() = temp & 0xff;
+		signBit = sign(_state.a());
+		parityBit = parity(_state.a());
+		zeroBit = zero(_state.a());
 	}
 	void Intel8080::dad(const uint16_t value)
 	{
-		uint32_t res = get_hl() + value;
-		h = res >> 8;
-		l = res & 0xff;
-		carryBit = (res & 0xffff0000) != 0;
+		uint32_t res = _state.hl() + value;
+		_state.h() = res >> 8;
+		_state.l() = res & 0xff;
+		if ((res & 0xffff0000) != 0)
+			_state.setFlags(Intel8080Flags::CF);
+		else
+			_state.resetFlags(Intel8080Flags::CF);
+		//		carryBit = (res & 0xffff0000) != 0;
 	}
 
 	const string Intel8080::disassemble() {
@@ -901,13 +899,13 @@ namespace ae::cpu {
 
 	void Intel8080::pushToStack(const uint16_t value)
 	{
-		sp -= 2;
-		write(sp, value);
+		_state.sp() -= 2;
+		write(_state.sp(), value);
 	}
 	const uint16_t Intel8080::popOfStack()
 	{
-		uint16_t value = _handlerRead(sp) | (_handlerRead(sp + 1) << 8);
-		sp += 2;
+		uint16_t value = _handlerRead(_state.sp()) | (_handlerRead(_state.sp() + 1) << 8);
+		_state.sp() += 2;
 		return value;
 	}
 	const uint8_t Intel8080::executeOne() {
@@ -920,1095 +918,9 @@ namespace ae::cpu {
 		else if (interrupt_enabled == 1)
 			interrupt_enabled = 0;
 
-		uint16_t cycle = 0;
 		const std::uint8_t opcode = readOpcode();
-		uint16_t tmp16 = 0;
-
-		switch (opcode) {
-		case 0x00: /* NOP */
-			cycle = 4;
-			break;
-		case 0x01: /* LXI B */
-			c = readArgument8();
-			b = readArgument8();
-			cycle = 10;
-			break;
-		case 0x02: /* STAX B */
-			_handlerWrite(get_bc(), a);
-			cycle = 7;
-			break;
-		case 0x03: /* INX B */
-			c++;
-			if (c == 0)
-				b++;
-			cycle = 5;
-			break;
-		case 0x04: /* INR B */
-			b = inr(b);
-			cycle = 5;
-			break;
-		case 0x05: /* DCR B */
-			b = dcr(b);
-			cycle = 5;
-			break;
-		case 0x06: /* MVI B */
-			b = readArgument8();
-			cycle = 7;
-			break;
-		case 0x07: /* RLC */
-			carryBit = (a >> 7);
-			a = carryBit | (a << 1);
-			cycle = 4;
-			break;
-		case 0x09: /* DAD BC */
-			dad(get_bc());
-			cycle = 10;
-			break;
-		case 0x0A: /* LDAX B */
-			a = _handlerRead(get_bc());
-			cycle = 7;
-			break;
-		case 0x0B: /* DCX B */
-			set_bc(get_bc() - 1);
-			cycle = 5;
-			break;
-		case 0x0C: /* INR C */
-			c = inr(c);
-			cycle = 5;
-			break;
-		case 0x0D: /* DCR C */
-			c = dcr(c);
-			cycle = 5;
-			break;
-		case 0x0E: /* MVI C */
-			c = readArgument8();
-			cycle = 7;
-			break;
-		case 0x0F: /* RRC */
-			carryBit = (a & 1);
-			a = (carryBit << 7) | (a >> 1);
-			cycle = 4;
-			break;
-
-		case 0x11: /* LXI D */
-			e = readArgument8();
-			d = readArgument8();
-			cycle = 10;
-			break;
-		case 0x12: /* STAX D */
-			_handlerWrite(get_de(), a);
-			cycle = 7;
-			break;
-		case 0x13: /* INX D */
-			e++;
-			if (e == 0)
-				d++;
-			cycle = 5;
-			break;
-		case 0x14: /* INR D */
-			d = inr(d);
-			cycle = 5;
-			break;
-		case 0x15: /* DCR D */
-			d = dcr(d);
-			cycle = 5;
-			break;
-		case 0x16: /* MVI D */
-			d = readArgument8();
-			cycle = 7;
-			break;
-		case 0x17: /* RAL */
-		{
-			uint8_t flag = carryBit;
-			carryBit = a >> 7;
-			a = (a << 1) | (flag);
-		}
-		cycle = 4;
-		break;
-		case 0x19: /* DAD D */
-			dad(get_de());
-			cycle = 10;
-			break;
-		case 0x1A: /* LDAX D */
-			a = _handlerRead(get_de());
-			cycle = 7;
-			break;
-		case 0x1B: /* DCX D */
-			set_de(get_de() - 1);
-			cycle = 5;
-			break;
-		case 0x1C: /* INR E */
-			e = inr(e);
-			cycle = 5;
-			break;
-		case 0x1D: /* DCR E */
-			e = dcr(e);
-			cycle = 5;
-			break;
-		case 0x1E: /* MVI E */
-			e = readArgument8();
-			cycle = 7;
-			break;
-		case 0x1F: /* RAR */
-		{
-			uint8_t flag = carryBit;
-			carryBit = a & 0x01;
-			a = (a >> 1) | (flag << 7);
-		}
-		cycle = 4;
-		break;
-		case 0x21: /* LXI H */
-			l = readArgument8();
-			h = readArgument8();
-			cycle = 10;
-			break;
-		case 0x22: /* SHLD */
-			tmp16 = readArgument16();
-			_handlerWrite(tmp16, l);
-			_handlerWrite(tmp16 + 1, h);
-			cycle = 16;
-			break;
-		case 0x23: /* INX H */
-			l++;
-			if (l == 0)
-				h++;
-			cycle = 5;
-			break;
-		case 0x24: /* INR H */
-			h = inr(h);
-			cycle = 5;
-			break;
-		case 0x25: /* DCR H */
-			h = dcr(h);
-			cycle = 5;
-			break;
-		case 0x26: /* MVI H */
-			h = readArgument8();
-			cycle = 7;
-			break;
-		case 0x27: /* DAA */
-			daa();
-			cycle = 4;
-			break;
-		case 0x29: /* DAD H */
-			dad(get_hl());
-			cycle = 10;
-			break;
-		case 0x2A: /* LHLD */
-			tmp16 = readArgument16();
-			l = _handlerRead(tmp16);
-			h = _handlerRead(tmp16 + 1);
-			cycle = 16;
-			break;
-		case 0x2B: /* DCX H */
-			tmp16 = get_hl() - 1;
-			h = tmp16 >> 8;
-			l = tmp16 & 0xff;
-			cycle = 5;
-			break;
-		case 0x2C: /* INR L */
-			l = inr(l);
-			cycle = 5;
-			break;
-		case 0x2D: /* DCR L */
-			l = dcr(l);
-			cycle = 5;
-			break;
-		case 0x2E: /* MVI L */
-			l = readArgument8();
-			cycle = 7;
-			break;
-		case 0x2F: /* CMA */
-			a = ~a;
-			cycle = 4;
-			break;
-
-		case 0x31: /* LXI SP */
-			sp = readArgument16();
-			cycle = 10;
-			break;
-		case 0x32: /* STA */
-			_handlerWrite(readArgument16(), a);
-			cycle = 13;
-			break;
-		case 0x33: /* INX SP */
-			sp = sp + 1;
-			cycle = 5;
-			break;
-		case 0x34: /* INR M */
-			_handlerWrite(get_hl(), inr(get_m()));
-			cycle = 10;
-			break;
-		case 0x35: /* DCR M */
-			_handlerWrite(get_hl(), dcr(get_m()));
-			cycle = 10;
-			break;
-		case 0x36: /* MVI M */
-			_handlerWrite(get_hl(), readArgument8());
-			cycle = 10;
-			break;
-		case 0x37: /* STC */
-			carryBit = 1;
-			cycle = 4;
-			break;
-		case 0x39: /* DAD SP */
-			dad(sp);
-			cycle = 10;
-			break;
-		case 0x3A: /* LDA */
-			a = _handlerRead(readArgument16());
-			cycle = 13;
-			break;
-		case 0x3B: /* DCX SP */
-			sp = sp - 1;
-			cycle = 5;
-			break;
-		case 0x3C: /* INR A */
-			a = inr(a);
-			cycle = 5;
-			break;
-		case 0x3D: /* DCR A */
-			a = dcr(a);
-			cycle = 5;
-			break;
-		case 0x3E: /* MVI A */
-			a = readArgument8();
-			cycle = 7;
-			break;
-		case 0x3F: /* CMC */
-			carryBit = 1 - carryBit;
-			cycle = 4;
-			break;
-		case 0x40: /* MOV B,B */
-			b = b;
-			cycle = 5;
-			break;
-		case 0x41: /* MOV B,C */
-			b = c;
-			cycle = 5;
-			break;
-		case 0x42: /* MOV B,D */
-			b = d;
-			cycle = 5;
-			break;
-		case 0x43: /* MOV B,E */
-			b = e;
-			cycle = 5;
-			break;
-		case 0x44: /* MOV B,H */
-			b = h;
-			cycle = 5;
-			break;
-		case 0x45: /* MOV B,L */
-			b = l;
-			cycle = 5;
-			break;
-		case 0x46: /* MOV B,M */
-			b = get_m();
-			cycle = 7;
-			break;
-		case 0x47: /* MOV B,A */
-			b = a;
-			cycle = 5;
-			break;
-		case 0x48: /* MOV C,B */
-			c = b;
-			cycle = 5;
-			break;
-		case 0x49: /* MOV C,C */
-			c = c;
-			cycle = 5;
-			break;
-		case 0x4A: /* MOV C,D */
-			c = d;
-			cycle = 5;
-			break;
-		case 0x4B: /* MOV C,E */
-			c = e;
-			cycle = 5;
-			break;
-		case 0x4C: /* MOV C,H */
-			c = h;
-			cycle = 5;
-			break;
-		case 0x4D: /* MOV C,L */
-			c = l;
-			cycle = 5;
-			break;
-		case 0x4E: /* MOV C,M */
-			c = get_m();
-			cycle = 7;
-			break;
-		case 0x4F: /* MOV C,A */
-			c = a;
-			cycle = 5;
-			break;
-
-		case 0x50: /* MOV D,B */
-			d = b;
-			cycle = 5;
-			break;
-		case 0x51: /* MOV D,C */
-			d = c;
-			cycle = 5;
-			break;
-		case 0x52: /* MOV D,D */
-			d = d;
-			cycle = 5;
-			break;
-		case 0x53: /* MOV D,E */
-			d = e;
-			cycle = 5;
-			break;
-		case 0x54: /* MOV D,H */
-			d = h;
-			cycle = 5;
-			break;
-		case 0x55: /* MOV D,L */
-			d = l;
-			cycle = 5;
-			break;
-		case 0x56: /* MOV D,M */
-			d = get_m();
-			cycle = 7;
-			break;
-		case 0x57: /* MOV D,A */
-			d = a;
-			cycle = 5;
-			break;
-		case 0x58: /* MOV E,B */
-			e = b;
-			cycle = 5;
-			break;
-		case 0x59: /* MOV E,C */
-			e = c;
-			cycle = 5;
-			break;
-		case 0x5A: /* MOV E,D */
-			e = d;
-			cycle = 5;
-			break;
-		case 0x5B: /* MOV E,E */
-			e = e;
-			cycle = 5;
-			break;
-		case 0x5C: /* MOV E,H */
-			e = h;
-			cycle = 5;
-			break;
-		case 0x5D: /* MOV E,L */
-			e = l;
-			cycle = 5;
-			break;
-		case 0x5E: /* MOV E,M */
-			e = get_m();
-			cycle = 7;
-			break;
-		case 0x5F: /* MOV E,A */
-			e = a;
-			cycle = 5;
-			break;
-
-		case 0x60: /* MOV H,B */
-			h = b;
-			cycle = 5;
-			break;
-		case 0x61: /* MOV H,C */
-			h = c;
-			cycle = 5;
-			break;
-		case 0x62: /* MOV H,D */
-			h = d;
-			cycle = 5;
-			break;
-		case 0x63: /* MOV H,E */
-			h = e;
-			cycle = 5;
-			break;
-		case 0x64: /* MOV H,H */
-			h = h;
-			cycle = 5;
-			break;
-		case 0x65: /* MOV H,L */
-			h = l;
-			cycle = 5;
-			break;
-		case 0x66: /* MOV H,M */
-			h = get_m();
-			cycle = 7;
-			break;
-		case 0x67: /* MOV H,A */
-			h = a;
-			cycle = 5;
-			break;
-		case 0x68: /* MOV L,B */
-			l = b;
-			cycle = 5;
-			break;
-		case 0x69: /* MOV L,C */
-			l = c;
-			cycle = 5;
-			break;
-		case 0x6A: /* MOV L,D */
-			l = d;
-			cycle = 5;
-			break;
-		case 0x6B: /* MOV L,E */
-			l = e;
-			cycle = 5;
-			break;
-		case 0x6C: /* MOV L,H */
-			l = h;
-			cycle = 5;
-			break;
-		case 0x6D: /* MOV L,L */
-			l = l;
-			cycle = 5;
-			break;
-		case 0x6E: /* MOV L,M */
-			l = get_m();
-			cycle = 7;
-			break;
-		case 0x6F: /* MOV L,A */
-			l = a;
-			cycle = 5;
-			break;
-
-		case 0x70: /* MOV M,B */
-			_handlerWrite(get_hl(), b);
-			cycle = 7;
-			break;
-		case 0x71: /* MOV M,C */
-			_handlerWrite(get_hl(), c);
-			cycle = 7;
-			break;
-		case 0x72: /* MOV M,D */
-			_handlerWrite(get_hl(), d);
-			cycle = 7;
-			break;
-		case 0x73: /* MOV M,E */
-			_handlerWrite(get_hl(), e);
-			cycle = 7;
-			break;
-		case 0x74: /* MOV M,H */
-			_handlerWrite(get_hl(), h);
-			cycle = 7;
-			break;
-		case 0x75: /* MOV M,L */
-			_handlerWrite(get_hl(), l);
-			cycle = 7;
-			break;
-			//		case 0x76: /* HLT */
-		case 0x77: /* MOV M,A */
-			_handlerWrite(get_hl(), a);
-			cycle = 7;
-			break;
-		case 0x78: /* MOV A,B */
-			a = b;
-			cycle = 5;
-			break;
-		case 0x79: /* MOV A,C */
-			a = c;
-			cycle = 5;
-			break;
-		case 0x7A: /* MOV A,D */
-			a = d;
-			cycle = 5;
-			break;
-		case 0x7B: /* MOV A,E */
-			a = e;
-			cycle = 5;
-			break;
-		case 0x7C: /* MOV A,H */
-			a = h;
-			cycle = 5;
-			break;
-		case 0x7D: /* MOV A,L */
-			a = l;
-			cycle = 5;
-			break;
-		case 0x7E: /* MOV A,M */
-			a = get_m();
-			cycle = 7;
-			break;
-		case 0x7F: /* MOV A,A */
-			a = a;
-			cycle = 5;
-			break;
-
-		case 0x80: /* ADD B */
-			add(b);
-			cycle = 4;
-			break;
-		case 0x81: /* ADD C */
-			add(c);
-			cycle = 4;
-			break;
-		case 0x82: /* ADD D */
-			add(d);
-			cycle = 4;
-			break;
-		case 0x83: /* ADD E */
-			add(e);
-			cycle = 4;
-			break;
-		case 0x84: /* ADD H */
-			add(h);
-			cycle = 4;
-			break;
-		case 0x85: /* ADD L */
-			add(l);
-			cycle = 4;
-			break;
-		case 0x86: /* ADD M */
-			add(get_m());
-			cycle = 7;
-			break;
-		case 0x87: /* ADD A */
-			add(a);
-			cycle = 4;
-			break;
-		case 0x88: /* ADC B */
-			adc(b);
-			cycle = 4;
-			break;
-		case 0x89: /* ADC C */
-			adc(c);
-			cycle = 4;
-			break;
-		case 0x8A: /* ADC D */
-			adc(d);
-			cycle = 4;
-			break;
-		case 0x8B: /* ADC E */
-			adc(e);
-			cycle = 4;
-			break;
-		case 0x8C: /* ADC H */
-			adc(h);
-			cycle = 4;
-			break;
-		case 0x8D: /* ADC L */
-			adc(l);
-			cycle = 4;
-			break;
-		case 0x8E: /* ADC M */
-			adc(get_m());
-			cycle = 7;
-			break;
-		case 0x8F: /* ADC A */
-			adc(a);
-			cycle = 4;
-			break;
-
-		case 0x90: /* SUB B */
-			sub(b);
-			cycle = 4;
-			break;
-		case 0x91: /* SUB C */
-			sub(c);
-			cycle = 4;
-			break;
-		case 0x92: /* SUB D */
-			sub(d);
-			cycle = 4;
-			break;
-		case 0x93: /* SUB E */
-			sub(e);
-			cycle = 4;
-			break;
-		case 0x94: /* SUB H */
-			sub(h);
-			cycle = 4;
-			break;
-		case 0x95: /* SUB L */
-			sub(l);
-			cycle = 4;
-			break;
-		case 0x96: /* SUB M */
-			sub(get_m());
-			cycle = 7;
-			break;
-		case 0x97: /* SUB A */
-			sub(a);
-			cycle = 4;
-			break;
-		case 0x98: /* SBB B */
-			sbb(b);
-			cycle = 4;
-			break;
-		case 0x99: /* SBB C */
-			sbb(c);
-			cycle = 4;
-			break;
-		case 0x9A: /* SBB D */
-			sbb(d);
-			cycle = 4;
-			break;
-		case 0x9B: /* SBB E */
-			sbb(e);
-			cycle = 4;
-			break;
-		case 0x9C: /* SBB H */
-			sbb(h);
-			cycle = 4;
-			break;
-		case 0x9D: /* SBB L */
-			sbb(l);
-			cycle = 4;
-			break;
-		case 0x9E: /* SBB M */
-			sbb(get_m());
-			cycle = 7;
-			break;
-		case 0x9F: /* SBB A */
-			sbb(a);
-			cycle = 4;
-			break;
-
-		case 0xA0: /* ANA B */
-			ana(b);
-			cycle = 4;
-			break;
-		case 0xA1: /* ANA C */
-			ana(c);
-			cycle = 4;
-			break;
-		case 0xA2: /* ANA D */
-			ana(d);
-			cycle = 4;
-			break;
-		case 0xA3: /* ANA E */
-			ana(e);
-			cycle = 4;
-			break;
-		case 0xA4: /* ANA H */
-			ana(h);
-			cycle = 4;
-			break;
-		case 0xA5: /* ANA L */
-			ana(l);
-			cycle = 4;
-			break;
-		case 0xA6: /* ANA M */
-			ana(get_m());
-			cycle = 7;
-			break;
-		case 0xA7: /* ANA A */
-			ana(a);
-			cycle = 4;
-			break;
-		case 0xA8: /* XRA B */
-			xra(b);
-			cycle = 4;
-			break;
-		case 0xA9: /* XRA C */
-			xra(c);
-			cycle = 4;
-			break;
-		case 0xAA: /* XRA D */
-			xra(d);
-			cycle = 4;
-			break;
-		case 0xAB: /* XRA E */
-			xra(e);
-			cycle = 4;
-			break;
-		case 0xAC: /* XRA H */
-			xra(h);
-			cycle = 4;
-			break;
-		case 0xAD: /* XRA L */
-			xra(l);
-			cycle = 4;
-			break;
-		case 0xAE: /* XRA M */
-			xra(get_m());
-			cycle = 7;
-			break;
-		case 0xAF: /* XRA A */
-			xra(a);
-			cycle = 4;
-			break;
-
-		case 0xB0: /* ORA B */
-			ora(b);
-			cycle = 4;
-			break;
-		case 0xB1: /* ORA C */
-			ora(c);
-			cycle = 4;
-			break;
-		case 0xB2: /* ORA D */
-			ora(d);
-			cycle = 4;
-			break;
-		case 0xB3: /* ORA E */
-			ora(e);
-			cycle = 4;
-			break;
-		case 0xB4: /* ORA H */
-			ora(h);
-			cycle = 4;
-			break;
-		case 0xB5: /* ORA L */
-			ora(l);
-			cycle = 4;
-			break;
-		case 0xB6: /* ORA M */
-			ora(get_m());
-			cycle = 7;
-			break;
-		case 0xB7: /* ORA A */
-			ora(a);
-			cycle = 4;
-			break;
-		case 0xB8: /* CMP B */
-			cmp(b);
-			cycle = 4;
-			break;
-		case 0xB9: /* CMP C */
-			cmp(c);
-			cycle = 4;
-			break;
-		case 0xBA: /* CMP D */
-			cmp(d);
-			cycle = 4;
-			break;
-		case 0xBB: /* CMP E */
-			cmp(e);
-			cycle = 4;
-			break;
-		case 0xBC: /* CMP H */
-			cmp(h);
-			cycle = 4;
-			break;
-		case 0xBD: /* CMP L */
-			cmp(l);
-			cycle = 4;
-			break;
-		case 0xBE: /* CMP M */
-			cmp(get_m());
-			cycle = 7;
-			break;
-		case 0xBF: /* CMP A */
-			cmp(a);
-			cycle = 4;
-			break;
-
-		case 0xC0: /* RNZ */
-			if (!zeroBit) {
-				pc = popOfStack();
-				cycle = 11;
-			}
-			else {
-				cycle = 5;
-			}
-			break;
-		case 0xC1: /* POP BC */ { uint16_t t = popOfStack(); b = t >> 8; c = t & 0xff; } cycle = 10; break;
-		case 0xC2: /* JNZ */
-			tmp16 = readArgument16();
-			if (!zeroBit)
-				pc = tmp16;
-			cycle = 10;
-			break;
-		case 0xC3: /* JMP */
-			pc = readArgument16();
-			cycle = 10;
-			break;
-		case 0xC4: /* CNZ */
-			tmp16 = readArgument16();
-			if (!zeroBit) {
-				pushToStack(pc);
-				pc = tmp16;
-				cycle = 17;
-			}
-			else {
-				cycle = 11;
-			}
-			break;
-		case 0xC5: /* PUSH BC */ pushToStack((b << 8) | c); cycle = 11; break;
-		case 0xC6: /* ADI */
-			add(readArgument8());
-			cycle = 7;
-			break;
-		case 0xC7: /* RST 0 */
-			pushToStack(pc);
-			pc = 0;
-			break;
-		case 0xC8: /* RZ */
-			if (zeroBit) {
-				pc = popOfStack();
-				cycle = 11;
-			}
-			else {
-				cycle = 5;
-			}
-			break;
-		case 0xC9: /* RET */ pc = popOfStack(); cycle = 10; break;
-		case 0xCA: /* JZ */
-			tmp16 = readArgument16();
-			if (zeroBit)
-				pc = tmp16;
-			cycle = 10;
-			break;
-		case 0xCC: /* CZ */
-			tmp16 = readArgument16();
-			if (zeroBit) {
-				pushToStack(pc);
-				pc = tmp16;
-				cycle = 17;
-			}
-			else {
-				cycle = 11;
-			}
-			break;
-		case 0xCD: /* CALL */ tmp16 = readArgument16(); pushToStack(pc); pc = tmp16; cycle = 17; break;
-		case 0xCE: /* ACI */
-			adc(readArgument8());
-			cycle = 7;
-			break;
-			//		case 0xCF: /* RST 1 */
-
-		case 0xD0: /* RNC */
-			if (!carryBit) {
-				pc = popOfStack();
-				cycle = 11;
-			}
-			else {
-				cycle = 5;
-			}
-			break;
-		case 0xD1: /* POP DE */
-			set_de(popOfStack());
-			cycle = 10;
-			break;
-		case 0XD2: /* JNC */
-			tmp16 = readArgument16();
-			if (!carryBit)
-				pc = tmp16;
-			cycle = 10;
-			break;
-		case 0xD3: /* OUT */
-			_handlerOut(readArgument8(), a);
-			cycle = 10;
-			break;
-		case 0xD4: /* CNC */
-			tmp16 = readArgument16();
-			if (!carryBit) {
-				pushToStack(pc);
-				pc = tmp16;
-				cycle = 17;
-			}
-			else {
-				cycle = 11;
-			}
-			break;
-		case 0xD5: /* PUSH DE */
-			pushToStack(get_de());
-			cycle = 11;
-			break;
-		case 0XD6: /* SUI */
-			sub(readArgument8());
-			cycle = 7;
-			break;
-			//		case 0xD7: /* RST 2 */
-		case 0XD8: /* RC */
-			if (carryBit) {
-				pc = popOfStack();
-				cycle = 11;
-			}
-			else {
-				cycle = 5;
-			}
-			break;
-		case 0xDA: /* JC */
-			tmp16 = readArgument16();
-			if (carryBit)
-				pc = tmp16;
-			cycle = 10;
-			break;
-		case 0XDB: /* IN */
-			a = _handlerIn(readArgument8());
-			cycle = 10;
-			break;
-		case 0xDC: /* CC */
-			tmp16 = readArgument16();
-			if (carryBit) {
-				pushToStack(pc);
-				pc = tmp16;
-				cycle = 17;
-			}
-			else {
-				cycle = 11;
-			}
-			break;
-		case 0xDE: /* SBI */
-			sbb(readArgument8());
-			cycle = 7;
-			break;
-			//		case 0xDF: /* RST 3 */
-
-		case 0xE0: /* RPO */
-			if (!parityBit) {
-				pc = popOfStack();
-				cycle = 11;
-			}
-			else {
-				cycle = 5;
-			}
-			break;
-		case 0xE1: /* POP HL */
-			set_hl(popOfStack());
-			cycle = 10;
-			break;
-		case 0xE2: /* JPO */
-			tmp16 = readArgument16();
-			if (!parityBit)
-				pc = tmp16;
-			cycle = 10;
-			break;
-		case 0xE3: /* XTHL */
-			tmp16 = _handlerRead(sp) | (_handlerRead(sp + 1) << 8);
-			_handlerWrite(sp, l);
-			_handlerWrite(sp + 1, h);
-			set_hl(tmp16);
-			cycle = 18;
-			break;
-		case 0xE4: /* CPO */
-			tmp16 = readArgument16();
-			if (!parityBit) {
-				pushToStack(pc);
-				pc = tmp16;
-				cycle = 17;
-			}
-			else {
-				cycle = 11;
-			}
-			break;
-		case 0xE5: /* PUSH HL */ pushToStack((h << 8) | l); cycle = 11; break;
-		case 0xE6: /* ANI */
-			ana(readArgument8());
-			cycle = 7;
-			break;
-			//		case 0XE7: /* RST 4 */
-		case 0xE8: /* RPE */
-			if (parityBit) {
-				pc = popOfStack();
-				cycle = 11;
-			}
-			else {
-				cycle = 5;
-			}
-			break;
-		case 0xE9: /* PCHL */
-			pc = get_hl();
-			cycle = 5;
-			break;
-		case 0xEA: /* JPE */
-			tmp16 = readArgument16();
-			if (parityBit)
-				pc = tmp16;
-			cycle = 10;
-			break;
-		case 0xEB: /* XCHG */ { uint8_t tmp = d; d = h; h = tmp; tmp = e; e = l; l = tmp; } cycle = 4; break;
-		case 0xEC: /* CPE */
-			tmp16 = readArgument16();
-			if (parityBit) {
-				pushToStack(pc);
-				pc = tmp16;
-				cycle = 17;
-			}
-			else {
-				cycle = 11;
-			}
-			break;
-		case 0xEE: /* XRI */
-			xra(readArgument8());
-			cycle = 7;
-			break;
-			//		case 0xEF: /* RST 5 */
-
-		case 0xF0: /* RP */
-			if (!signBit) {
-				pc = popOfStack();
-				cycle = 11;
-			}
-			else {
-				cycle = 5;
-			}
-			break;
-		case 0xF1: /* POP PSW */ { uint16_t t = popOfStack(); a = t >> 8; parityBit = (t >> 2) & 1; zeroBit = (t >> 6) & 1; signBit = (t >> 7) & 1; carryBit = t & 1; auxCarryBit = (t >> 4) & 1; } cycle = 10; break;
-		case 0xF2: /* JP */
-			tmp16 = readArgument16();
-			if (!signBit)
-				pc = tmp16;
-			cycle = 10;
-			break;
-		case 0xF3: /* DI */
-			interrupt_enabled = 0;
-			cycle = 4;
-			break;
-		case 0xF4: /* CP */
-			tmp16 = readArgument16();
-			if (!signBit) {
-				pushToStack(pc);
-				pc = tmp16;
-				cycle = 17;
-			}
-			else {
-				cycle = 11;
-			}
-			break;
-		case 0xF5: /* PUSH PSW */ pushToStack((a << 8) | (signBit << 7) | (zeroBit << 6) | (auxCarryBit << 4) | (parityBit << 2) | 2 | (carryBit)); cycle = 11; break;
-		case 0xF6: /* ORI */
-			ora(readArgument8());
-			cycle = 7;
-			break;
-			//		case 0xF7: /* RST 6 */
-		case 0xF8: /* RM */
-			if (signBit) {
-				pc = popOfStack();
-				cycle = 11;
-			}
-			else {
-				cycle = 5;
-			}
-			break;
-		case 0xF9: /* SPHL */
-			sp = get_hl();
-			cycle = 5;
-			break;
-		case 0xFA: /* JM */
-			tmp16 = readArgument16();
-			if (signBit)
-				pc = tmp16;
-			cycle = 10;
-			break;
-		case 0xFB: /* EI */
-			interrupt_enabled = 1;
-			cycle = 4;
-			break;
-		case 0xFC: /* CM */
-			tmp16 = readArgument16();
-			if (signBit) {
-				pushToStack(pc);
-				pc = tmp16;
-				cycle = 17;
-			}
-			else {
-				cycle = 11;
-			}
-			break;
-		case 0xFE: /* CPI */
-			cmp(readArgument8());
-			cycle = 7;
-			break;
-			//		case 0xFF: /* RST 7 */
-
-		default: unimplemented(); break;
-		}
-		return cycle;
+		decode_opcode(opcode);
+		return 4;
 	}
 
 	bool Intel8080::interrupt(const uint8_t inte) {
@@ -2019,16 +931,51 @@ namespace ae::cpu {
 
 	bool Intel8080::reset(const uint16_t address) {
 		pc = address;
-		a = 0;
-		b = 0;
-		c = 0;
-		d = 0;
-		e = 0;
-		h = 0;
-		l = 0;
+		_state.reset();
 		interrupt_enabled = 2;
 		interrupt_request = 8;
 		return true;
+	}
+
+	uint8_t Intel8080::decode8(const opcode_t opcode) const
+	{
+		switch (opcode & 0x07) {
+		case 0x00:
+			return _state.b();
+		case 0x01:
+			return _state.c();
+		case 0x02:
+			return _state.d();
+		case 0x03:
+			return _state.e();
+		case 0x04:
+			return _state.h();
+		case 0x05:
+			return _state.l();
+		case 0x07:
+			return _state.a();
+		}
+		throw std::runtime_error("Unexpected opcode in decode8 " + opcode);
+	}
+	uint8_t& Intel8080::decode8(const opcode_t opcode)
+	{
+		switch (opcode & 0x07) {
+		case 0x00:
+			return _state.b();
+		case 0x01:
+			return _state.c();
+		case 0x02:
+			return _state.d();
+		case 0x03:
+			return _state.e();
+		case 0x04:
+			return _state.h();
+		case 0x05:
+			return _state.l();
+		case 0x07:
+			return _state.a();
+		}
+		throw std::runtime_error("Unexpected opcode in decode8 " + opcode);
 	}
 }
 
