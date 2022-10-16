@@ -34,7 +34,7 @@ void loadFont() {
 }
 
 bool ae::ui::init() {
-	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
 		std::cout << "SDL could not be initialized: " << SDL_GetError();
 		return false;
 	}

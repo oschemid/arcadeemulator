@@ -1,0 +1,3 @@
+[submodule "libraries/xos-processors"]
+	path = libraries/xos-processors
+	url = https://github.com/oschemid/xos-processors.git

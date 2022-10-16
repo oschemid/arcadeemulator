@@ -6,8 +6,6 @@
 #include "SDL2/SDL.h"
 #include "../ui/ui.h"
 
-#include "../cpu/z80.h"
-
 
 ae::machine::Pacman::Pacman() :
 	memory(nullptr),
@@ -151,7 +149,7 @@ bool ae::machine::Pacman::init()
 		display->init();
 	}
 
-	cpu = Cpu::create("Z80");
+	cpu = xprocessors::Cpu::create("Z80");
 	memory = newMemory(0x5000);
 	videorom = newMemory(0x2000);
 	paletterom = newMemory(0x200);

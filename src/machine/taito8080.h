@@ -25,11 +25,11 @@ namespace ae
 
 			virtual void loadMemory() = 0;
 			virtual const uint8_t in(const uint8_t) = 0;
-			void out(const uint8_t, const uint8_t);
+			virtual void out(const uint8_t, const uint8_t);
 
 		public:
 			ae::IMemory* memory;
-			ae::Cpu* cpu;
+			xprocessors::Cpu* cpu;
 			ae::Display* display;
 			ae::Layout* layout;
 			ae::Layout::zones _zones;

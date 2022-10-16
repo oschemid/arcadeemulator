@@ -6,6 +6,7 @@
 #include "dipswitch.h"
 #include "memory.h"
 #include "cpu.h"
+#include "../emulator/sound.h"
 
 
 namespace ae
@@ -18,9 +19,12 @@ namespace ae
 			DIPSwitch<2> ships;
 			DIPSwitch<1> extraShip;
 			DIPSwitch<1> coinInfo;
+			ae::Sound* s1;
+			ae::AudioDevice* audiodevice;
 
 			virtual const uint8_t in1();
 			virtual const uint8_t in2();
+			virtual  void out(const uint8_t, const uint8_t);
 
 		protected:
 			virtual const uint8_t in(const uint8_t);

@@ -49,6 +49,16 @@ std::list<ae::IParameter*> ae::machine::SpaceInvaders::getParameters() const {
 			 (ae::IParameter*)&coinInfo };
 }
 
+void ae::machine::SpaceInvaders::out(const uint8_t port, const uint8_t value) {
+	if (port == 3) {
+		if ((value & 2) == 2) {
+			audiodevice->playSound(s1);
+		}
+		return;
+	}
+	Taito8080::out(port, value);
+}
+
 const uint8_t ae::machine::SpaceInvaders::in2() {
 	uint8_t port = 0b00000000;
 
@@ -96,6 +106,11 @@ void ae::machine::SpaceInvadersMidway::loadMemory() {
 	memory->load(0x0800, "roms/spaceinvaders/invaders/invaders.g");
 	memory->load(0x1000, "roms/spaceinvaders/invaders/invaders.f");
 	memory->load(0x1800, "roms/spaceinvaders/invaders/invaders.e");
+
+
+	s1 = new ae::Sound("roms/spaceinvaders/shoot.wav");
+	audiodevice = new ae::AudioDevice();
+
 }
 
 ae::machine::SpaceInvadersTV::SpaceInvadersTV() :

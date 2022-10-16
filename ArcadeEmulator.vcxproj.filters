@@ -21,9 +21,6 @@
     <ClCompile Include="src\machine\spaceinvaders.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\cpu\i8080.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
     <ClCompile Include="src\ui\ui.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
@@ -31,9 +28,6 @@
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="src\machine\machine.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\cpu\cpu.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="src\ui\interface.cpp">
@@ -63,23 +57,32 @@
     <ClCompile Include="src\machine\pacman.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\cpu\z80\z80.cpp">
+    <ClCompile Include="src\emulator\sound.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\cpu\z80\z80opcodes.cpp">
+    <ClCompile Include="libraries\xos-processors\src\cpu.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\cpu\z80\z80opcodes_cb.cpp">
+    <ClCompile Include="libraries\xos-processors\src\registry.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\cpu\z80\z80opcodes_ed.cpp">
+    <ClCompile Include="libraries\xos-processors\src\z80family\i8080.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="libraries\xos-processors\src\z80family\z80.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="libraries\xos-processors\src\z80family\z80opcodes.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="libraries\xos-processors\src\z80family\z80opcodes_cb.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="libraries\xos-processors\src\z80family\z80opcodes_ed.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\cpu\i8080.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
     <ClInclude Include="src\machine\spaceinvaders.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
@@ -93,9 +96,6 @@
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="src\include\types.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="src\include\cpu.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="src\include\memory.h">
@@ -116,13 +116,31 @@
     <ClInclude Include="src\display\rasterdisplay.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="src\cpu\z80.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
     <ClInclude Include="src\machine\pacman.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="src\cpu\z80\z80state.h">
+    <ClInclude Include="src\emulator\sound.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="libraries\xos-processors\src\z80family\cpus.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="libraries\xos-processors\src\z80family\i8080.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="libraries\xos-processors\src\z80family\states.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="libraries\xos-processors\src\z80family\z80.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="libraries\xos-processors\src\registry.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="libraries\xos-processors\include\cpu.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="libraries\xos-processors\include\types.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
   </ItemGroup>
@@ -131,11 +149,6 @@
     <None Include="docs\cpu\8080-Programmers-Manual.pdf" />
     <None Include=".gitignore" />
     <None Include="README.MD" />
-    <None Include="tests\data\cpu\Z80\prelim.src" />
-    <None Include="tests\data\cpu\Intel8080\TST8080.ASM">
-      <Filter>Fichiers sources</Filter>
-    </None>
-    <None Include="tests\data\cpu\Z80\zexdoc.src" />
     <None Include="docs\cpu\Z80-User-Manual.pdf" />
     <None Include="docs\cpu\z80-documented.pdf" />
     <None Include="docs\machine\Pacman.pdf" />

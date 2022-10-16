@@ -56,7 +56,7 @@ bool ae::machine::Taito8080::init()
 		layout->init();
 	}
 
-	cpu = Cpu::create("i8080");
+	cpu = xprocessors::Cpu::create("i8080");
 	memory = newMemory(_memorySize);
 	loadMemory();
 

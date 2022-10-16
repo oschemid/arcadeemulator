@@ -49,7 +49,7 @@ namespace ae
 			uint8_t* tiles;
 			uint8_t* sprites;
 			uint8_t* spritesxy;
-			ae::Cpu* cpu;
+			xprocessors::Cpu* cpu;
 			ae::Display* display;
 
 

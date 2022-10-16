@@ -79,12 +79,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <LibraryPath>$(LibraryPath)</LibraryPath>
-    <IncludePath>$(ProjectDir)src\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)libraries/xos-processors/include;$(ProjectDir)src\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <LibraryPath>$(LibraryPath)</LibraryPath>
-    <IncludePath>$(ProjectDir)src\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)libraries/xos-processors/include;$(ProjectDir)src\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -150,14 +150,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ArcadeEmulator.cpp" />
-    <ClCompile Include="src\cpu\cpu.cpp" />
-    <ClCompile Include="src\cpu\i8080.cpp" />
-    <ClCompile Include="src\cpu\z80\z80.cpp" />
-    <ClCompile Include="src\cpu\z80\z80opcodes.cpp" />
-    <ClCompile Include="src\cpu\z80\z80opcodes_cb.cpp" />
-    <ClCompile Include="src\cpu\z80\z80opcodes_ed.cpp" />
+    <ClCompile Include="libraries\xos-processors\src\cpu.cpp" />
+    <ClCompile Include="libraries\xos-processors\src\registry.cpp" />
+    <ClCompile Include="libraries\xos-processors\src\z80family\i8080.cpp" />
+    <ClCompile Include="libraries\xos-processors\src\z80family\z80.cpp" />
+    <ClCompile Include="libraries\xos-processors\src\z80family\z80opcodes.cpp" />
+    <ClCompile Include="libraries\xos-processors\src\z80family\z80opcodes_cb.cpp" />
+    <ClCompile Include="libraries\xos-processors\src\z80family\z80opcodes_ed.cpp" />
     <ClCompile Include="src\display\display.cpp" />
     <ClCompile Include="src\display\rasterdisplay.cpp" />
+    <ClCompile Include="src\emulator\sound.cpp" />
     <ClCompile Include="src\machine\machine.cpp" />
     <ClCompile Include="src\machine\pacman.cpp" />
     <ClCompile Include="src\machine\spacechaser.cpp" />
@@ -171,11 +173,15 @@
     <ClCompile Include="src\ui\ui.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\cpu\i8080.h" />
-    <ClInclude Include="src\cpu\z80.h" />
-    <ClInclude Include="src\cpu\z80\z80state.h" />
+    <ClInclude Include="libraries\xos-processors\include\cpu.h" />
+    <ClInclude Include="libraries\xos-processors\include\types.h" />
+    <ClInclude Include="libraries\xos-processors\src\registry.h" />
+    <ClInclude Include="libraries\xos-processors\src\z80family\cpus.h" />
+    <ClInclude Include="libraries\xos-processors\src\z80family\i8080.h" />
+    <ClInclude Include="libraries\xos-processors\src\z80family\states.h" />
+    <ClInclude Include="libraries\xos-processors\src\z80family\z80.h" />
     <ClInclude Include="src\display\rasterdisplay.h" />
-    <ClInclude Include="src\include\cpu.h" />
+    <ClInclude Include="src\emulator\sound.h" />
     <ClInclude Include="src\include\display.h" />
     <ClInclude Include="src\include\machine.h" />
     <ClInclude Include="src\include\memory.h" />
@@ -196,9 +202,6 @@
     <None Include="docs\machine\Pacman.pdf" />
     <None Include="LICENSE" />
     <None Include="README.MD" />
-    <None Include="tests\data\cpu\Intel8080\TST8080.ASM" />
-    <None Include="tests\data\cpu\Z80\prelim.src" />
-    <None Include="tests\data\cpu\Z80\zexdoc.src" />
   </ItemGroup>
   <ItemGroup>
     <Xsd Include="docs\machine\spaceinvaders.md">
