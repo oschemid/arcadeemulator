@@ -3,6 +3,8 @@
 #include <string>
 #include <cstdint>
 #include <functional>
+#include <fstream>
+
 
 namespace ae {
 	using std::string;
@@ -22,5 +24,18 @@ namespace ae {
 		uint16_t top;
 		uint16_t right;
 		uint16_t bottom;
+	};
+
+	class File {
+	protected:
+		std::ifstream _ifs;
+		size_t _size;
+
+	public:
+		File(const string&);
+		~File();
+
+		size_t getSize() const { return _size; }
+		bool read(const uint16_t, const uint16_t, const uint8_t*);
 	};
 };

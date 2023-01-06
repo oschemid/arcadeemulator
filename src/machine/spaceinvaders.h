@@ -5,7 +5,7 @@
 #include "taito8080.h"
 #include "dipswitch.h"
 #include "memory.h"
-#include "cpu.h"
+#include "xprocessors.h"
 #include "../emulator/sound.h"
 
 

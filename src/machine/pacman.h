@@ -4,7 +4,7 @@
 #include "machine.h"
 
 #include "memory.h"
-#include "cpu.h"
+#include "xprocessors.h"
 #include "display.h"
 #include "dipswitch.h"
 

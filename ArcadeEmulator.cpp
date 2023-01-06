@@ -4,7 +4,6 @@
 #include <iostream>
 
 #include "machine.h"
-#include "src/machine/spaceinvaders.h"
 #include "src/ui/ui.h"
 
 
