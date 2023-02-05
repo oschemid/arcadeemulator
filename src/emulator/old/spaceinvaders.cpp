@@ -4,11 +4,13 @@
 #include "time.h"
 #include <iostream>
 #include "SDL2/SDL.h"
-#include "../ui/ui.h"
+#include "../registry.h"
 
+static ae::emulator::RegistryHandler reg("spaceinvadersmiday", [] { return std::make_unique<ae::machine::SpaceInvadersMidway>(); });
+static ae::emulator::RegistryHandler reg2("spaceinvaderstv", [] { return std::make_unique<ae::machine::SpaceInvadersTV>(); });
 
 ae::machine::SpaceInvaders::SpaceInvaders() :
-	Taito8080(0x3ffff, ae::machine::Taito8080::invaders_layout),
+	Taito8080(0x3ffff /*, ae::machine::Taito8080::invaders_layout*/),
 	ships("Ships"),
 	extraShip("Extra ship"),
 	coinInfo("Coin Info")
@@ -42,12 +44,12 @@ const uint8_t ae::machine::SpaceInvaders::in1() {
 		port |= 0x40;
 	return port;
 }
-
+/*
 std::list<ae::IParameter*> ae::machine::SpaceInvaders::getParameters() const {
 	return { (ae::IParameter*)&ships,
 			 (ae::IParameter*)&extraShip,
 			 (ae::IParameter*)&coinInfo };
-}
+}*/
 
 void ae::machine::SpaceInvaders::out(const uint8_t port, const uint8_t value) {
 	if (port == 3) {

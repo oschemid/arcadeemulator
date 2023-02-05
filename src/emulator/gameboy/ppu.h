@@ -1,7 +1,9 @@
 #pragma once
 #include "types.h"
-#include "../../display/rasterdisplay.h"
+//#include "../../display/rasterdisplay.h"
 #include "xprocessors.h"
+#include "../gui/vulkan/engine.h"
+
 
 
 namespace ae::gameboy {
@@ -53,7 +55,11 @@ namespace ae::gameboy {
 		} _fetcher;
 		bool _fetcher_stopped;
 		uint8_t _nextsprite;
-		display::RasterDisplay _display;
+
+		ae::gui::RasterDisplay* _raster;
+		uint32_t* _src;
+//		display::RasterDisplay _display;
+		
 		uint8_t _dmatransfer;
 		uint16_t _dmaaddress;
 
@@ -74,6 +80,7 @@ namespace ae::gameboy {
 	public:
 		Ppu();
 
+		void init(ae::gui::RasterDisplay* raster) { _raster = raster; }
 		uint8_t executeOne() override;
 		bool reset(const uint16_t = 0) override { return true; }
 		bool interrupt(const uint8_t) override { return true; }

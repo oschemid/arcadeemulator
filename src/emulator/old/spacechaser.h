@@ -28,12 +28,10 @@ namespace ae
 			const uint8_t read_colorram(const uint16_t);
 			bool write_colorram(const uint16_t, const uint8_t);
 		public:
-			const string getName() const override { return "Space Chaser (CV)"; }
-			const string getID() const override { return "SpaceChaserCV"; }
-			const string getDescription() const override { return "1979 Taito"; }
-			std::list<ae::IParameter*> getParameters() const override;
+//			std::list<ae::IParameter*> getParameters() const override;
 
-			bool init() override;
+			void init() override;
+//			MachineRequirements getRequirements() const override;
 			SpaceChaserCV();
 			virtual ~SpaceChaserCV() = default;
 		};

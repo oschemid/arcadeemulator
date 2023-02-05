@@ -1,13 +1,8 @@
 #include "display.h"
-#include "rasterdisplay.h"
 #include <SDL2/SDL.h>
 #include "../ui/ui.h"
 
 using namespace ae;
-
-Display* Display::create() {
-	return new display::RasterDisplay();
-}
 
 Layout::Layout() :
 	_texture(nullptr) {

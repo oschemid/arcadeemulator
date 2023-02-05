@@ -4,6 +4,8 @@
 #include <cstdint>
 #include <functional>
 #include <fstream>
+#include "nlohmann/json.hpp"
+
 
 
 namespace ae {
@@ -11,6 +13,7 @@ namespace ae {
 	using std::uint8_t;
 	using std::uint16_t;
 	using std::size_t;
+	using json = nlohmann::json;
 
 	typedef std::function<uint8_t(const uint8_t)> fnuint8_t;
 

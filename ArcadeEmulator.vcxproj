@@ -79,12 +79,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <LibraryPath>$(LibraryPath)</LibraryPath>
-    <IncludePath>$(ProjectDir)libraries/xos-processors/include;$(ProjectDir)src\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)libraries/VulkanMemoryAllocator-Hpp/include;$(ProjectDir)libraries/xos-processors/include;$(ProjectDir)src\include;$(VULKAN_SDK)\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <LibraryPath>$(LibraryPath)</LibraryPath>
-    <IncludePath>$(ProjectDir)libraries/xos-processors/include;$(ProjectDir)src\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)libraries/VulkanMemoryAllocator-Hpp/include;$(ProjectDir)libraries/xos-processors/include;$(ProjectDir)src\include;$(VULKAN_SDK)\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -125,8 +125,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2maind.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(VcpkgRoot)\installed\$(VcpkgTriplet)\debug\lib\manual-link\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2maind.lib;%(AdditionalDependencies);vulkan-1.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(VcpkgRoot)\installed\$(VcpkgTriplet)\debug\lib\manual-link\;%(AdditionalLibraryDirectories);$(VULKAN_SDK)/Lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -144,8 +144,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(VcpkgRoot)\installed\$(VcpkgTriplet)\lib\manual-link\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2main.lib;%(AdditionalDependencies);vulkan-1.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(VcpkgRoot)\installed\$(VcpkgTriplet)\lib\manual-link\;%(AdditionalLibraryDirectories);$(VULKAN_SDK)/Lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -158,27 +158,30 @@
     <ClCompile Include="libraries\xos-processors\src\z80family\z80opcodes.cpp" />
     <ClCompile Include="libraries\xos-processors\src\z80family\z80opcodes_cb.cpp" />
     <ClCompile Include="libraries\xos-processors\src\z80family\z80opcodes_ed.cpp" />
-    <ClCompile Include="src\display\display.cpp" />
-    <ClCompile Include="src\machine\gameboy\channel.cpp" />
-    <ClCompile Include="src\machine\gameboy\mmu.cpp" />
-    <ClCompile Include="src\machine\gameboy\ppu.cpp" />
-    <ClCompile Include="src\display\rasterdisplay.cpp" />
-    <ClCompile Include="src\emulator\sound.cpp" />
-    <ClCompile Include="src\machine\gameboy\apu.cpp" />
-    <ClCompile Include="src\machine\gameboy\gameboy.cpp" />
-    <ClCompile Include="src\machine\gameboy\mbc.cpp" />
-    <ClCompile Include="src\machine\machine.cpp" />
-    <ClCompile Include="src\machine\pacman.cpp" />
-    <ClCompile Include="src\machine\spacechaser.cpp" />
-    <ClCompile Include="src\machine\spaceinvaders.cpp" />
-    <ClCompile Include="src\machine\taito8080.cpp" />
+    <ClCompile Include="src\emulator\emulator.cpp" />
+    <ClCompile Include="src\gui\vulkan\engine.cpp" />
+    <ClCompile Include="src\gui\gui.cpp" />
+    <ClCompile Include="src\gui\vulkan\stbi.cpp" />
+    <ClCompile Include="src\gui\vulkan\texture.cpp" />
+    <ClCompile Include="src\gui\vulkan\vma.cpp" />
+    <ClCompile Include="src\gui\widgets.cpp" />
+    <ClCompile Include="src\gui\window.cpp" />
+    <ClCompile Include="src\emulator\taito8080\taito8080.cpp" />
+    <ClCompile Include="src\settings\consoles.cpp" />
+    <ClCompile Include="src\settings\library.cpp" />
+    <ClCompile Include="src\emulator\gameboy\channel.cpp" />
+    <ClCompile Include="src\emulator\gameboy\mmu.cpp" />
+    <ClCompile Include="src\emulator\gameboy\ppu.cpp" />
+    <ClCompile Include="src\sound\sound.cpp" />
+    <ClCompile Include="src\emulator\gameboy\apu.cpp" />
+    <ClCompile Include="src\emulator\gameboy\gameboy.cpp" />
+    <ClCompile Include="src\emulator\gameboy\mbc.cpp" />
+    <ClCompile Include="src\emulator\old\pacman.cpp" />
+    <ClCompile Include="src\emulator\old\spacechaser.cpp" />
+    <ClCompile Include="src\emulator\old\spaceinvaders.cpp" />
+    <ClCompile Include="src\emulator\old\taito8080o.cpp" />
     <ClCompile Include="src\memory\memory.cpp" />
     <ClCompile Include="src\tools\file.cpp" />
-    <ClCompile Include="src\ui\gameselection.cpp" />
-    <ClCompile Include="src\ui\gamesettings.cpp" />
-    <ClCompile Include="src\ui\interface.cpp" />
-    <ClCompile Include="src\ui\menu.cpp" />
-    <ClCompile Include="src\ui\ui.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="libraries\xos-processors\include\xprocessors.h" />
@@ -190,28 +193,35 @@
     <ClInclude Include="libraries\xos-processors\src\z80family\opcodes_cb.h" />
     <ClInclude Include="libraries\xos-processors\src\z80family\states.h" />
     <ClInclude Include="libraries\xos-processors\src\z80family\z80.h" />
-    <ClInclude Include="src\machine\gameboy\apu.h" />
-    <ClInclude Include="src\machine\gameboy\channel.h" />
-    <ClInclude Include="src\machine\gameboy\mmu.h" />
-    <ClInclude Include="src\machine\gameboy\ppu.h" />
-    <ClInclude Include="src\display\rasterdisplay.h" />
-    <ClInclude Include="src\emulator\sound.h" />
+    <ClInclude Include="src\emulator\registry.h" />
+    <ClInclude Include="src\gui\vulkan\engine.h" />
+    <ClInclude Include="src\gui\gui.h" />
+    <ClInclude Include="src\gui\widgets.h" />
+    <ClInclude Include="src\emulator\taito8080\taito8080.h" />
+    <ClInclude Include="src\include\emulator.h" />
+    <ClInclude Include="src\settings\console.h" />
+    <ClInclude Include="src\settings\library.h" />
+    <ClInclude Include="src\emulator\gameboy\apu.h" />
+    <ClInclude Include="src\emulator\gameboy\channel.h" />
+    <ClInclude Include="src\emulator\gameboy\mmu.h" />
+    <ClInclude Include="src\emulator\gameboy\ppu.h" />
+    <ClInclude Include="src\sound\sound.h" />
     <ClInclude Include="src\include\display.h" />
     <ClInclude Include="src\include\machine.h" />
     <ClInclude Include="src\include\memory.h" />
     <ClInclude Include="src\include\dipswitch.h" />
     <ClInclude Include="src\include\types.h" />
-    <ClInclude Include="src\machine\gameboy\gameboy.h" />
-    <ClInclude Include="src\machine\gameboy\mbc.h" />
-    <ClInclude Include="src\machine\pacman.h" />
-    <ClInclude Include="src\machine\spacechaser.h" />
-    <ClInclude Include="src\machine\spaceinvaders.h" />
-    <ClInclude Include="src\machine\taito8080.h" />
-    <ClInclude Include="src\ui\nuklear_sdl_renderer.h" />
-    <ClInclude Include="src\ui\ui.h" />
+    <ClInclude Include="src\emulator\gameboy\gameboy.h" />
+    <ClInclude Include="src\emulator\gameboy\mbc.h" />
+    <ClInclude Include="src\emulator\old\pacman.h" />
+    <ClInclude Include="src\emulator\old\spacechaser.h" />
+    <ClInclude Include="src\emulator\old\spaceinvaders.h" />
+    <ClInclude Include="src\emulator\old\taito8080.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
+    <None Include="data\consoles.json" />
+    <None Include="data\library.json" />
     <None Include="docs\cpu\8080-Programmers-Manual.pdf" />
     <None Include="docs\cpu\z80-documented.pdf" />
     <None Include="docs\cpu\Z80-User-Manual.pdf" />
@@ -226,6 +236,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </Xsd>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\Downloads\tetris-pal-e171136.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

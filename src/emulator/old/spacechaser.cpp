@@ -1,6 +1,8 @@
 #include "spacechaser.h"
 #include "SDL2/SDL.h"
+#include "../registry.h"
 
+static ae::emulator::RegistryHandler reg("spacechasercv", [] { return std::make_unique<ae::machine::SpaceChaserCV>(); });
 
 ae::machine::SpaceChaserCV::SpaceChaserCV() :
 	Taito8080(0x5fff),
@@ -14,10 +16,10 @@ ae::machine::SpaceChaserCV::SpaceChaserCV() :
 	difficulty.addAlias(1, "Hard");
 }
 
-std::list<ae::IParameter*> ae::machine::SpaceChaserCV::getParameters() const {
-	return { (ae::IParameter*)&ships,
-			 (ae::IParameter*)&difficulty };
-}
+//std::list<ae::IParameter*> ae::machine::SpaceChaserCV::getParameters() const {
+//	return { (ae::IParameter*)&ships,
+//			 (ae::IParameter*)&difficulty };
+//}
 
 const uint8_t ae::machine::SpaceChaserCV::in2() {
 	uint8_t port = 0b00000000;
@@ -101,7 +103,14 @@ void ae::machine::SpaceChaserCV::loadMemory() {
 	memory->load(0x4000, "roms/spacechaser/schasercv/9");
 	memory->load(0x4400, "roms/spacechaser/schasercv/10");
 }
-
+/*
+ae::MachineRequirements ae::machine::SpaceChaserCV::getRequirements() const
+{
+	return ae::MachineRequirements{
+		.display = {.type = ae::MachineDisplayType::RASTER, .width = 224, .height = 256 }
+	};
+}
+*/
 const uint8_t ae::machine::SpaceChaserCV::read_colorram(const uint16_t p) {
 	uint16_t offset = p - 0xC400;
 	return colorram->read((offset & 0x1f) | ((offset & 0x1f80) >> 2));
@@ -110,7 +119,7 @@ bool ae::machine::SpaceChaserCV::write_colorram(const uint16_t p, const uint8_t 
 	uint16_t offset = p - 0xC400;
 	return colorram->write((offset & 0x1f) | ((offset & 0x1f80) >> 2), v);
 }
-bool ae::machine::SpaceChaserCV::init() {
+void ae::machine::SpaceChaserCV::init() {
 	ae::machine::Taito8080::init();
 
 	if (!colorram) {
@@ -120,7 +129,6 @@ bool ae::machine::SpaceChaserCV::init() {
 
 	cpu->read([this](const uint16_t p) { return (p < 0x6000) ? memory->read(p) : this->read_colorram(p); });
 	cpu->write([this](const uint16_t p, const uint8_t v) { return (p < 0x6000) ? memory->write(p, v) : this->write_colorram(p, v); });
-	return true;
 }
 
 void ae::machine::SpaceChaserCV::updateDisplay(uint32_t* pixels) {
@@ -131,17 +139,17 @@ void ae::machine::SpaceChaserCV::updateDisplay(uint32_t* pixels) {
 			uint8_t VRAMByte = memory->read(0x2400 + offset);
 			uint8_t color = colorram->read((offset & 0x1f) | ((offset & 0x1f80) >> 2)) & 0x07;
 			for (int bit = 0; bit < 8; bit++) {
-				ColorToDraw = 0xff0000ff;
+				ColorToDraw = 0xffff0000;
 				if (((VRAMByte >> bit) & 1)) {
 					switch (color) {
 					case 0:
-						ColorToDraw = 0x008080ff;
+						ColorToDraw = 0x00ff8080;
 						break;
 					case 1:
-						ColorToDraw = 0xffff0000;
+						ColorToDraw = 0xff0000ff;
 						break;
 					case 2:
-						ColorToDraw = 0xff0000ff;
+						ColorToDraw = 0xffff0000;
 						break;
 					case 3:
 						ColorToDraw = 0xffff00ff;
@@ -150,10 +158,10 @@ void ae::machine::SpaceChaserCV::updateDisplay(uint32_t* pixels) {
 						ColorToDraw = 0xff00ff00;
 						break;
 					case 5:
-						ColorToDraw = 0xffffff00;
+						ColorToDraw = 0xff00ffff;
 						break;
 					case 6:
-						ColorToDraw = 0xff00ffff;
+						ColorToDraw = 0xffffff00;
 						break;
 					case 7:
 						ColorToDraw = 0xffffffff;

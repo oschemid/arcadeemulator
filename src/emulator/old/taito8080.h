@@ -1,18 +1,19 @@
 #pragma once
 
 #include "types.h"
-#include "machine.h"
+#include "emulator.h"
 
 #include "memory.h"
 #include "xprocessors.h"
 #include "display.h"
+#include "../../gui/widgets.h"
 
 
 namespace ae
 {
 	namespace machine
 	{
-		class Taito8080 : public IMachine
+		class Taito8080 : public emulator::Emulator
 		{
 		public:
 			static const ae::Layout::zones invaders_layout;
@@ -27,10 +28,12 @@ namespace ae
 			virtual const uint8_t in(const uint8_t) = 0;
 			virtual void out(const uint8_t, const uint8_t);
 
+			ae::gui::RasterDisplay* _raster;
+			uint32_t* _src;
+
 		public:
 			ae::IMemory* memory;
-			xprocessors::Cpu* cpu;
-			ae::Display* display;
+			xprocessors::UCpu cpu;
 			ae::Layout* layout;
 			ae::Layout::zones _zones;
 
@@ -39,8 +42,10 @@ namespace ae
 					  const ae::Layout::zones = {});
 			virtual ~Taito8080() = default;
 
-			bool init() override;
-			bool run() override;
+			emulator::SystemInfo getSystemInfo() const override;
+			void init() override;
+			void load(const json&) override {}
+			void run(ae::gui::RasterDisplay*) override;
 		};
 	}
 }

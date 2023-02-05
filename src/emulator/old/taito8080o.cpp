@@ -4,21 +4,19 @@
 #include "time.h"
 #include <iostream>
 #include "SDL2/SDL.h"
-#include "../ui/ui.h"
-
+/*
 const ae::Layout::zones ae::machine::Taito8080::invaders_layout = {
 		{{255,255,255}, {0,0,224,260}},
 		{{32, 255, 32}, {0,184,224,240}},
 		{{32,255,32}, {16,240,134,260}},
 		{{255,32,32}, {0,32,224,62}}
 };
-
+*/
 
 ae::machine::Taito8080::Taito8080(const size_t memSize,
 								  const ae::Layout::zones zones) :
 	memory(nullptr),
 	cpu(nullptr),
-	display(nullptr),
 	layout(nullptr),
 	shift0(0),
 	shift1(0),
@@ -26,6 +24,13 @@ ae::machine::Taito8080::Taito8080(const size_t memSize,
 	_zones(zones),
 	shift_offset(0)
 {
+}
+
+ae::emulator::SystemInfo ae::machine::Taito8080::getSystemInfo() const
+{
+	return ae::emulator::SystemInfo{
+		.geometry = {.width = 224, .height = 288}
+	};
 }
 
 void ae::machine::Taito8080::out(const uint8_t port, const uint8_t value) {
@@ -41,21 +46,22 @@ void ae::machine::Taito8080::out(const uint8_t port, const uint8_t value) {
 	}
 }
 
-bool ae::machine::Taito8080::init()
+void ae::machine::Taito8080::init()
 {
-	if (!display) {
-		display = Display::create();
-		display->setSize(224, 256);
-		display->registerCallback([this](uint32_t* p) { return this->updateDisplay(p); });
-		display->init();
-	}
-	if ((!layout) && (_zones.size() > 0)) {
+	//if (!display) {
+	//	display = Display::create();
+	//	display->setSize(224, 256);
+	//	display->registerCallback([this](uint32_t* p) { return this->updateDisplay(p); });
+	//	display->init();
+	//}
+	_src = new uint32_t[224 * 256];
+/*	if ((!layout) && (_zones.size() > 0)) {
 		layout = Layout::create();
 		layout->setSize(224, 256);
 		layout->setZones(_zones);
 		layout->init();
 	}
-
+	*/
 	cpu = xprocessors::Cpu::create("i8080");
 	memory = newMemory(_memorySize);
 	loadMemory();
@@ -64,7 +70,6 @@ bool ae::machine::Taito8080::init()
 	cpu->out([this](const uint8_t p, const uint8_t v) { out(p, v); });
 	cpu->read([this](const uint16_t p) { return memory->read(p); });
 	cpu->write([this](const uint16_t p, const uint8_t v) { return memory->write(p, v); });
-	return true;
 }
 
 uint64_t getNanoSeconds(std::chrono::time_point<std::chrono::high_resolution_clock>* start) {
@@ -94,8 +99,10 @@ void ae::machine::Taito8080::updateDisplay(uint32_t* pixels) {
 	}
 }
 
-bool ae::machine::Taito8080::run()
+void ae::machine::Taito8080::run(ae::gui::RasterDisplay* raster)
 {
+	_raster = raster;
+
 	auto StartTime = std::chrono::high_resolution_clock::now();
 
 	uint64_t CurrentTime = 0;
@@ -131,20 +138,21 @@ bool ae::machine::Taito8080::run()
 
 			bool interrupt = false;
 			if (DrawFull) {
-				SDL_Renderer* renderer = ae::ui::getRenderer();
-				SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-				SDL_RenderClear(renderer);
+				//SDL_Renderer* renderer = ae::ui::getRenderer();
+				//SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+				//SDL_RenderClear(renderer);
 
-				SDL_Rect rect;
-				rect.x = 512 - 224;
-				rect.y = 384 - 256;
-				rect.w = 224 * 2;
-				rect.h = 256 * 2;
-
-				display->update(rect);
-				if (layout)
-					layout->update(rect);
-				SDL_RenderPresent(renderer);
+				//SDL_Rect rect;
+				//rect.x = 512 - 224;
+				//rect.y = 384 - 256;
+				//rect.w = 224 * 2;
+				//rect.h = 256 * 2;
+				updateDisplay(_src);
+//				display->update(rect);
+//				if (layout)
+//					layout->update(rect);
+				_raster->refresh((uint8_t*)_src);
+//				SDL_RenderPresent(renderer);
 				interrupt = cpu->interrupt(2);
 			}
 			else
@@ -156,7 +164,7 @@ bool ae::machine::Taito8080::run()
 			while (SDL_PollEvent(&ev)) {
 			}
 			if (Keyboard[SDL_SCANCODE_ESCAPE]) {
-				return true;
+				return;
 			}
 		}
 	}

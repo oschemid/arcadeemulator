@@ -4,7 +4,10 @@
 #include "time.h"
 #include <iostream>
 #include "SDL2/SDL.h"
-#include "../ui/ui.h"
+#include "../registry.h"
+
+
+static ae::emulator::RegistryHandler reg("gameboy", [] { return std::make_unique<ae::gameboy::Gameboy>(); });
 
 
 ae::gameboy::Gameboy::Gameboy() :
@@ -12,11 +15,22 @@ ae::gameboy::Gameboy::Gameboy() :
 {
 }
 
-bool ae::gameboy::Gameboy::init()
+ae::emulator::SystemInfo ae::gameboy::Gameboy::getSystemInfo() const
+{
+	return ae::emulator::SystemInfo{
+		.geometry = {.width = 160, .height = 144}
+	};
+}
+
+void ae::gameboy::Gameboy::init()
 {
 	cpu = xprocessors::Cpu::create("lr35902");
 	_bootrom = std::make_shared<BootRom>(string("roms/gameboy/bootroms/dmg_rom.bin"));
-	_cartridge = std::shared_ptr<Mbc>(Mbc::create("roms/gameboy/tetris.gb"));
+}
+
+void ae::gameboy::Gameboy::load(const json& game)
+{
+	_cartridge = std::shared_ptr<Mbc>(Mbc::create(game.at("cartridge")));
 	_mmu = std::make_unique<Mmu>(_bootrom, _cartridge);
 	_mmu->registerIoCallback([this](const uint8_t io, const uint8_t v) { _apu.callback(io, v); });
 
@@ -28,14 +42,14 @@ bool ae::gameboy::Gameboy::init()
 	_apu.out([this](const uint8_t p, const uint8_t v) { return _mmu->out(p, v, Mmu::origin::apu); });
 
 	_apu.init();
-	return true;
 }
-
 
 extern uint64_t getNanoSeconds(std::chrono::time_point<std::chrono::high_resolution_clock>* start);
 
-bool ae::gameboy::Gameboy::run()
+void ae::gameboy::Gameboy::run(ae::gui::RasterDisplay* raster)
 {
+	_ppu.init(raster);
+
 	auto StartTime = std::chrono::high_resolution_clock::now();
 
 	uint64_t CurrentTime = 0;
@@ -79,7 +93,7 @@ bool ae::gameboy::Gameboy::run()
 				_ppu.switchDisplayVram();
 			}
 			if (Keyboard[SDL_SCANCODE_ESCAPE]) {
-				return true;
+				return;
 			}
 		}
 	}

@@ -1,5 +1,4 @@
 #include "ppu.h"
-#include "../ui/ui.h"
 
 
 using namespace ae::gameboy;
@@ -36,29 +35,26 @@ Ppu::Ppu() :
 	_lx(0),
 	_dots(0),
 	_mode(OAMSEARCH),
-	_display(),
 	displayVram(false),
 	_dmatransfer(0),
 	_oamobject_count(0)
 {
-	_display.setSize(160, 144);
-	_display.registerCallback([](uint32_t*) { return; });
-	_display.init();
+	_src = new uint32_t[160 * 144];
 }
 
 void Ppu::pixel(const uint8_t x, const uint8_t y, const uint8_t c) {
 	switch (c) {
 	case 0x00:
-		_display.setPixel(x, y, 0x009bbc0f);
+		_src[x + 160 * y] = 0xff0fbc9b;
 		break;
 	case 0x01:
-		_display.setPixel(x, y, 0x008bac0f);
+		_src[x + 160 * y] = 0xff0fac8b;
 		break;
 	case 0x02:
-		_display.setPixel(x, y, 0x00306230);
+		_src[x + 160 * y] = 0xff306230;
 		break;
 	case 0x03:
-		_display.setPixel(x, y, 0x000f380f);
+		_src[x + 160 * y] = 0xff0f380f;
 		break;
 	}
 }
@@ -166,7 +162,7 @@ uint8_t Ppu::executeOne() {
 				}
 				if (!is_lcdc_on()) {
 					if (_lx < 160) {
-						_display.setPixel(_lx++, _get_ly(), 0x00000000);
+						_src[_get_ly() * 160 + _lx++] = 0;
 					}
 				}
 				else {
@@ -218,15 +214,6 @@ void Ppu::switchDisplayVram() {
 }
 
 void Ppu::draw() {
-	SDL_Renderer* renderer = ae::ui::getRenderer();
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-	SDL_RenderClear(renderer);
-
-	SDL_Rect rect;
-	rect.x = 512 - 320;
-	rect.y = 384 - 288;
-	rect.w = 320 * 2;
-	rect.h = 288 * 2;
 	if (displayVram) {
 		uint16_t address = 0x8000;
 		for (uint16_t tile = 0; tile < 60; tile++) {
@@ -251,7 +238,7 @@ void Ppu::draw() {
 						truecolor = 0x000000FF;
 						break;
 					}
-					_display.setPixel(x++, y, truecolor);
+					_src[y * 160 + x++] = truecolor;
 				}
 				y++;
 				x -= 8;
@@ -259,7 +246,5 @@ void Ppu::draw() {
 		}
 	}
 
-	_display.update(rect);
-
-	SDL_RenderPresent(renderer);
+	_raster->refresh((uint8_t*)_src);
 }

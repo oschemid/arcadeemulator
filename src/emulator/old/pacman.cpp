@@ -4,13 +4,14 @@
 #include "time.h"
 #include <iostream>
 #include "SDL2/SDL.h"
-#include "../ui/ui.h"
+#include "../registry.h"
+
+static ae::emulator::RegistryHandler reg("pacman", [] { return std::make_unique<ae::machine::Pacman>(); });
 
 
 ae::machine::Pacman::Pacman() :
 	memory(nullptr),
 	cpu(nullptr),
-	display(nullptr),
 	interrupt_enabled(false),
 	sound_enabled(false),
 	flip_screen(false),
@@ -45,6 +46,13 @@ ae::machine::Pacman::Pacman() :
 	rackadvance.addAlias(0, "On");
 	rackadvance.addAlias(1, "Off");
 	rackadvance.setValue(1);
+}
+
+ae::emulator::SystemInfo ae::machine::Pacman::getSystemInfo() const
+{
+	return ae::emulator::SystemInfo{
+		.geometry = {.width = 224, .height = 288}
+	};
 }
 
 uint8_t ae::machine::Pacman::readMemory(const uint16_t p) const {
@@ -140,14 +148,9 @@ bool ae::machine::Pacman::writeMemory(const uint16_t p, const uint8_t v) {
 	}
 	return true;
 }
-bool ae::machine::Pacman::init()
+void ae::machine::Pacman::init()
 {
-	if (!display) {
-		display = Display::create();
-		display->setSize(224, 288);
-		display->registerCallback([this](uint32_t* p) { return this->updateDisplay(p); });
-		display->init();
-	}
+	_src = new uint32_t[224 * 288];
 
 	cpu = xprocessors::Cpu::create("Z80");
 	memory = newMemory(0x5000);
@@ -205,7 +208,8 @@ bool ae::machine::Pacman::init()
 	cpu->out([this](const uint8_t p, const uint8_t v) { if (p == 0) interrupt_vector = v; return; });
 	cpu->read([this](const uint16_t p) { return this->readMemory(p); });
 	cpu->write([this](const uint16_t p, const uint8_t v) { return this->writeMemory(p, v); });
-	return true;
+
+	StartTime = std::chrono::high_resolution_clock::now();
 }
 
 
@@ -215,7 +219,8 @@ void ae::machine::Pacman::load_palettes() {
 		uint8_t r = (data & 1) * 0x21 + ((data >> 1) & 1) * 0x47 + ((data >> 2) & 1) * 0x97;
 		uint8_t g = ((data >> 3) & 1) * 0x21 + ((data >> 4) & 1) * 0x47 + ((data >> 5) & 1) * 0x97;
 		uint8_t b = ((data >> 6) & 1) * 0x51 + ((data >> 7) & 1) * 0xae;
-		colors[i] = 0xff000000 | (r << 16) | (g << 8) | b;
+		colors[i] = 0xff000000 | (b << 16) | (g << 8) | r;
+		//colors[i] = (r << 24) | (g << 16) | (b << 8) | 0xff;
 	}
 }
 
@@ -270,8 +275,8 @@ void ae::machine::Pacman::draw_sprite(uint32_t* pixels,
 }
 void ae::machine::Pacman::updateDisplay(uint32_t* pixels) {
 	uint16_t address = 0x4002;
-	uint16_t x;
-	uint16_t y;
+	uint16_t x=2;
+	uint16_t y=5;
 
 	// bottom of screen
 	for (uint16_t i = 0; i < 56; ++i) {
@@ -313,20 +318,12 @@ void ae::machine::Pacman::updateDisplay(uint32_t* pixels) {
 
 extern uint64_t getNanoSeconds(std::chrono::time_point<std::chrono::high_resolution_clock>* start);
 
-bool ae::machine::Pacman::run()
+void ae::machine::Pacman::run(ae::gui::RasterDisplay* raster)
 {
-	auto StartTime = std::chrono::high_resolution_clock::now();
+	_raster = raster;
 
+//	auto StartTime = std::chrono::high_resolution_clock::now();
 	uint64_t CurrentTime = 0;
-	uint64_t LastDraw = 0;
-	uint8_t DrawFull = 0;
-	uint64_t LastInput = 0;
-	uint64_t LastThrottle = 0;
-	uint64_t LastDisplay = 0;
-	uint32_t ClocksPerMS = 3720;
-	uint64_t ClockCompensation = 0;
-	uint64_t ClockCount = 0;
-	SDL_Event ev;
 
 	const uint8_t* Keyboard = SDL_GetKeyboardState(NULL);
 
@@ -361,25 +358,27 @@ bool ae::machine::Pacman::run()
 			while (SDL_PollEvent(&ev)) {
 			}
 			if (Keyboard[SDL_SCANCODE_ESCAPE]) {
-				return true;
+				return;
 			}
 		}
 	}
 }
 
 void ae::machine::Pacman::draw() {
-	SDL_Renderer* renderer = ae::ui::getRenderer();
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-	SDL_RenderClear(renderer);
+//	SDL_Renderer* renderer = _window->getRenderer();
+//	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+//	SDL_RenderClear(renderer);
 
-	SDL_Rect rect;
-	rect.x = 512 - 224;
-	rect.y = 384 - 288;
-	rect.w = 224 * 2;
-	rect.h = 288 * 2;
+//	SDL_Rect rect;
+//	rect.x = 0;
+//	rect.y = 0;
+//	rect.w = 224 * 2;
+//	rect.h = 288 * 2;
 
-	display->update(rect);
-	SDL_RenderPresent(renderer);
+//	display->update(rect);
+//	SDL_RenderPresent(renderer);
+	updateDisplay(_src);
+	_raster->refresh((uint8_t*)_src);
 }
 
 void ae::machine::Pacman::loadMemory() {

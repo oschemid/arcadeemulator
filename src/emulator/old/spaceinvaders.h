@@ -6,7 +6,7 @@
 #include "dipswitch.h"
 #include "memory.h"
 #include "xprocessors.h"
-#include "../emulator/sound.h"
+#include "../sound/sound.h"
 
 
 namespace ae
@@ -33,7 +33,7 @@ namespace ae
 			SpaceInvaders();
 			virtual ~SpaceInvaders() = default;
 
-			std::list<ae::IParameter*> getParameters() const override;
+//			std::list<ae::IParameter*> getParameters() const override;
 		};
 		class SpaceInvadersMidway : public SpaceInvaders
 		{
@@ -41,10 +41,6 @@ namespace ae
 			void loadMemory() override;
 
 		public:
-			const string getName() const override { return "Space Invaders (Midway)"; }
-			const string getID() const override { return "SpaceInvadersMidway"; }
-			const string getDescription() const override { return "1978 Taito"; }
-
 			SpaceInvadersMidway();
 			virtual ~SpaceInvadersMidway() = default;
 		};
@@ -56,10 +52,6 @@ namespace ae
 			virtual const uint8_t in2() override;
 
 		public:
-			const string getName() const override { return "Space Invaders (TV)"; }
-			const string getID() const override { return "SpaceInvadersTV"; }
-			const string getDescription() const override { return "1978 Taito"; }
-
 			SpaceInvadersTV();
 			virtual ~SpaceInvadersTV() = default;
 		};

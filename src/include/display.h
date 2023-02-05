@@ -16,7 +16,7 @@ namespace ae
 		virtual bool registerCallback(updatefn) = 0;
 
 		virtual bool setPixel(const uint16_t, const uint16_t, const uint32_t) = 0;
-		virtual bool init() = 0;
+		virtual bool init(SDL_Renderer* = nullptr) = 0;
 		virtual bool update(const SDL_Rect) = 0;
 
 	public:

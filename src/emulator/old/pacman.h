@@ -1,19 +1,20 @@
 #pragma once
 
 #include "types.h"
-#include "machine.h"
+#include "emulator.h"
 
 #include "memory.h"
 #include "xprocessors.h"
 #include "display.h"
 #include "dipswitch.h"
+#include "../gui/vulkan/engine.h"
 
 
 namespace ae
 {
 	namespace machine
 	{
-		class Pacman : public IMachine
+		class Pacman : public emulator::Emulator
 		{
 		protected:
 			DIPSwitch<2> coinage;
@@ -40,6 +41,22 @@ namespace ae
 			uint8_t interrupt_vector;
 			bool sound_enabled;
 			bool flip_screen;
+
+			ae::gui::RasterDisplay* _raster;
+			uint32_t* _src;
+
+			std::chrono::steady_clock::time_point StartTime;
+
+			uint64_t LastDraw = 0;
+			uint8_t DrawFull = 0;
+			uint64_t LastInput = 0;
+			uint64_t LastThrottle = 0;
+			uint64_t LastDisplay = 0;
+			uint32_t ClocksPerMS = 3720;
+			uint64_t ClockCompensation = 0;
+			uint64_t ClockCount = 0;
+			SDL_Event ev;
+
 		public:
 			ae::IMemory* memory;
 			ae::IMemory* videorom;
@@ -49,18 +66,14 @@ namespace ae
 			uint8_t* tiles;
 			uint8_t* sprites;
 			uint8_t* spritesxy;
-			xprocessors::Cpu* cpu;
-			ae::Display* display;
-
+			xprocessors::UCpu cpu;
 
 		public:
 			Pacman();
 			virtual ~Pacman() = default;
 
-			const string getName() const override { return "Pacman"; }
-			const string getID() const override { return "Pacman"; }
-			const string getDescription() const override { return "Namco"; }
-			std::list<ae::IParameter*> getParameters() const override {
+			emulator::SystemInfo getSystemInfo() const override;
+/*			std::list<ae::IParameter*> getParameters() const override {
 				return { (ae::IParameter*)&coinage,
 						 (ae::IParameter*)&lives,
 						 (ae::IParameter*)&bonus,
@@ -68,9 +81,10 @@ namespace ae
 						 (ae::IParameter*)&ghostname,
 						 (ae::IParameter*)&rackadvance };
 			}
-
-			bool init() override;
-			bool run() override;
+			*/
+			void init() override;
+			void load(const json&) override {}
+			void run(ae::gui::RasterDisplay*) override;
 		};
 	}
 }
