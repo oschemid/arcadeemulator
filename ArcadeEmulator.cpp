@@ -48,8 +48,7 @@ int main(int argc, char** argv)
 		if (gameselection.getSelected().title() != "") {
 			if (!si) {
 				si = ae::emulator::Emulator::create(sidebar.getSelected().id());
-				si->init();
-				si->load(gameselection.getSelected().settings());
+				si->init(gameselection.getSelected().settings());
 				ae::emulator::SystemInfo requirements = si->getSystemInfo();
 				raster = engine.getRasterDisplay();
 				raster->init(requirements.geometry.width, requirements.geometry.height);

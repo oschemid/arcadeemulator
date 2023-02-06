@@ -159,6 +159,8 @@
     <ClCompile Include="libraries\xos-processors\src\z80family\z80opcodes_cb.cpp" />
     <ClCompile Include="libraries\xos-processors\src\z80family\z80opcodes_ed.cpp" />
     <ClCompile Include="src\emulator\emulator.cpp" />
+    <ClCompile Include="src\emulator\taito8080\spacechaser.cpp" />
+    <ClCompile Include="src\emulator\taito8080\spaceinvaders.cpp" />
     <ClCompile Include="src\gui\vulkan\engine.cpp" />
     <ClCompile Include="src\gui\gui.cpp" />
     <ClCompile Include="src\gui\vulkan\stbi.cpp" />
@@ -177,9 +179,6 @@
     <ClCompile Include="src\emulator\gameboy\gameboy.cpp" />
     <ClCompile Include="src\emulator\gameboy\mbc.cpp" />
     <ClCompile Include="src\emulator\old\pacman.cpp" />
-    <ClCompile Include="src\emulator\old\spacechaser.cpp" />
-    <ClCompile Include="src\emulator\old\spaceinvaders.cpp" />
-    <ClCompile Include="src\emulator\old\taito8080o.cpp" />
     <ClCompile Include="src\memory\memory.cpp" />
     <ClCompile Include="src\tools\file.cpp" />
   </ItemGroup>
@@ -193,12 +192,14 @@
     <ClInclude Include="libraries\xos-processors\src\z80family\opcodes_cb.h" />
     <ClInclude Include="libraries\xos-processors\src\z80family\states.h" />
     <ClInclude Include="libraries\xos-processors\src\z80family\z80.h" />
-    <ClInclude Include="src\emulator\registry.h" />
+    <ClInclude Include="src\emulator\taito8080\spacechaser.h" />
+    <ClInclude Include="src\emulator\taito8080\spaceinvaders.h" />
     <ClInclude Include="src\gui\vulkan\engine.h" />
     <ClInclude Include="src\gui\gui.h" />
     <ClInclude Include="src\gui\widgets.h" />
     <ClInclude Include="src\emulator\taito8080\taito8080.h" />
     <ClInclude Include="src\include\emulator.h" />
+    <ClInclude Include="src\include\registry.h" />
     <ClInclude Include="src\settings\console.h" />
     <ClInclude Include="src\settings\library.h" />
     <ClInclude Include="src\emulator\gameboy\apu.h" />
@@ -214,9 +215,6 @@
     <ClInclude Include="src\emulator\gameboy\gameboy.h" />
     <ClInclude Include="src\emulator\gameboy\mbc.h" />
     <ClInclude Include="src\emulator\old\pacman.h" />
-    <ClInclude Include="src\emulator\old\spacechaser.h" />
-    <ClInclude Include="src\emulator\old\spaceinvaders.h" />
-    <ClInclude Include="src\emulator\old\taito8080.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
@@ -236,9 +234,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </Xsd>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="..\..\Downloads\tetris-pal-e171136.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

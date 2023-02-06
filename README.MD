@@ -7,6 +7,7 @@ Another Arcade Emulator
 - Space Invaders (Taito version and TV version)
 - Space Chaser (CV version)
 - Pacman
+- Gameboy Tetris
 
 ## License
 

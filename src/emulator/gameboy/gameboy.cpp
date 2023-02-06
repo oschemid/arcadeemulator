@@ -4,7 +4,6 @@
 #include "time.h"
 #include <iostream>
 #include "SDL2/SDL.h"
-#include "../registry.h"
 
 
 static ae::emulator::RegistryHandler reg("gameboy", [] { return std::make_unique<ae::gameboy::Gameboy>(); });
@@ -22,15 +21,11 @@ ae::emulator::SystemInfo ae::gameboy::Gameboy::getSystemInfo() const
 	};
 }
 
-void ae::gameboy::Gameboy::init()
+void ae::gameboy::Gameboy::init(const json& settings)
 {
 	cpu = xprocessors::Cpu::create("lr35902");
 	_bootrom = std::make_shared<BootRom>(string("roms/gameboy/bootroms/dmg_rom.bin"));
-}
-
-void ae::gameboy::Gameboy::load(const json& game)
-{
-	_cartridge = std::shared_ptr<Mbc>(Mbc::create(game.at("cartridge")));
+	_cartridge = std::shared_ptr<Mbc>(Mbc::create(settings.at("roms")));
 	_mmu = std::make_unique<Mmu>(_bootrom, _cartridge);
 	_mmu->registerIoCallback([this](const uint8_t io, const uint8_t v) { _apu.callback(io, v); });
 

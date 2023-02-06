@@ -17,6 +17,10 @@
   },
   {
     "id": "gameboy",
-    "name":  "Gameboy"
+    "name": "Gameboy"
+  },
+  {
+    "id": "taito8080",
+    "name": "Taito 8080"
   }
 ]

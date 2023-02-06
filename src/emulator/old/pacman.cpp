@@ -4,7 +4,7 @@
 #include "time.h"
 #include <iostream>
 #include "SDL2/SDL.h"
-#include "../registry.h"
+
 
 static ae::emulator::RegistryHandler reg("pacman", [] { return std::make_unique<ae::machine::Pacman>(); });
 
@@ -148,7 +148,7 @@ bool ae::machine::Pacman::writeMemory(const uint16_t p, const uint8_t v) {
 	}
 	return true;
 }
-void ae::machine::Pacman::init()
+void ae::machine::Pacman::init(const json&)
 {
 	_src = new uint32_t[224 * 288];
 

@@ -82,8 +82,7 @@ namespace ae
 						 (ae::IParameter*)&rackadvance };
 			}
 			*/
-			void init() override;
-			void load(const json&) override {}
+			void init(const json&) override;
 			void run(ae::gui::RasterDisplay*) override;
 		};
 	}
