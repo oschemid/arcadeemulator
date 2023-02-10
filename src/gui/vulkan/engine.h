@@ -61,14 +61,27 @@ namespace ae::gui {
 
 	protected:
 		Window* _window;
+
+		// Instance attributes
 		vk::Instance _instance;
+
+		// Gpu attributes
 		vk::PhysicalDevice _gpu;
+		uint32_t _graphicsQueueFamily;
+
+		// Device attributes
 		vk::Device _device;
+		vk::Queue _graphicsQueue;
+
+		// Memory Allocator attributes
 		vma::Allocator _allocator;
 
+		// SurfaceKHR attributes
 		vk::SurfaceKHR _surface;
-		uint32_t _queuefamily;
-		VkQueue _queue;
+		vk::SurfaceFormatKHR _surfaceFormat;
+
+
+
 		VkDescriptorPool _descriptorpool;
 
 		std::map<ImTextureID, Texture> _textures;
@@ -80,13 +93,13 @@ namespace ae::gui {
 		void selectGpu();
 		void createDevice();
 		void createAllocator();
+		void createSurfaceKHR();
 
 		void freeTexture(const Texture&);
 
 		void FrameRender(ImDrawData*);
 		void FramePresent();
 
-		uint32_t findGraphicsQueueFamily();
 		uint32_t findMemoryType(const uint32_t, const vk::MemoryPropertyFlags);
 	public:
 		Engine(Window*);

@@ -1,6 +1,5 @@
 #pragma once
 #include "types.h"
-//#include "../../display/rasterdisplay.h"
 #include "xprocessors.h"
 #include "../gui/vulkan/engine.h"
 
@@ -9,6 +8,13 @@
 namespace ae::gameboy {
 	class Ppu : public xprocessors::Cpu {
 	protected:
+		uint8_t* _vram;
+
+		struct Tile {
+			uint8_t id;
+			enum class Type { OBJ, BG, WND } type;
+		};
+
 		class Pixel_Fifo {
 		public:
 			struct Item {
@@ -45,7 +51,7 @@ namespace ae::gameboy {
 		struct {
 			uint8_t _cycle;
 			uint8_t _tile_count;
-			uint8_t _tile;
+			Tile _tile;
 			uint16_t _tile_address;
 			uint8_t _low;
 			uint8_t _high;
@@ -58,7 +64,6 @@ namespace ae::gameboy {
 
 		ae::gui::RasterDisplay* _raster;
 		uint32_t* _src;
-//		display::RasterDisplay _display;
 		
 		uint8_t _dmatransfer;
 		uint16_t _dmaaddress;
@@ -76,7 +81,9 @@ namespace ae::gameboy {
 
 		void draw();
 		void pixel(const uint8_t, const uint8_t, const uint8_t);
-		bool displayVram;
+
+		uint8_t getTileHigh(const Tile&, const uint8_t) const;
+		uint8_t getTileLow(const Tile&, const uint8_t) const;
 	public:
 		Ppu();
 
@@ -85,6 +92,7 @@ namespace ae::gameboy {
 		bool reset(const uint16_t = 0) override { return true; }
 		bool interrupt(const uint8_t) override { return true; }
 
-		void switchDisplayVram();
+		uint8_t readVRAM(const uint16_t p) { return _vram[p - 0x8000]; }
+		void writeVRAM(const uint16_t p, const uint8_t v) { _vram[p - 0x8000] = v; }
 	};
 }

@@ -28,6 +28,13 @@ void ae::gameboy::Gameboy::init(const json& settings)
 	_cartridge = std::shared_ptr<Mbc>(Mbc::create(settings.at("roms")));
 	_mmu = std::make_unique<Mmu>(_bootrom, _cartridge);
 	_mmu->registerIoCallback([this](const uint8_t io, const uint8_t v) { _apu.callback(io, v); });
+	_mmu->map(MemoryMap::REGISTER_SB, [this](const uint16_t p) { return _serial.in(p); },
+		[this](const uint16_t p, const uint8_t v) { _serial.out(p, v); });
+	_mmu->map(MemoryMap::REGISTER_SC, [this](const uint16_t p) { return _serial.in(p); },
+		[this](const uint16_t p, const uint8_t v) { _serial.out(p, v); });
+	_mmu->map(MemoryMap::VRAM, [this](const uint16_t p) { return _ppu.readVRAM(p); },
+		[this](const uint16_t p, const uint8_t v) { _ppu.writeVRAM(p, v); });
+	_serial.write([this](const uint16_t p, const uint8_t v) { return _mmu->write(p, v, Mmu::origin::cpu); });
 
 	cpu->read([this](const uint16_t p) { return _mmu->read(p, Mmu::origin::cpu); });
 	cpu->write([this](const uint16_t p, const uint8_t v) { return _mmu->write(p, v, Mmu::origin::cpu); });
@@ -73,6 +80,7 @@ void ae::gameboy::Gameboy::run(ae::gui::RasterDisplay* raster)
 					_mmu->tick();
 					_apu.tick();
 					_ppu.executeOne();
+					_serial.tick();
 				}
 			}
 		}
@@ -83,9 +91,6 @@ void ae::gameboy::Gameboy::run(ae::gui::RasterDisplay* raster)
 		if (CurrentTime - LastInput > 1000000000 / 30 || LastInput > CurrentTime) { // 30 Hz - Manage Events
 			LastInput = CurrentTime;
 			while (SDL_PollEvent(&ev)) {
-			}
-			if (Keyboard[SDL_SCANCODE_F1]) {
-				_ppu.switchDisplayVram();
 			}
 			if (Keyboard[SDL_SCANCODE_ESCAPE]) {
 				return;

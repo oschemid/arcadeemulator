@@ -8,12 +8,12 @@
   },
   {
     "id": "2",
-    "title": "pacman",
+    "title": "Pacman",
     "console": "pacman"
   },
   {
     "id": "3",
-    "title": "alleyway",
+    "title": "Alleyway",
     "console": "gameboy",
     "roms": "roms/gameboy/alleyway.gb",
     "cover": "roms/gameboy/alleyway.jpg"
@@ -46,5 +46,4 @@
       "difficulty": 0
     }
   }
-
 ]

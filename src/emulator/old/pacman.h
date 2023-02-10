@@ -5,7 +5,6 @@
 
 #include "memory.h"
 #include "xprocessors.h"
-#include "display.h"
 #include "dipswitch.h"
 #include "../gui/vulkan/engine.h"
 
@@ -66,7 +65,7 @@ namespace ae
 			uint8_t* tiles;
 			uint8_t* sprites;
 			uint8_t* spritesxy;
-			xprocessors::UCpu cpu;
+			xprocessors::Cpu::Ptr cpu;
 
 		public:
 			Pacman();

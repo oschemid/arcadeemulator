@@ -1,5 +1,6 @@
 #pragma once
 #include "types.h"
+#include "memorymap.h"
 #include "mbc.h"
 #include <functional>
 #include <vector>
@@ -35,6 +36,9 @@ namespace ae::gameboy {
 
 	class Mmu {
 	public:
+		using read_fn = std::function<uint8_t(const uint16_t)>;
+		using write_fn = std::function<void(const uint16_t, const uint8_t)>;
+
 		enum class origin {
 			cpu,
 			ppu,
@@ -43,9 +47,15 @@ namespace ae::gameboy {
 		void registerIoCallback(std::function<void(const uint8_t, const uint8_t)> cb) {
 			_io_callbacks.push_back(cb);
 		}
+		void map(MemoryMap, read_fn, write_fn);
 
 	protected:
 		std::vector< std::function<void(const uint8_t, const uint8_t)>> _io_callbacks;
+		read_fn _handlerReadVRAM;
+		write_fn _handlerWriteVRAM;
+		std::array<read_fn, 0x80> _handlerReadIO;
+		std::array<write_fn, 0x80> _handlerWriteIO;
+
 		void notify(const uint8_t, const uint8_t) const;
 		std::shared_ptr<BootRom> _bootrom;
 		std::shared_ptr<Mbc> _cartridge;

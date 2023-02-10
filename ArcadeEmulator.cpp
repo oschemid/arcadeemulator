@@ -38,7 +38,7 @@ int main(int argc, char** argv)
 	gui.init();
 	std::thread* t = nullptr;
 	bool done = false;
-	ae::emulator::UEmulator si = nullptr;
+	ae::emulator::Emulator::Ptr si = nullptr;
 	ae::gui::RasterDisplay* raster = nullptr;
 
 	while (!done)

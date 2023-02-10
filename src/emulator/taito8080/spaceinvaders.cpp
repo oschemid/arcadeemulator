@@ -91,14 +91,19 @@ void SpaceInvaders::updateDisplay(uint32_t* pixels)
 			uint8_t VRAMByte = read(0x2400 + (x << 5) + (y >> 3));
 
 			for (int bit = 0; bit < 8; bit++) {
-				ColorToDraw = 0x00000000;
-
-				if (((VRAMByte >> bit) & 1)) {
-					ColorToDraw = 0xffffffff;
-				}
-
 				uint8_t CoordX = x;
 				uint8_t CoordY = (256 - 1 - (y + bit));
+
+				ColorToDraw = 0x00000000;
+				if (((VRAMByte >> bit) & 1)) {
+					ColorToDraw = 0xffffffff;
+					if ((CoordY >= 32) && (CoordY < 62))
+						ColorToDraw = 0xff2020ff;
+					if ((CoordY >= 184) && (CoordY < 240))
+						ColorToDraw = 0xff20ff20;
+					if ((CoordY >= 240) && (CoordX >= 16) && (CoordX < 134))
+						ColorToDraw = 0xff20ff20;
+				}
 				pixels[CoordY * 224 + CoordX] = ColorToDraw;
 			}
 		}

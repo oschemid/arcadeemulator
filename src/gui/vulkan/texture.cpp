@@ -59,7 +59,7 @@ ImTextureID Engine::createTexture(const uint16_t width, const uint16_t height)
     vk::Sampler sampler = _device.createSampler(samplerCreateInfo);
 
     vk::CommandPool pool = _device.createCommandPool(vk::CommandPoolCreateInfo{
-        .queueFamilyIndex = findGraphicsQueueFamily() });
+        .queueFamilyIndex = _graphicsQueueFamily });
     vk::CommandBuffer cbuffer = _device.allocateCommandBuffers(vk::CommandBufferAllocateInfo{
         .commandPool = pool,
         .level = vk::CommandBufferLevel::ePrimary,
@@ -161,7 +161,7 @@ void Engine::fillTextureFromBuffer(const ImTextureID& textureID, const unsigned 
     _allocator.unmapMemory(texture.bufferAllocation);
 
     vk::Fence fence = _device.createFence(vk::FenceCreateInfo());
-    vk::Queue(_queue).submit(vk::SubmitInfo{
+    _graphicsQueue.submit(vk::SubmitInfo{
         .waitSemaphoreCount = 0,
         .pWaitSemaphores = nullptr,
         .pWaitDstStageMask = nullptr,

@@ -17,7 +17,8 @@ const Ppu::Pixel_Fifo::Item Ppu::Pixel_Fifo::pop() {
 void Ppu::Pixel_Fifo::push(const uint8_t lowB, const uint8_t highB, const uint8_t origin,
 							  const uint8_t palette) {
 	if (_index < 8)
-		throw "ERROR";
+		return;
+//		throw "ERROR";
 	uint8_t l = lowB, h = highB;
 	for (uint8_t i = 0; i < 8; ++i) {
 		_items[i] = { (uint8_t)(((h >> 7) << 1) | (l >> 7)), origin, palette };
@@ -35,11 +36,31 @@ Ppu::Ppu() :
 	_lx(0),
 	_dots(0),
 	_mode(OAMSEARCH),
-	displayVram(false),
 	_dmatransfer(0),
 	_oamobject_count(0)
 {
 	_src = new uint32_t[160 * 144];
+	_vram = new uint8_t[0x2000];
+}
+
+uint8_t Ppu::getTileHigh(const Tile& tile, const uint8_t row) const
+{
+	const bool mode8000 = (tile.type == Tile::Type::OBJ) || (_get_lcdc() & 0x10);
+
+	if ((mode8000) || (tile.id > 127)) {
+		return _vram[(tile.id << 4)+(row<<1)];
+	}
+	return _vram[0x1000 + (tile.id << 4) + (row << 1)];
+}
+
+uint8_t Ppu::getTileLow(const Tile& tile, const uint8_t row) const
+{
+	const bool mode8000 = (tile.type == Tile::Type::OBJ) || (_get_lcdc() & 0x10);
+
+	if ((mode8000) || (tile.id > 127)) {
+		return _vram[(tile.id << 4) + (row << 1)+1];
+	}
+	return _vram[0x1001 + (tile.id << 4) + (row << 1)];
 }
 
 void Ppu::pixel(const uint8_t x, const uint8_t y, const uint8_t c) {
@@ -108,19 +129,19 @@ uint8_t Ppu::executeOne() {
 		case 0:
 			if (_fetcher_stopped) {
 				_fetcher._y = _get_ly() - _oamobject[_nextsprite]._y;
-				_fetcher._tile = _oamobject[_nextsprite]._tile;
+				_fetcher._tile = { .id = _oamobject[_nextsprite]._tile, .type = Tile::Type::OBJ };
 				_fetcher._flags = _oamobject[_nextsprite]._flags;
 			}
 			else {
 				_fetcher._y = (_get_ly() + _get_scrolly()) & 0xff;
-				_fetcher._tile = _handlerRead(0x9800 + ((_fetcher._y & 0xf8) << 2) + _fetcher._tile_count);
+				_fetcher._tile = { .id = _handlerRead(0x9800 + ((_fetcher._y & 0xf8) << 2) + _fetcher._tile_count), .type=Tile::Type::BG };
 			}
 			break;
 		case 2:
-			_fetcher._high = _handlerRead(0x8000 + ((_fetcher._tile << 4) + ((_fetcher._y & 7) << 1)));
+			_fetcher._high = getTileHigh(_fetcher._tile, _fetcher._y & 7);
 			break;
 		case 4:
-			_fetcher._low = _handlerRead(0x8000 + ((_fetcher._tile << 4) + ((_fetcher._y & 7) << 1)) + 1);
+			_fetcher._low = getTileLow(_fetcher._tile, _fetcher._y & 7);
 			break;
 		case 6:
 			if (!_fetcher_stopped)
@@ -209,42 +230,6 @@ uint8_t Ppu::executeOne() {
 	return 0;
 }
 
-void Ppu::switchDisplayVram() {
-	displayVram = (displayVram) ? false : true;
-}
-
 void Ppu::draw() {
-	if (displayVram) {
-		uint16_t address = 0x8000;
-		for (uint16_t tile = 0; tile < 60; tile++) {
-			uint16_t x = (tile % 10) * 8;
-			uint16_t y = (tile / 10) * 8;
-			for (uint8_t b = 0; b < 8; b++) {
-				uint8_t a1 = _handlerRead(address++);
-				uint8_t a2 = _handlerRead(address++);
-				for (uint8_t c = 0; c < 8; c++) {
-					uint8_t color = (a1 >> 7) | ((a2 >> 7) << 1);
-					a1 <<= 1;
-					a2 <<= 1;
-					uint32_t truecolor = 0;
-					switch (color) {
-					case 1:
-						truecolor = 0x00FF0000;
-						break;
-					case 2:
-						truecolor = 0x0000FF00;
-						break;
-					case 3:
-						truecolor = 0x000000FF;
-						break;
-					}
-					_src[y * 160 + x++] = truecolor;
-				}
-				y++;
-				x -= 8;
-			}
-		}
-	}
-
 	_raster->refresh((uint8_t*)_src);
 }

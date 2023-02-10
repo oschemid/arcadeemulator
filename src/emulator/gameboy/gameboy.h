@@ -8,32 +8,31 @@
 #include "apu.h"
 #include "mbc.h"
 #include "mmu.h"
+#include "serial.h"
 
 
-namespace ae
+namespace ae::gameboy
 {
-	namespace gameboy
+	class Gameboy : public emulator::Emulator
 	{
-		class Gameboy : public emulator::Emulator
-		{
-		public:
-			std::unique_ptr<Mmu> _mmu;
-			Ppu _ppu;
+	public:
+		std::unique_ptr<Mmu> _mmu;
+		SerialLink _serial;
+		Ppu _ppu;
 
-			std::shared_ptr<Mbc> _cartridge;
-			std::shared_ptr<BootRom> _bootrom;
+		std::shared_ptr<Mbc> _cartridge;
+		std::shared_ptr<BootRom> _bootrom;
 
-			Apu _apu;
+		Apu _apu;
 
-			xprocessors::UCpu cpu;
+		xprocessors::Cpu::Ptr cpu;
 
-		public:
-			Gameboy();
-			virtual ~Gameboy() = default;
+	public:
+		Gameboy();
+		virtual ~Gameboy() = default;
 
-			emulator::SystemInfo getSystemInfo() const override;
-			void init(const json&) override;
-			void run(ae::gui::RasterDisplay*) override;
-		};
-	}
+		emulator::SystemInfo getSystemInfo() const override;
+		void init(const json&) override;
+		void run(ae::gui::RasterDisplay*) override;
+	};
 }

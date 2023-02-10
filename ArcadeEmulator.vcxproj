@@ -159,6 +159,7 @@
     <ClCompile Include="libraries\xos-processors\src\z80family\z80opcodes_cb.cpp" />
     <ClCompile Include="libraries\xos-processors\src\z80family\z80opcodes_ed.cpp" />
     <ClCompile Include="src\emulator\emulator.cpp" />
+    <ClCompile Include="src\emulator\gameboy\serial.cpp" />
     <ClCompile Include="src\emulator\taito8080\spacechaser.cpp" />
     <ClCompile Include="src\emulator\taito8080\spaceinvaders.cpp" />
     <ClCompile Include="src\gui\vulkan\engine.cpp" />
@@ -192,12 +193,15 @@
     <ClInclude Include="libraries\xos-processors\src\z80family\opcodes_cb.h" />
     <ClInclude Include="libraries\xos-processors\src\z80family\states.h" />
     <ClInclude Include="libraries\xos-processors\src\z80family\z80.h" />
+    <ClInclude Include="src\emulator\gameboy\memorymap.h" />
+    <ClInclude Include="src\emulator\gameboy\serial.h" />
     <ClInclude Include="src\emulator\taito8080\spacechaser.h" />
     <ClInclude Include="src\emulator\taito8080\spaceinvaders.h" />
     <ClInclude Include="src\gui\vulkan\engine.h" />
     <ClInclude Include="src\gui\gui.h" />
     <ClInclude Include="src\gui\widgets.h" />
     <ClInclude Include="src\emulator\taito8080\taito8080.h" />
+    <ClInclude Include="src\include\dipswitch.h" />
     <ClInclude Include="src\include\emulator.h" />
     <ClInclude Include="src\include\registry.h" />
     <ClInclude Include="src\settings\console.h" />
@@ -207,10 +211,8 @@
     <ClInclude Include="src\emulator\gameboy\mmu.h" />
     <ClInclude Include="src\emulator\gameboy\ppu.h" />
     <ClInclude Include="src\sound\sound.h" />
-    <ClInclude Include="src\include\display.h" />
     <ClInclude Include="src\include\machine.h" />
     <ClInclude Include="src\include\memory.h" />
-    <ClInclude Include="src\include\dipswitch.h" />
     <ClInclude Include="src\include\types.h" />
     <ClInclude Include="src\emulator\gameboy\gameboy.h" />
     <ClInclude Include="src\emulator\gameboy\mbc.h" />

@@ -6,10 +6,6 @@
 
 namespace ae::emulator
 {
-	class Emulator;
-	using UEmulator = std::unique_ptr<Emulator>;
-	using RegistryHandler = ae::RegistryHandler<UEmulator>;
-
 	struct SystemInfo
 	{
 		struct Geometry {
@@ -21,12 +17,17 @@ namespace ae::emulator
 	class Emulator
 	{
 	public:
+		using Ptr = std::unique_ptr<Emulator>;
+
+	public:
 		virtual void init(const json&) = 0;
 
 		virtual SystemInfo getSystemInfo() const = 0;
 		virtual void run(ae::gui::RasterDisplay*) = 0;
 
 		// Factory
-		static UEmulator create(const string&);
+		static Emulator::Ptr create(const string&);
 	};
+
+	using RegistryHandler = ae::RegistryHandler<Emulator::Ptr>;
 }

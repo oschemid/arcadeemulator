@@ -9,18 +9,38 @@ Mmu::Mmu(std::shared_ptr<BootRom>& bootrom,
 		 std::shared_ptr<Mbc>& cartridge)
 	: _bootrom(bootrom),
 	  _cartridge(cartridge),
-	  _div(0) {
+	  _div{0},
+	_handlerReadVRAM{nullptr},
+	_handlerWriteVRAM{nullptr}
+{
 	_rams = new uint8_t[0xffff](0);
 }
 
-Mmu::~Mmu() {
+Mmu::~Mmu()
+{
 	delete[] _rams;
 }
 
-void Mmu::tick() {
-	_div++;
-	if ((_div & 0x1fff) == 0)
+void Mmu::tick()
+{
+	if ((++_div & 0x1fff) == 0)
 		notify(io::div, _div >> 8);
+}
+
+void Mmu::map(MemoryMap address, read_fn readfn, write_fn writefn)
+{
+	if (address == MemoryMap::VRAM) {
+		_handlerReadVRAM = readfn;
+		_handlerWriteVRAM = writefn;
+		return;
+	}
+	if (address < MemoryMap::REGISTER_SB)
+		return;
+	if (address <= MemoryMap::REGISTER_SC) {
+		_handlerReadIO[static_cast<uint16_t>(address) & 0xff] = readfn;
+		_handlerWriteIO[static_cast<uint16_t>(address) & 0xff] = writefn;
+		return;
+	}
 }
 
 void Mmu::notify(const uint8_t io, const uint8_t value) const {
@@ -32,6 +52,11 @@ uint8_t Mmu::in(const uint8_t io, const origin caller) const {
 	switch (io) {
 	case io::div:
 		return _div >> 8;
+	case 2:
+	case 1:
+		if (_handlerReadIO[io])
+			return _handlerReadIO[io](0xff00+io);
+		return 0;
 	default:
 		if (io<0x80)
 			return _rams[0xff00 + io];
@@ -41,6 +66,13 @@ uint8_t Mmu::in(const uint8_t io, const origin caller) const {
 
 bool Mmu::out(const uint8_t io, const uint8_t value, const origin caller) {
 	switch (io) {
+	case 2:
+	case 1:
+		if (_handlerWriteIO[io]) {
+			_handlerWriteIO[io](0xff00+io, value);
+			return true;
+		}
+		return false;
 	case io::div:
 		_div = 0;
 		break;
@@ -80,15 +112,15 @@ bool Mmu::out(const uint8_t io, const uint8_t value, const origin caller) {
 
 uint8_t Mmu::read(const uint16_t address, const origin caller) const {
 	// ROM cartridge
-	if (address < 0x8000) {
+	if (address < MemoryMap::VRAM) {
 		if ((address < 0x100) && (in(io::ff50, caller) == 0))
 			return _bootrom->read(address);
 		return _cartridge->read(address);
 	}
 
 	// VRAM
-	if (address < 0xa000)
-		return _rams[address];
+	if (address < MemoryMap::EXTRA_RAM)
+		return (_handlerReadVRAM)? _handlerReadVRAM(address) : 0;
 
 	// External RAM
 	if (address < 0xc000)
@@ -132,6 +164,8 @@ uint8_t Mmu::read(const uint16_t address, const origin caller) const {
 				}
 				return value;
 			}
+			if (_handlerReadIO[address & 0xff])
+				return _handlerReadIO[address & 0xff](address);
 			return in(address & 0xff, caller);
 		}
 		else
@@ -141,12 +175,13 @@ uint8_t Mmu::read(const uint16_t address, const origin caller) const {
 
 bool Mmu::write(const uint16_t address, const uint8_t value, const origin caller) {
 	// ROM cartridge
-	if (address <= 0x7fff)
+	if (address < MemoryMap::VRAM)
 		return false;
 
 	// VRAM
-	if (address < 0xa000) {
-		_rams[address] = value;
+	if (address < MemoryMap::EXTRA_RAM) {
+		if (_handlerWriteVRAM)
+			_handlerWriteVRAM(address, value);
 		return true;
 	}
 
@@ -166,7 +201,12 @@ bool Mmu::write(const uint16_t address, const uint8_t value, const origin caller
 		if (address < 0xff80) {
 //			if ((address >= 0xff10) && (address < 0xff27))
 //				return _apu.write(address & 0xff, value);
-			return out(address & 0xff, value, caller);
+			if (_handlerWriteIO[address & 0xff]) {
+				_handlerWriteIO[address & 0xff](address, value);
+				return true;
+			}
+			else
+				return out(address & 0xff, value, caller);
 		}
 		_rams[address] = value;
 		return true;

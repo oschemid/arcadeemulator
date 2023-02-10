@@ -32,7 +32,7 @@ namespace ae::taito8080
 	class Taito8080 : public emulator::Emulator
 	{
 	protected:
-		xprocessors::UCpu _cpu;
+		xprocessors::Cpu::Ptr _cpu;
 		UCartridge _cartridge;
 		uint32_t* _src;
 

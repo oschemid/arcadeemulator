@@ -15,7 +15,7 @@ namespace ae {
 	using std::size_t;
 	using json = nlohmann::json;
 
-	typedef std::function<uint8_t(const uint8_t)> fnuint8_t;
+	using fnuint8_t = std::function<uint8_t(const uint8_t)>;
 
 	struct rgb_t {
 		uint8_t red;

@@ -10,46 +10,20 @@
 using namespace ae::gui;
 
 
-uint32_t Engine::findGraphicsQueueFamily() {
-    std::vector<vk::QueueFamilyProperties> families = _gpu.getQueueFamilyProperties();
-    for (size_t i = 0; i < families.size(); ++i) {
-        if (families[i].queueFlags & vk::QueueFlagBits::eGraphics)
-            return static_cast<uint32_t>(i);
-    }
-    throw std::exception("No graphics queue found");
-}
-
-void Engine::createDevice() {
-    std::vector<const char*> extensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
-    std::vector<float> queuePriority = { 1. };
-
-    vk::DeviceQueueCreateInfo queueInfo{
-        .queueFamilyIndex = findGraphicsQueueFamily(),
-        .queueCount = 1,
-        .pQueuePriorities = queuePriority.data()
-    };
-
-
-    vk::DeviceCreateInfo createInfo{
-        .queueCreateInfoCount = 1,
-        .pQueueCreateInfos = &queueInfo,
-        .enabledExtensionCount = 1,
-        .ppEnabledExtensionNames = extensions.data()
-    };
-    _device = _gpu.createDevice(createInfo);
-}
-
-
 Engine::Engine(Window* window) :
-    _window{ window }
+    _window{ window },
+    _graphicsQueueFamily{ 10000 }
 {
 }
 
 Engine::~Engine() {
-    for (auto texture : _textures)
+    for (auto& texture : _textures)
         freeTexture(texture.second);
     _textures.clear();
 
+    _instance.destroySurfaceKHR(_surface);
+    _allocator.destroy();
+    _device.destroy();
     _instance.destroy();
 }
 
@@ -80,8 +54,39 @@ void Engine::createInstance()
 
 void Engine::selectGpu()
 {
-    // Selection the first one
+    // Select the first one
     _gpu = _instance.enumeratePhysicalDevices().front();
+
+    // Select queue families
+    std::vector<vk::QueueFamilyProperties> families = _gpu.getQueueFamilyProperties();
+    for (size_t i = 0; i < families.size(); ++i) {
+        if (families[i].queueFlags & vk::QueueFlagBits::eGraphics)
+            _graphicsQueueFamily = static_cast<uint32_t>(i);
+    }
+    if (_graphicsQueueFamily == 10000)
+        throw std::runtime_error("No graphics queue found");
+}
+
+void Engine::createDevice() {
+    std::vector<const char*> extensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
+    std::vector<float> queuePriority = { 1. };
+
+    vk::DeviceQueueCreateInfo queueInfo{
+        .queueFamilyIndex = _graphicsQueueFamily,
+        .queueCount = 1,
+        .pQueuePriorities = queuePriority.data()
+    };
+
+
+    vk::DeviceCreateInfo createInfo{
+        .queueCreateInfoCount = 1,
+        .pQueueCreateInfos = &queueInfo,
+        .enabledExtensionCount = 1,
+        .ppEnabledExtensionNames = extensions.data()
+    };
+    _device = _gpu.createDevice(createInfo);
+
+    _graphicsQueue = _device.getQueue(_graphicsQueueFamily, 0);
 }
 
 void Engine::createAllocator()
@@ -95,15 +100,40 @@ void Engine::createAllocator()
     _allocator = vma::createAllocator(info);
 }
 
+void Engine::createSurfaceKHR()
+{
+    VkSurfaceKHR surface;
+    if (SDL_Vulkan_CreateSurface(_window->get(), _instance, &surface) == 0)
+        throw std::exception("Failed to create Vulkan surface.\n");
+    _surface = surface;
+
+    // Select first compatible format 
+    const vk::Format requestedFormat[] = { vk::Format::eR8G8B8A8Unorm, vk::Format::eB8G8R8A8Unorm, vk::Format::eR8G8B8Unorm, vk::Format::eB8G8R8Unorm };
+    const vk::ColorSpaceKHR requestedColorSpace = vk::ColorSpaceKHR::eSrgbNonlinear;
+    auto availableFormat = _gpu.getSurfaceFormatsKHR(_surface);
+    for (auto& av : availableFormat) {
+        if (av.format == vk::Format::eUndefined) {
+            _surfaceFormat.format = requestedFormat[0];
+            _surfaceFormat.colorSpace = requestedColorSpace;
+            break;
+        }
+        if (av.colorSpace == requestedColorSpace) {
+            for (auto req : requestedFormat) {
+                if (av.format == req) {
+                    _surfaceFormat = av;
+                    break;
+                }
+            }
+        }
+    }
+}
+
 void Engine::init_vulkan() {
 	createInstance();
     selectGpu();
-
-    _queuefamily = findGraphicsQueueFamily();
 	createDevice();
     createAllocator();
-
-    vkGetDeviceQueue(_device, _queuefamily, 0, &_queue);
+    createSurfaceKHR();
 
     VkDescriptorPoolSize pool_sizes[] =
         {
@@ -127,22 +157,13 @@ void Engine::init_vulkan() {
         pool_info.pPoolSizes = pool_sizes;
         vkCreateDescriptorPool(_device, &pool_info, nullptr, &_descriptorpool);
 
-    VkSurfaceKHR surface;
-    if (SDL_Vulkan_CreateSurface(_window->get(), _instance, &surface) == 0)
-        throw std::exception("Failed to create Vulkan surface.\n");
-    _surface = surface;
-
-    const VkFormat requestSurfaceImageFormat[] = { VK_FORMAT_B8G8R8A8_UNORM, VK_FORMAT_R8G8B8A8_UNORM, VK_FORMAT_B8G8R8_UNORM, VK_FORMAT_R8G8B8_UNORM };
     VkPresentModeKHR present_modes[] = { VK_PRESENT_MODE_FIFO_KHR };
     _vulkanwindow.Surface = _surface;
-    _vulkanwindow.SurfaceFormat = ImGui_ImplVulkanH_SelectSurfaceFormat(_gpu,
-        _surface,
-        requestSurfaceImageFormat,
-        4,
-        VK_COLORSPACE_SRGB_NONLINEAR_KHR);
+    _vulkanwindow.SurfaceFormat = _surfaceFormat;
+    
     _vulkanwindow.PresentMode = ImGui_ImplVulkanH_SelectPresentMode(_gpu, _surface, present_modes, 1);
 
-    ImGui_ImplVulkanH_CreateOrResizeWindow(_instance, _gpu, _device, &_vulkanwindow, _queuefamily, nullptr, 1280, 800, 3);
+    ImGui_ImplVulkanH_CreateOrResizeWindow(_instance, _gpu, _device, &_vulkanwindow, _graphicsQueueFamily, nullptr, 1280, 800, 3);
 }
 
 void Engine::initImGui() {
@@ -151,8 +172,8 @@ void Engine::initImGui() {
     init_info.Instance = _instance;
     init_info.PhysicalDevice = _gpu;
     init_info.Device = _device;
-    init_info.QueueFamily = _queuefamily;
-    init_info.Queue = _queue;
+    init_info.QueueFamily = _graphicsQueueFamily;
+    init_info.Queue = _graphicsQueue;
     init_info.PipelineCache = nullptr;
     init_info.DescriptorPool = _descriptorpool;
     init_info.Subpass = 0;
@@ -181,7 +202,7 @@ void Engine::initImGui() {
         end_info.commandBufferCount = 1;
         end_info.pCommandBuffers = &command_buffer;
         vkEndCommandBuffer(command_buffer);
-        vkQueueSubmit(_queue, 1, &end_info, VK_NULL_HANDLE);
+        vkQueueSubmit(_graphicsQueue, 1, &end_info, VK_NULL_HANDLE);
 
         vkDeviceWaitIdle(_device);
         ImGui_ImplVulkan_DestroyFontUploadObjects();
@@ -250,7 +271,7 @@ void Engine::FrameRender(ImDrawData* data) {
         info.pSignalSemaphores = &render_complete_semaphore;
 
         err = vkEndCommandBuffer(fd->CommandBuffer);
-        err = vkQueueSubmit(_queue, 1, &info, fd->Fence);
+        err = vkQueueSubmit(_graphicsQueue, 1, &info, fd->Fence);
     }
 }
 
@@ -263,20 +284,13 @@ void Engine::FramePresent() {
     info.swapchainCount = 1;
     info.pSwapchains = &_vulkanwindow.Swapchain;
     info.pImageIndices = &_vulkanwindow.FrameIndex;
-    VkResult err = vkQueuePresentKHR(_queue, &info);
+    VkResult err = vkQueuePresentKHR(_graphicsQueue, &info);
     if (err == VK_ERROR_OUT_OF_DATE_KHR || err == VK_SUBOPTIMAL_KHR)
     {
         return;
     }
     _vulkanwindow.SemaphoreIndex = (_vulkanwindow.SemaphoreIndex + 1) % _vulkanwindow.ImageCount; // Now we can use the next set of semaphores
 }
-
-//RasterDisplay::RasterDisplay(vk::PhysicalDevice gpu, vk::Device device, vk::Queue queue) :
-//    _device(device),
-//    _gpu(gpu),
-//    _queue(queue)
-//{
-//}
 
 RasterDisplay::RasterDisplay(Engine* engine) :
     _engine{ engine }
