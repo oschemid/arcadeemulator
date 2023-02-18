@@ -12,6 +12,8 @@
 #include "src/settings/console.h"
 #include "imgui_impl_sdl.h"
 
+#include "src/emulator/gameboy/debugger/tilemap.h"
+#include "src/emulator/gameboy/gameboy.h"
 
 int main(int argc, char** argv)
 {
@@ -37,9 +39,16 @@ int main(int argc, char** argv)
 	engine.init();
 	gui.init();
 	std::thread* t = nullptr;
+	std::thread* t2 = nullptr;
 	bool done = false;
 	ae::emulator::Emulator::Ptr si = nullptr;
 	ae::gui::RasterDisplay* raster = nullptr;
+	ae::gui::RasterDisplay* raster2 = nullptr;
+	ae::gameboy::debug::Debugger* debugger = nullptr;
+	std::string n1 = "TEST";
+	std::string n2 = "TILEMAP";
+	ae::RasterDisplay* r1;
+	ae::RasterDisplay* r2;
 
 	while (!done)
 	{
@@ -52,9 +61,16 @@ int main(int argc, char** argv)
 				ae::emulator::SystemInfo requirements = si->getSystemInfo();
 				raster = engine.getRasterDisplay();
 				raster->init(requirements.geometry.width, requirements.geometry.height);
-				ae::RasterDisplay rasterdisplay(raster->getID());
-				gui.addWidget("rasterdisplay", &rasterdisplay);
+				r1 = new ae::RasterDisplay(n1, raster->getID());
+				gui.addWidget("rasterdisplay", r1);
 				t = new std::thread([&si, &t, &raster]() { si->run(raster); t->detach(); });
+
+				//raster2 = engine.getRasterDisplay();
+				//raster2->init(256,256);
+				//r2 = new ae::RasterDisplay(n2, raster2->getID());
+				//gui.addWidget("tilemap", r2);
+				//debugger = new ae::gameboy::debug::Debugger(static_cast<ae::gameboy::Gameboy*>(&(*si)), raster2);
+				//t2 = new std::thread([&debugger, &t2]() { debugger->run(); t2->detach(); });
 			}
 			else {
 				if ((t)&&(!(t->joinable()))) {

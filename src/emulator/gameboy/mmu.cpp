@@ -34,9 +34,14 @@ void Mmu::map(MemoryMap address, read_fn readfn, write_fn writefn)
 		_handlerWriteVRAM = writefn;
 		return;
 	}
+	if (address == MemoryMap::OAM) {
+		_handlerReadOAM = readfn;
+		_handlerWriteOAM = writefn;
+		return;
+	}
 	if (address < MemoryMap::REGISTER_SB)
 		return;
-	if (address <= MemoryMap::REGISTER_SC) {
+	if (address <= MemoryMap::REGISTER_WX) {
 		_handlerReadIO[static_cast<uint16_t>(address) & 0xff] = readfn;
 		_handlerWriteIO[static_cast<uint16_t>(address) & 0xff] = writefn;
 		return;
@@ -101,6 +106,9 @@ bool Mmu::out(const uint8_t io, const uint8_t value, const origin caller) {
 		_rams[0xff00 + io] = value;
 		break;
 	default:
+		if ((io==0x0f)&&(value&0x08))
+			_rams[0xff00 + io] = value;
+
 		if (io >= 0x80)
 			throw std::runtime_error("Bad io writing");
 		_rams[0xff00 + io] = value;
@@ -131,8 +139,12 @@ uint8_t Mmu::read(const uint16_t address, const origin caller) const {
 //		return memory->read(address);
 
 	// Echo RAM
-//	if (address < 0xfe00)
-//		return memory->read(address - 0x2000);
+	if (address < MemoryMap::OAM)
+		return _rams[address];
+
+	// OAM
+	if (address < MemoryMap::NOTUSE)
+		return (_handlerReadOAM)? _handlerReadOAM(address) : 0;
 
 	if (address >= 0xff00)
 		if (address < 0xff80) {
@@ -194,8 +206,17 @@ bool Mmu::write(const uint16_t address, const uint8_t value, const origin caller
 //		return memory->write(address, value);
 
 	// Echo RAM
-//	if (address < 0xfe00)
-//		return memory->write(address, value);
+	if (address < MemoryMap::OAM) {
+		_rams[address] = value;
+		return true;
+	}
+
+	// OAM
+	if (address < MemoryMap::NOTUSE) {
+		if (_handlerWriteOAM)
+			_handlerWriteOAM(address, value);
+		return true;
+	}
 
 	if (address >= 0xff00) {
 		if (address < 0xff80) {

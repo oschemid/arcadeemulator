@@ -105,11 +105,11 @@ void GameSelection::draw(gui::GuiManager* gui) {
     ImGui::End();
 }
 
-RasterDisplay::RasterDisplay(const ImTextureID id) : _textureid(id)
+RasterDisplay::RasterDisplay(const string& name, const ImTextureID id) : _name(name), _textureid(id)
 {}
 
 void RasterDisplay::draw(gui::GuiManager*) {
-    ImGui::Begin("TEST");
+    ImGui::Begin(_name.c_str());
     ImGui::Image(_textureid, ImVec2(224*2, 288*2));
     ImGui::End();
 }

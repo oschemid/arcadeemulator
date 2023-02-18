@@ -12,34 +12,37 @@ SerialLink::SerialLink() :
 	_sc{ 0 }
 {}
 
-uint8_t SerialLink::in(const uint8_t io) const
+uint8_t SerialLink::getRegister(const MemoryMap io) const
 {
 	switch (io)
 	{
-	case 1:
+	case MemoryMap::REGISTER_SB:
 		return _sb;
-	case 2:
+	case MemoryMap::REGISTER_SC:
 		return _sc;
+	default:
+		return 0;
 	}
-	return 0;
 }
 
-void SerialLink::out(const uint8_t io, const uint8_t val)
+void SerialLink::setRegister(const MemoryMap io, const uint8_t val)
 {
 	switch (io)
 	{
-	case 1:
+	case MemoryMap::REGISTER_SB:
 		_sb = val;
 		if (_enabled)
 			_count = 8;
 		break;
-	case 2:
+	case MemoryMap::REGISTER_SC:
 		_sc = val;
-		if (val & 0x80) {
+		if ((val & 0x81) == 0x81) {
 			_enabled = true;
 			_clock = 0;
 			_count = 8;
 		}
+		break;
+	default:
 		break;
 	}
 }
@@ -54,7 +57,7 @@ void SerialLink::tick()
 		_clock = 0;
 		if (--_count == 0) {
 			_enabled = false;
-			_handlerWrite(0xff0f, 8);
+			_handlerWrite(MemoryMap::REGISTER_IF, _handlerRead(MemoryMap::REGISTER_IF)|0x08);
 		}
 	}
 }

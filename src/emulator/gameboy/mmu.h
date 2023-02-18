@@ -53,6 +53,8 @@ namespace ae::gameboy {
 		std::vector< std::function<void(const uint8_t, const uint8_t)>> _io_callbacks;
 		read_fn _handlerReadVRAM;
 		write_fn _handlerWriteVRAM;
+		read_fn _handlerReadOAM;
+		write_fn _handlerWriteOAM;
 		std::array<read_fn, 0x80> _handlerReadIO;
 		std::array<write_fn, 0x80> _handlerWriteIO;
 

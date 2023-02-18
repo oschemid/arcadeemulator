@@ -4,7 +4,7 @@
 #include "emulator.h"
 
 #include "xprocessors.h"
-#include "ppu.h"
+#include "ppu/ppu.h"
 #include "apu.h"
 #include "mbc.h"
 #include "mmu.h"

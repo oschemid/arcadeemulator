@@ -35,10 +35,11 @@ namespace ae {
 
 	class RasterDisplay : public gui::widgets::Widget {
 	protected:
+		string _name;
 		ImTextureID _textureid;
 
 	public:
-		RasterDisplay(const ImTextureID);
+		RasterDisplay(const string&, const ImTextureID);
 		void draw(gui::GuiManager*) override;
 	};
 }

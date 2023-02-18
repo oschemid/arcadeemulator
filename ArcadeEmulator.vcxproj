@@ -159,6 +159,8 @@
     <ClCompile Include="libraries\xos-processors\src\z80family\z80opcodes_cb.cpp" />
     <ClCompile Include="libraries\xos-processors\src\z80family\z80opcodes_ed.cpp" />
     <ClCompile Include="src\emulator\emulator.cpp" />
+    <ClCompile Include="src\emulator\gameboy\debugger\tilemap.cpp" />
+    <ClCompile Include="src\emulator\gameboy\ppu\modes.cpp" />
     <ClCompile Include="src\emulator\gameboy\serial.cpp" />
     <ClCompile Include="src\emulator\taito8080\spacechaser.cpp" />
     <ClCompile Include="src\emulator\taito8080\spaceinvaders.cpp" />
@@ -174,7 +176,7 @@
     <ClCompile Include="src\settings\library.cpp" />
     <ClCompile Include="src\emulator\gameboy\channel.cpp" />
     <ClCompile Include="src\emulator\gameboy\mmu.cpp" />
-    <ClCompile Include="src\emulator\gameboy\ppu.cpp" />
+    <ClCompile Include="src\emulator\gameboy\ppu\ppu.cpp" />
     <ClCompile Include="src\sound\sound.cpp" />
     <ClCompile Include="src\emulator\gameboy\apu.cpp" />
     <ClCompile Include="src\emulator\gameboy\gameboy.cpp" />
@@ -193,6 +195,7 @@
     <ClInclude Include="libraries\xos-processors\src\z80family\opcodes_cb.h" />
     <ClInclude Include="libraries\xos-processors\src\z80family\states.h" />
     <ClInclude Include="libraries\xos-processors\src\z80family\z80.h" />
+    <ClInclude Include="src\emulator\gameboy\debugger\tilemap.h" />
     <ClInclude Include="src\emulator\gameboy\memorymap.h" />
     <ClInclude Include="src\emulator\gameboy\serial.h" />
     <ClInclude Include="src\emulator\taito8080\spacechaser.h" />
@@ -209,7 +212,7 @@
     <ClInclude Include="src\emulator\gameboy\apu.h" />
     <ClInclude Include="src\emulator\gameboy\channel.h" />
     <ClInclude Include="src\emulator\gameboy\mmu.h" />
-    <ClInclude Include="src\emulator\gameboy\ppu.h" />
+    <ClInclude Include="src\emulator\gameboy\ppu\ppu.h" />
     <ClInclude Include="src\sound\sound.h" />
     <ClInclude Include="src\include\machine.h" />
     <ClInclude Include="src\include\memory.h" />

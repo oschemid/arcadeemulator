@@ -51,7 +51,7 @@
     <ClCompile Include="src\emulator\gameboy\gameboy.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\emulator\gameboy\ppu.cpp">
+    <ClCompile Include="src\emulator\gameboy\ppu\ppu.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="libraries\xos-processors\src\z80family\lr35902.cpp">
@@ -114,6 +114,12 @@
     <ClCompile Include="src\emulator\gameboy\serial.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
+    <ClCompile Include="src\emulator\gameboy\debugger\tilemap.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\emulator\gameboy\ppu\modes.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\include\machine.h">
@@ -152,7 +158,7 @@
     <ClInclude Include="src\emulator\gameboy\gameboy.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="src\emulator\gameboy\ppu.h">
+    <ClInclude Include="src\emulator\gameboy\ppu\ppu.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="libraries\xos-processors\src\z80family\lr35902.h">
@@ -213,6 +219,9 @@
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="src\emulator\gameboy\memorymap.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\emulator\gameboy\debugger\tilemap.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
   </ItemGroup>

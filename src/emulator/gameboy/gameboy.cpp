@@ -28,13 +28,27 @@ void ae::gameboy::Gameboy::init(const json& settings)
 	_cartridge = std::shared_ptr<Mbc>(Mbc::create(settings.at("roms")));
 	_mmu = std::make_unique<Mmu>(_bootrom, _cartridge);
 	_mmu->registerIoCallback([this](const uint8_t io, const uint8_t v) { _apu.callback(io, v); });
-	_mmu->map(MemoryMap::REGISTER_SB, [this](const uint16_t p) { return _serial.in(p); },
-		[this](const uint16_t p, const uint8_t v) { _serial.out(p, v); });
-	_mmu->map(MemoryMap::REGISTER_SC, [this](const uint16_t p) { return _serial.in(p); },
-		[this](const uint16_t p, const uint8_t v) { _serial.out(p, v); });
+	_mmu->map(MemoryMap::REGISTER_SB, [this](const uint16_t) { return _serial.getRegister(MemoryMap::REGISTER_SB); },
+		[this](const uint16_t, const uint8_t v) { _serial.setRegister(MemoryMap::REGISTER_SB, v); });
+	_mmu->map(MemoryMap::REGISTER_SC, [this](const uint16_t) { return _serial.getRegister(MemoryMap::REGISTER_SC); },
+		[this](const uint16_t, const uint8_t v) { _serial.setRegister(MemoryMap::REGISTER_SC, v); });
+	_mmu->map(MemoryMap::REGISTER_LCDC, [this](const uint16_t) { return _ppu.getRegister(MemoryMap::REGISTER_LCDC); },
+		[this](const uint16_t, const uint8_t v) { _ppu.setRegister(MemoryMap::REGISTER_LCDC, v); });
+	_mmu->map(MemoryMap::REGISTER_LY, [this](const uint16_t) { return _ppu.getRegister(MemoryMap::REGISTER_LY); },
+		[this](const uint16_t, const uint8_t v) { _ppu.setRegister(MemoryMap::REGISTER_LY, v); });
+	_mmu->map(MemoryMap::REGISTER_SCY, [this](const uint16_t) { return _ppu.getRegister(MemoryMap::REGISTER_SCY); },
+		[this](const uint16_t, const uint8_t v) { _ppu.setRegister(MemoryMap::REGISTER_SCY, v); });
+	_mmu->map(MemoryMap::REGISTER_WX, [this](const uint16_t) { return _ppu.getRegister(MemoryMap::REGISTER_WX); },
+		[this](const uint16_t, const uint8_t v) { _ppu.setRegister(MemoryMap::REGISTER_WX, v); });
+	_mmu->map(MemoryMap::REGISTER_WY, [this](const uint16_t) { return _ppu.getRegister(MemoryMap::REGISTER_WY); },
+		[this](const uint16_t, const uint8_t v) { _ppu.setRegister(MemoryMap::REGISTER_WY, v); });
+
 	_mmu->map(MemoryMap::VRAM, [this](const uint16_t p) { return _ppu.readVRAM(p); },
 		[this](const uint16_t p, const uint8_t v) { _ppu.writeVRAM(p, v); });
+	_mmu->map(MemoryMap::OAM, [this](const uint16_t p) { return _ppu.readOAM(p); },
+		[this](const uint16_t p, const uint8_t v) { _ppu.writeOAM(p, v); });
 	_serial.write([this](const uint16_t p, const uint8_t v) { return _mmu->write(p, v, Mmu::origin::cpu); });
+	_serial.read([this](const uint16_t p) { return _mmu->read(p, Mmu::origin::cpu); });
 
 	cpu->read([this](const uint16_t p) { return _mmu->read(p, Mmu::origin::cpu); });
 	cpu->write([this](const uint16_t p, const uint8_t v) { return _mmu->write(p, v, Mmu::origin::cpu); });
