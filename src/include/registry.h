@@ -5,30 +5,27 @@
 
 namespace ae
 {
-	template<class I> class Registry
+	template<class I, typename creator_fn> class Registry
 	{
 	public:
-		using factory_fn = std::function<I()>;
+		static Registry& instance() { static Registry _registry; return _registry; }
 
-	protected:
-		std::map<const string, const factory_fn> _entries;
+		void add(const string& name, creator_fn factory) { _entries.insert({ name, factory }); }
+		creator_fn create(const string& name) { auto it = _entries.find(name); return (it != _entries.end()) ? it->second : nullptr; }
+
 	protected:
 		Registry() = default;
 		~Registry() = default;
 
-	public:
-		static Registry& instance() { static Registry _registry; return _registry; }
-
-		void add(const string& name, factory_fn factory) { _entries.insert({ name, factory }); }
-		I create(const string& name) { auto it = _entries.find(name); return (it != _entries.end()) ? it->second() : nullptr; }
+		std::map<const string, const creator_fn> _entries;
 	};
 
-	template<class I> class RegistryHandler
+	template<class I, typename creator_fn> class RegistryHandler
 	{
 	public:
-		RegistryHandler(const string& id, Registry<I>::factory_fn fn)
+		RegistryHandler(const string& id, creator_fn fn)
 		{
-			Registry<I>::instance().add(id, fn);
+			Registry<I, creator_fn>::instance().add(id, fn);
 		}
 	};
 }

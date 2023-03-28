@@ -25,21 +25,24 @@ namespace ae::gameboy
 		// Video registers
 		struct Registers {
 			uint8_t lcdc;
+			uint8_t stat;
 			uint8_t scy;
+			uint8_t scx;
 			uint8_t ly;
 			uint8_t wx;
 			uint8_t wy;
 
 			// Internal
 			uint8_t lcdenable_delay;
-
 			void set_lcdc(const uint8_t);
+
+			// Helpers
 			bool lcdc_bg_enable() const { return (lcdc & 0x01) ? true : false; }
 			bool lcdc_sprite_enable() const { return (lcdc & 0x02) ? true : false; }
-			bool lcdc_bg_map() const { return (lcdc & 0x08) ? true : false; }
-			bool lcdc_tile_area() const { return (lcdc & 0x10) ? true : false; }
+			uint16_t lcdc_bg_map() const { return (lcdc & 0x08) ? 0x1c00 : 0x1800; }
+			bool lcdc_tile_mode8000() const { return (lcdc & 0x10) ? true : false; }
 			bool lcdc_window_enable() const { return (lcdc & 0x20) ? true : false; }
-			bool lcdc_window_map() const { return (lcdc & 0x40) ? true : false; }
+			uint16_t lcdc_window_map() const { return (lcdc & 0x40) ? 0x1c00 : 0x1800; }
 			bool lcd_enable() const { return (lcdc & 0x80) ? true : false; }
 		} _registers;
 
@@ -86,12 +89,13 @@ namespace ae::gameboy
 			uint8_t lx;
 			bool window;
 			uint16_t mapAddress;
+			uint8_t scrollX;
 			uint8_t offset;
 			uint8_t row;
 			Tile tile;
 			OAMSprite sprite;
 
-			void init() { state = TILE_ID; window = false; tile = { 0, 0, 0 }; offset = 0; row = 0; lx = 0; }
+			void init() { state = TILE_ID; window = false; tile = { 0, 0, 0 }; offset = 0; row = 0; lx = 0; scrollX = 0; }
 			void add(const OAMSprite& s) { state = SPRITE_ID; sprite = s; }
 			bool sprite_processing() const { return ((state == SPRITE_ID) || (state == SPRITE_HIGH) || (state == SPRITE_LOW) || (state == SPRITE_PUSH)) ? true : false; }
 		} _modePixelTransfer;
@@ -109,10 +113,10 @@ namespace ae::gameboy
 		uint16_t _dmaaddress;
 
 		uint8_t _get_lyc() const { return _handlerRead(0xff45); }
-		uint8_t _get_stat() const { return _handlerRead(0xff41); }
 		uint8_t _get_bgp() const { return _handlerRead(0xff47); }
 		uint8_t _get_obp(const uint8_t t) const { return _handlerRead(0xff48 + t); }
-		void _set_stat(const uint8_t v) { _handlerWrite(0xff41, v); }
+
+		void set_stat_mode(const uint8_t);
 
 		void draw();
 		void pixel(const uint8_t, const uint8_t, const uint8_t);

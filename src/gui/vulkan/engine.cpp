@@ -3,7 +3,7 @@
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_vulkan.h"
 #include "imgui.h"
-#include "imgui_impl_sdl.h"
+#include "imgui_impl_sdl2.h"
 #include "imgui_impl_vulkan.h"
 
 
@@ -46,7 +46,7 @@ void Engine::createInstance()
         .applicationVersion = 1,
         .pEngineName = "xArcade",
         .engineVersion = 1,
-        .apiVersion = VK_API_VERSION_1_1 };
+        .apiVersion = VK_API_VERSION_1_3 };
 
     vk::InstanceCreateInfo instanceCreateInfo{ .pApplicationInfo = &applicationInfo, .enabledExtensionCount = extensions_count, .ppEnabledExtensionNames = extensions };
     _instance = vk::createInstance(instanceCreateInfo);
@@ -68,7 +68,7 @@ void Engine::selectGpu()
 }
 
 void Engine::createDevice() {
-    std::vector<const char*> extensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
+    std::vector<const char*> extensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_QCOM_ROTATED_COPY_COMMANDS_EXTENSION_NAME };
     std::vector<float> queuePriority = { 1. };
 
     vk::DeviceQueueCreateInfo queueInfo{
@@ -76,7 +76,6 @@ void Engine::createDevice() {
         .queueCount = 1,
         .pQueuePriorities = queuePriority.data()
     };
-
 
     vk::DeviceCreateInfo createInfo{
         .queueCreateInfoCount = 1,
@@ -95,7 +94,7 @@ void Engine::createAllocator()
         .physicalDevice = _gpu,
         .device = _device,
         .instance = _instance,
-        .vulkanApiVersion = VK_API_VERSION_1_1
+        .vulkanApiVersion = VK_API_VERSION_1_3
     };
     _allocator = vma::createAllocator(info);
 }

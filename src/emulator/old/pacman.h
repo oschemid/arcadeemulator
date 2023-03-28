@@ -68,20 +68,11 @@ namespace ae
 			xprocessors::Cpu::Ptr cpu;
 
 		public:
-			Pacman();
+			Pacman(const emulator::Game&);
 			virtual ~Pacman() = default;
 
 			emulator::SystemInfo getSystemInfo() const override;
-/*			std::list<ae::IParameter*> getParameters() const override {
-				return { (ae::IParameter*)&coinage,
-						 (ae::IParameter*)&lives,
-						 (ae::IParameter*)&bonus,
-						 (ae::IParameter*)&difficulty,
-						 (ae::IParameter*)&ghostname,
-						 (ae::IParameter*)&rackadvance };
-			}
-			*/
-			void init(const json&) override;
+			void init() override;
 			void run(ae::gui::RasterDisplay*) override;
 		};
 	}

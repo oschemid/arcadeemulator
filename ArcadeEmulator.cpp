@@ -10,10 +10,10 @@
 #include <fstream>
 #include "src/settings/library.h"
 #include "src/settings/console.h"
-#include "imgui_impl_sdl.h"
+#include "imgui_impl_sdl2.h"
 
-#include "src/emulator/gameboy/debugger/tilemap.h"
-#include "src/emulator/gameboy/gameboy.h"
+//#include "src/emulator/gameboy/debugger/tilemap.h"
+//#include "src/emulator/gameboy/gameboy.h"
 
 int main(int argc, char** argv)
 {
@@ -38,13 +38,14 @@ int main(int argc, char** argv)
 	window.init();
 	engine.init();
 	gui.init();
+
 	std::thread* t = nullptr;
 	std::thread* t2 = nullptr;
 	bool done = false;
 	ae::emulator::Emulator::Ptr si = nullptr;
 	ae::gui::RasterDisplay* raster = nullptr;
 	ae::gui::RasterDisplay* raster2 = nullptr;
-	ae::gameboy::debug::Debugger* debugger = nullptr;
+//	ae::gameboy::debug::Debugger* debugger = nullptr;
 	std::string n1 = "TEST";
 	std::string n2 = "TILEMAP";
 	ae::RasterDisplay* r1;
@@ -56,12 +57,23 @@ int main(int argc, char** argv)
 		gameselection.setFiltered(sidebar.getSelected());
 		if (gameselection.getSelected().title() != "") {
 			if (!si) {
-				si = ae::emulator::Emulator::create(sidebar.getSelected().id());
-				si->init(gameselection.getSelected().settings());
+				auto version = gameselection.getSelected().currentVersion();
+				std::map<std::string, uint8_t> settings;
+				for (auto s : version->settings) {
+					std::string id = s.at("id");
+					uint8_t value = s.at("value");
+					settings.insert({ id,value });
+				}
+				ae::emulator::Game game(gameselection.getSelected().hardware(),
+					                    version->_version,
+					                    version->_romspath,
+					                    settings);
+				si = ae::emulator::create(sidebar.getSelected().id(),game);
+				si->init();
 				ae::emulator::SystemInfo requirements = si->getSystemInfo();
 				raster = engine.getRasterDisplay();
 				raster->init(requirements.geometry.width, requirements.geometry.height);
-				r1 = new ae::RasterDisplay(n1, raster->getID());
+				r1 = new ae::RasterDisplay(n1, raster->getID(), requirements.geometry.width*2, requirements.geometry.height*2);
 				gui.addWidget("rasterdisplay", r1);
 				t = new std::thread([&si, &t, &raster]() { si->run(raster); t->detach(); });
 

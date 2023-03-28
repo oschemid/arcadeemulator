@@ -19,27 +19,30 @@ namespace ae {
 
 	class GameSelection : public gui::widgets::Widget {
 	protected:
-		Game _selected;
+		ae::Game* _selected;
+		string _action{ "" };
 		string _filtered;
 		Library _library;
 		Console _console;
 
-		void drawTile(const Game&, VkDescriptorSet);
+		void drawTile(Game&, VkDescriptorSet);
+		bool drawSettings(Game&);
 	public:
 		GameSelection(Library);
 		void setFiltered(Console);
 		void draw(gui::GuiManager*) override;
-		Game getSelected() const { return _selected; }
-		void resetSelected() { _selected = Game(); }
+		Game getSelected() const { return (_action=="run")?*_selected : Game(); }
+		void resetSelected() { _selected = nullptr; _action = ""; }
 	};
 
 	class RasterDisplay : public gui::widgets::Widget {
 	protected:
 		string _name;
 		ImTextureID _textureid;
+		ImVec2 _texturesize;
 
 	public:
-		RasterDisplay(const string&, const ImTextureID);
+		RasterDisplay(const string&, const ImTextureID, const uint16_t, const uint16_t);
 		void draw(gui::GuiManager*) override;
 	};
 }

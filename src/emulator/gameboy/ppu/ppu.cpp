@@ -4,6 +4,7 @@
 using namespace ae::gameboy;
 
 Ppu::Ppu() :
+	Cpu{Cpu::MEM_AVAILABLE},
 	_registers{ 0, 0, 0, 0, 0 },
 	_dots(0),
 	_mode(Ppu::NONE),
@@ -69,8 +70,12 @@ uint8_t Ppu::getRegister(const MemoryMap io) const
 	{
 	case MemoryMap::REGISTER_LCDC:
 		return _registers.lcdc;
+	case MemoryMap::REGISTER_STAT:
+		return _registers.stat;
 	case MemoryMap::REGISTER_SCY:
 		return _registers.scy;
+	case MemoryMap::REGISTER_SCX:
+		return _registers.scx;
 	case MemoryMap::REGISTER_LY:
 		return _registers.ly;
 	case MemoryMap::REGISTER_WX:
@@ -89,11 +94,19 @@ void Ppu::setRegister(const MemoryMap io, const uint8_t v)
 	case MemoryMap::REGISTER_LCDC:
 		_registers.set_lcdc(v);
 		break;
+	case MemoryMap::REGISTER_STAT:
+		_registers.stat &= 0x07;
+		_registers.stat |= v & 0x78;
+		break;
 	case MemoryMap::REGISTER_LY:
-		_registers.ly = v;
+		throw std::runtime_error("Trying to write ly");
+//		_registers.ly = v;
 		break;
 	case MemoryMap::REGISTER_SCY:
 		_registers.scy = v;
+		break;
+	case MemoryMap::REGISTER_SCX:
+		_registers.scx = v;
 		break;
 	case MemoryMap::REGISTER_WX:
 		_registers.wx = v;
@@ -115,9 +128,30 @@ void Ppu::Registers::set_lcdc(const uint8_t v)
 	lcdc = v;
 }
 
+void Ppu::set_stat_mode(const uint8_t mode)
+{
+	_registers.stat &= 0xfc;
+	_registers.stat |= mode;
+	switch (mode)
+	{
+	case 0:
+		if (_registers.stat&0x08)
+			_handlerWrite(0xff0f, _handlerRead(0xff0f) | 2);
+		break;
+	case 1:
+		if (_registers.stat & 0x10)
+			_handlerWrite(0xff0f, _handlerRead(0xff0f) | 2);
+		break;
+	case 2:
+		if (_registers.stat & 0x20)
+			_handlerWrite(0xff0f, _handlerRead(0xff0f) | 2);
+		break;
+	}
+}
+
 uint8_t Ppu::tileHigh(const uint8_t id, const uint8_t row, const bool isSprite) const
 {
-	const bool mode8000 = (isSprite) || (_registers.lcdc_tile_area());
+	const bool mode8000 = (isSprite) || (_registers.lcdc_tile_mode8000());
 
 	if ((mode8000) || (id > 127)) {
 		return _vram[(id << 4)+(row<<1)];
@@ -127,7 +161,7 @@ uint8_t Ppu::tileHigh(const uint8_t id, const uint8_t row, const bool isSprite) 
 
 uint8_t Ppu::tileLow(const uint8_t id, const uint8_t row, const bool isSprite) const
 {
-	const bool mode8000 = (isSprite) || (_registers.lcdc_tile_area());
+	const bool mode8000 = (isSprite) || (_registers.lcdc_tile_mode8000());
 
 	if ((mode8000) || (id > 127)) {
 		return _vram[(id << 4) | (row << 1) | 1];
@@ -184,14 +218,13 @@ uint8_t Ppu::executeOne() {
 		if (!tickModeOamSearch()) {
 			startModePixelTransfer();
 			_pixelFifo = {};
-
-			_set_stat(_get_stat() | 3);
 		}
 		break;
 	case DRAWING:
 		if (!tickModePixelTransfer())
 		{
 			_mode = HBLANK;
+			set_stat_mode(0);
 		}
 	}
 	_dots++;
@@ -199,25 +232,25 @@ uint8_t Ppu::executeOne() {
 	{
 		_dots = 0;
 		_registers.ly++;
-		if (_registers.ly == _get_lyc())
-			_set_stat(_get_stat() | 4);
-		else
-			_set_stat(_get_stat() | 0xfb);
+		_registers.stat &= 0xfb;
+		if (_registers.ly == _get_lyc()) {
+			_registers.stat |= 0x04;
+			if (_registers.stat & 0x40)
+				_handlerWrite(0xff0f, _handlerRead(0xff0f) | 2);
+		}
 
 		if (_registers.ly < 144) {
 			startModeOamSearch();
-			_set_stat((_get_stat() & 0xfc) | 2);
 		}
 		else if (_registers.ly == 144) {
 			_mode = VBLANK;
-			_set_stat((_get_stat() & 0xfc) | 1);
+			set_stat_mode(1);
 			_handlerWrite(0xff0f, _handlerRead(0xff0f) | 1);
 			draw();
 		}
 		else if (_registers.ly == 154) {
 			_registers.ly = 0;
 			startModeOamSearch();
-			_set_stat((_get_stat() & 0xfc) | 2);
 		}
 	}
 	return 0;

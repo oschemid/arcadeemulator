@@ -37,6 +37,7 @@ namespace ae::gui {
 	protected:
 		Engine* _engine;
 		std::map<string, widgets::Widget*> _widgets;
+		std::map<string, ImTextureID> _textures;
 
 		ImFont* _fontStandard;
 		ImFont* _fontTitle;

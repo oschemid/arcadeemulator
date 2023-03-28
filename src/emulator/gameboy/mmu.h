@@ -48,6 +48,7 @@ namespace ae::gameboy {
 			_io_callbacks.push_back(cb);
 		}
 		void map(MemoryMap, read_fn, write_fn);
+		void map(MemoryMap, MemoryMap, read_fn, write_fn);
 
 	protected:
 		std::vector< std::function<void(const uint8_t, const uint8_t)>> _io_callbacks;

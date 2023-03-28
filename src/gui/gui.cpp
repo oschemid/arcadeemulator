@@ -1,6 +1,6 @@
 #include "gui.h"
 
-#include "imgui_impl_sdl.h"
+#include "imgui_impl_sdl2.h"
 
 using namespace ae::gui;
 
@@ -63,7 +63,13 @@ void GuiManager::renderFrame() {
 }
 
 ImTextureID GuiManager::loadTexture(const string& filename) {
-    return _engine->createTextureFromFile(filename);
+    auto entry = _textures.find(filename);
+    if (entry == _textures.end()) {
+        ImTextureID id = _engine->createTextureFromFile(filename);
+        _textures.insert({ filename, id });
+        return id;
+    }
+    return entry->second;
 }
 
 widgets::Sidebar::Sidebar(const uint16_t width) : Widget(), _width(width) {
@@ -75,7 +81,7 @@ void widgets::Sidebar::draw(gui::GuiManager* gui) {
     ImGui::SetNextWindowSize(ImVec2(_width, displaysize.y));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
     ImGui::PushStyleColor(ImGuiCol_WindowBg, IM_COL32(50, 50, 50, 255));
-    ImGui::Begin("Panel", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoDecoration);
+    ImGui::Begin("Panel", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBringToFrontOnFocus);
 
     drawContents();
 

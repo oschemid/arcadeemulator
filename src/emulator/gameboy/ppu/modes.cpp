@@ -7,6 +7,7 @@ void Ppu::startModeOamSearch()
 	_modeOamSearch.init();
 	_selectedSprites.clear();
 	_mode = OAMSEARCH;
+	set_stat_mode(2);
 }
 
 bool Ppu::tickModeOamSearch()
@@ -32,13 +33,14 @@ bool Ppu::tickModeOamSearch()
 void Ppu::startModePixelTransfer()
 {
 	_modePixelTransfer.init();
-	_modePixelTransfer.mapAddress = (_registers.lcdc_bg_map()) ? 0x1c00 : 0x1800;
-
 	uint8_t y = _registers.ly + _registers.scy;
-	_modePixelTransfer.mapAddress += (y & 0xf8) << 2;
+	_modePixelTransfer.mapAddress = _registers.lcdc_bg_map() + ((y & 0xf8) << 2);
+
 	_modePixelTransfer.row = y & 0x07;
-	_modePixelTransfer.mapAddress += 0; // SCX
+	_modePixelTransfer.mapAddress += _registers.scx >> 3;
+	_modePixelTransfer.scrollX = _registers.scx & 0x07;
 	_mode = DRAWING;
+	set_stat_mode(3);
 }
 
 void Ppu::fetchModePixelTransfer()
@@ -114,15 +116,19 @@ bool Ppu::tickModePixelTransfer()
 			if ((_registers.lcdc_window_enable()) && (_registers.ly >= _registers.wy) && (_modePixelTransfer.lx + 7 == _registers.wx))
 			{
 				_modePixelTransfer.window = true;
-				_modePixelTransfer.mapAddress = (_registers.lcdc_window_map()) ? 0x1c00 : 0x1800;
 				uint8_t y = _registers.ly - _registers.wy;
-				_modePixelTransfer.mapAddress += (y & 0xf8) << 2;
+				_modePixelTransfer.mapAddress = _registers.lcdc_window_map() + ((y & 0xf8) << 2);
 				_modePixelTransfer.row = y & 0x07;
 				_modePixelTransfer.offset = 0;
 				_pixelFifo = {};
 				_modePixelTransfer.state = Mode3::TILE_ID;
 				return true;
 			}
+		}
+		if (_modePixelTransfer.scrollX > 0) {
+			for (; _modePixelTransfer.scrollX > 0; --_modePixelTransfer.scrollX)
+				_pixelFifo.pop_front();
+			return true;
 		}
 	}
 	if (_registers.lcdc_sprite_enable())

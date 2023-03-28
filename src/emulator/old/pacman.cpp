@@ -6,10 +6,10 @@
 #include "SDL2/SDL.h"
 
 
-static ae::emulator::RegistryHandler reg("pacman", [] { return std::make_unique<ae::machine::Pacman>(); });
+static ae::emulator::Emulator::registry reg("pacman", [](const ae::emulator::Game& game) { return std::make_unique<ae::machine::Pacman>(game); });
 
 
-ae::machine::Pacman::Pacman() :
+ae::machine::Pacman::Pacman(const emulator::Game&) :
 	memory(nullptr),
 	cpu(nullptr),
 	interrupt_enabled(false),
@@ -148,7 +148,7 @@ bool ae::machine::Pacman::writeMemory(const uint16_t p, const uint8_t v) {
 	}
 	return true;
 }
-void ae::machine::Pacman::init(const json&)
+void ae::machine::Pacman::init()
 {
 	_src = new uint32_t[224 * 288];
 
@@ -365,18 +365,6 @@ void ae::machine::Pacman::run(ae::gui::RasterDisplay* raster)
 }
 
 void ae::machine::Pacman::draw() {
-//	SDL_Renderer* renderer = _window->getRenderer();
-//	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-//	SDL_RenderClear(renderer);
-
-//	SDL_Rect rect;
-//	rect.x = 0;
-//	rect.y = 0;
-//	rect.w = 224 * 2;
-//	rect.h = 288 * 2;
-
-//	display->update(rect);
-//	SDL_RenderPresent(renderer);
 	updateDisplay(_src);
 	_raster->refresh((uint8_t*)_src);
 }

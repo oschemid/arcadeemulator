@@ -6,9 +6,9 @@
 using namespace ae::emulator;
 
 
-Emulator::Ptr Emulator::create(const string& id)
+Emulator::Ptr ae::emulator::create(const string& name, const Game& game)
 {
-	return Registry<Emulator::Ptr>::instance().create(id);
+	return ae::Registry<Emulator::Ptr,Emulator::creator_fn>::instance().create(name)(game);
 }
 
 uint64_t getNanoSeconds(std::chrono::time_point<std::chrono::high_resolution_clock>* start) {

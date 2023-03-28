@@ -9,7 +9,8 @@ SerialLink::SerialLink() :
 	_count{ 0 },
 	_clock{ 0 },
 	_sb{ 0 },
-	_sc{ 0 }
+	_sc{ 0 },
+	Device{Device::MEM_AVAILABLE}
 {}
 
 uint8_t SerialLink::getRegister(const MemoryMap io) const

@@ -47,6 +47,11 @@ void Mmu::map(MemoryMap address, read_fn readfn, write_fn writefn)
 		return;
 	}
 }
+void Mmu::map(MemoryMap address1, MemoryMap address2, read_fn readfn, write_fn writefn)
+{
+	for (int i = address1; i <= address2; i++)
+		map(static_cast<MemoryMap>(i), readfn, writefn);
+}
 
 void Mmu::notify(const uint8_t io, const uint8_t value) const {
 	for (auto& cb : _io_callbacks)

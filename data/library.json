@@ -3,47 +3,201 @@
     "id": "1",
     "title": "Tetris",
     "console": "gameboy",
-    "roms": "roms/gameboy/tetris.gb",
-    "cover": "roms/gameboy/tetris.jpg"
+    "cover": "roms/gameboy/tetris.jpg",
+    "versions": [
+      {
+        "version": "original",
+        "roms": "roms/gameboy/tetris.gb"
+      }
+    ]
   },
   {
     "id": "2",
     "title": "Pacman",
-    "console": "pacman"
+    "console": "pacman",
+    "versions": [
+      {
+        "version": "original",
+        "roms":  "pacman.zip"
+      }
+    ]
   },
   {
     "id": "3",
     "title": "Alleyway",
     "console": "gameboy",
-    "roms": "roms/gameboy/alleyway.gb",
-    "cover": "roms/gameboy/alleyway.jpg"
+    "cover": "roms/gameboy/alleyway.jpg",
+    "versions": [
+      {
+        "version": "original",
+        "roms": "roms/gameboy/alleyway.gb"
+      }
+    ]
   },
   {
     "id": "4",
     "title": "Space Invaders",
-    "console": "taito8080",
-    "roms": {
-      "id": "spaceinvaders",
-      "path": "roms/taito8080/spaceinvaders"
+    "console": {
+      "name": "midway8080",
+      "hardware": "spaceinvaders"
     },
-    "settings": {
-      "version": "sitv",
-      "ships": 1,
-      "extraShip": true,
-      "coinInfo": true
-    }
+    "versions": [
+      {
+        "version": "sisv2",
+        "roms": "spaceinvaders/sisv2.zip",
+        "settings": [
+          {
+            "id": "coinInfo",
+            "name": "Display Coin",
+            "type": "list",
+            "value": 1,
+            "values": [ "False", "True" ]
+          },
+          {
+            "id": "ships",
+            "name": "Ships",
+            "type": "list",
+            "value": 0,
+            "values": [ "3", "4", "5", "6" ]
+          },
+          {
+            "id": "extra",
+            "name": "Extra Ship",
+            "type": "list",
+            "value": 0,
+            "values": [ "1500", "1000" ]
+          }
+        ]
+      },
+      {
+        "version": "sitv",
+        "roms": "spaceinvaders/sitv.zip",
+        "settings": [
+          {
+            "id": "coinInfo",
+            "name": "Display Coin",
+            "type": "list",
+            "value": 1,
+            "values": [ "False", "True" ]
+          },
+          {
+            "id": "ships",
+            "name": "Ships",
+            "type": "list",
+            "value": 0,
+            "values": [ "3", "4", "5", "6" ]
+          },
+          {
+            "id": "extra",
+            "name": "Extra Ship",
+            "type": "list",
+            "value": 0,
+            "values": [ "1500", "1000" ]
+          }
+        ]
+      },
+      {
+        "version": "midway",
+        "default": true,
+        "roms": "spaceinvaders/invaders.zip",
+        "settings": [
+          {
+            "id": "coinInfo",
+            "name": "Display Coin",
+            "type": "list",
+            "value": 1,
+            "values": [ "False", "True" ]
+          },
+          {
+            "id": "ships",
+            "name": "Ships",
+            "type": "list",
+            "value": 0,
+            "values": [ "3", "4", "5", "6" ]
+          },
+          {
+            "id": "extra",
+            "name": "Extra Ship",
+            "type": "list",
+            "value": 0,
+            "values": [ "1500", "1000" ]
+          }
+        ]
+      }
+    ]
   },
   {
     "id": "5",
     "title": "Space Chaser",
-    "console": "taito8080",
-    "roms": {
-      "id": "spacechaser",
-      "path": "roms/taito8080/spacechaser"
+    "console": {
+      "name": "midway8080",
+      "hardware": "spacechaser"
     },
-    "settings": {
-      "ships": 1,
-      "difficulty": 0
-    }
+    "versions": [
+      {
+        "version": "CV",
+        "roms": "spacechaser/schasercv.zip",
+        "settings": [
+          {
+            "id": "difficulty",
+            "name": "Difficulty",
+            "type": "list",
+            "value": 0,
+            "values": [ "Normal", "Hard" ]
+          },
+          {
+            "id": "ships",
+            "name": "Ships",
+            "type": "list",
+            "value": 0,
+            "values": ["3", "4"]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "6",
+    "title": "Sea Wolf",
+    "console": {
+      "name": "midway8080",
+      "hardware": "seawolf"
+    },
+    "versions": [
+      {
+        "version": "default",
+        "roms": "seawolf/seawolf.zip"
+      }
+    ]
+  },
+  {
+    "id": "7",
+    "title": "Amazing Maze",
+    "console": {
+      "name": "midway8080",
+      "hardware": "amazingmaze"
+    },
+    "versions": [
+      {
+        "version": "default",
+        "roms": "maze.zip",
+        "settings": [
+          {
+            "id": "coinage",
+            "name": "Coin",
+            "type": "list",
+            "value": 0,
+            "values": [ "One coin One credit", "Two coins One credit", "One coin Two credits", "Two coins Two redits" ]
+          },
+          {
+            "id": "gametime",
+            "name": "Two player time",
+            "type": "list",
+            "value": 0,
+            "values": [ "6 mins", "4 mins" ]
+          }
+        ]
+      }
+    ]
   }
 ]

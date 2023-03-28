@@ -93,7 +93,29 @@ ImTextureID Engine::createTexture(const uint16_t width, const uint16_t height)
             .layerCount = 1},
         .imageExtent = vk::Extent3D(width, height, 1)
     };
-    cbuffer.copyBufferToImage(buffer.first, image.first, vk::ImageLayout::eTransferDstOptimal, { copyRegion });
+//    cbuffer.copyBufferToImage(buffer.first, image.first, vk::ImageLayout::eTransferDstOptimal, { copyRegion });
+    vk::CopyCommandTransformInfoQCOM aaa{ .transform = vk::SurfaceTransformFlagBitsKHR::eRotate90 };
+    vk::BufferImageCopy2 cp{
+        .pNext = static_cast<void*>(&aaa),
+        .bufferOffset = 0,
+        .bufferRowLength = 0,
+        .bufferImageHeight = 0,
+        .imageSubresource = {
+            .aspectMask = vk::ImageAspectFlagBits::eColor,
+            .mipLevel = 0,
+            .baseArrayLayer = 0,
+            .layerCount = 1},
+        .imageExtent = vk::Extent3D(width, height, 1)
+    };
+    std::vector<vk::BufferImageCopy2> ii = { cp };
+    vk::CopyBufferToImageInfo2 i{
+        .srcBuffer = buffer.first,
+        .dstImage = image.first,
+        .dstImageLayout = vk::ImageLayout::eTransferDstOptimal,
+        .regionCount = 1,
+        .pRegions = ii.data()
+    };
+    cbuffer.copyBufferToImage2(i);
     vk::ImageMemoryBarrier imageMemoryBarrier2{
         .srcAccessMask = vk::AccessFlagBits::eTransferWrite,
         .dstAccessMask = vk::AccessFlagBits::eShaderRead,

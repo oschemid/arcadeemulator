@@ -1,4 +1,6 @@
 #include "widgets.h"
+#include "imgui_internal.h"
+
 
 using namespace ae;
 
@@ -32,11 +34,66 @@ void GameSelection::setFiltered(Console console) {
     if (console.id() != _filtered) {
         _filtered = console.id();
         _console = console;
-        _selected = Game();
+        _selected = nullptr;
     }
 }
 
-void GameSelection::drawTile(const Game& game, VkDescriptorSet ds) {
+bool GameSelection::drawSettings(Game& game) {
+    if (ImGui::BeginPopupModal(("Settings " + game.title()).c_str())) {
+        auto versions = game.versions();
+        auto current = game.currentVersion();
+        string currentversion = (current)? current->_version : "";
+
+        if (versions.size() > 1) {
+            if (ImGui::BeginCombo("Version", currentversion.c_str(), ImGuiComboFlags_None))
+            {
+                for (auto version : versions)
+                {
+                    const bool is_selected = (currentversion == version);
+                    if (ImGui::Selectable(version.c_str(), is_selected))
+                        game.setCurrentVersion(version);
+                    if (is_selected)
+                        ImGui::SetItemDefaultFocus();
+                }
+                ImGui::EndCombo();
+            }
+        }
+        else {
+            currentversion = versions[0];
+            game.setCurrentVersion(currentversion);
+            current = game.currentVersion();
+        }
+        if (!currentversion.empty()) {
+            if (current->settings.is_array()) {
+                for (auto& setting : current->settings) {
+                    string name = setting.at("name");
+                    string type = setting.at("type");
+                    int value = setting.at("value");
+                    string value_str;
+                    int maxvalue;
+                    if (type == "bool") {
+                        value_str = (value == 1) ? "True" : "False";
+                        maxvalue = 1;
+                    }
+                    else {
+                        value_str = setting.at("values")[value];
+                        maxvalue = setting.at("values").size()-1;
+                    }
+                    if (ImGui::SliderInt(name.c_str(), &value, 0, maxvalue, value_str.c_str())) {
+                        setting["value"] = value;
+                    }
+                }
+            }
+        }
+        if (ImGui::Button("Close")) {
+            ImGui::CloseCurrentPopup();
+        }
+        ImGui::EndPopup();
+    }
+    return true;
+}
+
+void GameSelection::drawTile(Game& game, VkDescriptorSet ds) {
     const string title = game.title();
     const uint8_t size = 200;
     ImGui::BeginChild(title.c_str(), ImVec2(size, size));
@@ -51,19 +108,26 @@ void GameSelection::drawTile(const Game& game, VkDescriptorSet ds) {
     }
     bool s = ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenOverlapped);
 
-
     // Image
     const uint8_t imagesize = 100;
     ImVec2 image_topleft = ImVec2(topleft.x + size / 2 - imagesize / 2, topleft.y + imagesize / 4);
     ImVec2 image_bottomright = ImVec2(image_topleft.x + imagesize, image_topleft.y + imagesize);
     if (s) {
+        _selected = &game;
         selected = title;
-        ImGui::SetCursorScreenPos(ImVec2(topleft.x + 80, image_bottomright.y + 20));
-        if (ImGui::Button("Run", ImVec2(40, 40))) {
-            _selected = game;
+        ImGui::SetCursorScreenPos(ImVec2(topleft.x + 40, image_bottomright.y + 20));
+        if (ImGui::ArrowButton("Run", ImGuiDir_Right)) {
+            _action = "run";
+        }
+        ImGui::SetItemAllowOverlap();
+        ImGui::SetCursorScreenPos(ImVec2(topleft.x + 120, image_bottomright.y + 20));
+        if (ImGui::Button("Config", ImVec2(40, 40))) {
+            ImGui::OpenPopup(("Settings "+title).c_str());
+            _action = "settings";
         }
         ImGui::SetItemAllowOverlap();
     }
+    drawSettings(game);
 
     if (ds!=0)
         draw_list->AddImage(ds, image_topleft, image_bottomright);
@@ -82,21 +146,17 @@ void GameSelection::draw(gui::GuiManager* gui) {
     ImGui::SetNextWindowSize(ImVec2(size, displaysize.y));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
     ImGui::PushStyleColor(ImGuiCol_WindowBg, IM_COL32(100, 100, 100, 255));
-    ImGui::Begin("Panel2", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoDecoration);
+    ImGui::Begin("Panel2", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBringToFrontOnFocus);
 
     ImGui::PushFont(gui->fontTitle());
     ImGui::Text(_console.name().c_str());
     ImGui::PopFont();
     ImGui::Columns(nbcolumns, 0, false);
     for (auto& game : _library.games(_filtered)) {
-        ImTextureID id = game.coverId();
-        if (id == 0) {
-            string filename = game.cover();
-            if (filename != "") {
-                id = gui->loadTexture(filename);
-                game.setCoverId(id);
-            }
-        }
+        ImTextureID id{ 0 };
+        string filename = game.cover();
+        if (!filename.empty())
+            id = gui->loadTexture(filename);
         drawTile(game, static_cast<VkDescriptorSet>(id));
         ImGui::NextColumn();
     }
@@ -105,11 +165,11 @@ void GameSelection::draw(gui::GuiManager* gui) {
     ImGui::End();
 }
 
-RasterDisplay::RasterDisplay(const string& name, const ImTextureID id) : _name(name), _textureid(id)
+RasterDisplay::RasterDisplay(const string& name, const ImTextureID id, const uint16_t width, const uint16_t height) : _name(name), _textureid(id), _texturesize(ImVec2(width,height))
 {}
 
 void RasterDisplay::draw(gui::GuiManager*) {
     ImGui::Begin(_name.c_str());
-    ImGui::Image(_textureid, ImVec2(224*2, 288*2));
+    ImGui::Image(_textureid, _texturesize);
     ImGui::End();
 }
