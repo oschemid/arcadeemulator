@@ -57,7 +57,7 @@ void ae::gameboy::Gameboy::init()
 
 extern uint64_t getNanoSeconds(std::chrono::time_point<std::chrono::high_resolution_clock>* start);
 
-void ae::gameboy::Gameboy::run(ae::gui::RasterDisplay* raster)
+void ae::gameboy::Gameboy::run(ae::display::RasterDisplay* raster)
 {
 	_ppu.init(raster);
 

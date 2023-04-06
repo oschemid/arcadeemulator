@@ -34,6 +34,6 @@ namespace ae::gameboy
 
 		emulator::SystemInfo getSystemInfo() const override;
 		void init() override;
-		void run(ae::gui::RasterDisplay*) override;
+		void run(ae::display::RasterDisplay*) override;
 	};
 }

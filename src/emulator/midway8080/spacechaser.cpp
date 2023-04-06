@@ -9,6 +9,23 @@ SpaceChaser::SpaceChaser() :
 	GameBoard{DisplayOrientation::Vertical}
 {
 	_colorram = new uint8_t[0x2000];
+	_port0 = 0xff;
+	_port1.set(0, "_COIN");
+	_port1.set(1, "_START2");
+	_port1.set(2, "_START1");
+	_port1.set(3, "_JOY1_DOWN");
+	_port1.set(4, "_JOY1_FIRE");
+	_port1.set(5, "_JOY1_LEFT");
+	_port1.set(6, "_JOY1_RIGHT");
+	_port1.set(7, "_JOY1_UP");
+
+	_port2.set(0, "ships");
+	_port2.set(1, "_JOY2_DOWN");
+	_port2.set(2, "_JOY2_UP");
+	_port2.set(3, "difficulty");
+	_port2.set(4, "_JOY2_FIRE");
+	_port2.set(5, "_JOY2_LEFT");
+	_port2.set(6, "_JOY2_RIGHT");
 }
 
 SpaceChaser::~SpaceChaser()
@@ -21,8 +38,8 @@ void SpaceChaser::init(const emulator::Game& settings)
 	_shifter = xprocessors::MB14241::create();
 	_controller = ae::controller::ArcadeController::create();
 
-	_port2 |= settings.settings("ships");
-	_port2 |= settings.settings("difficulty") << 3;
+	_port1.init(settings);
+	_port2.init(settings);
 }
 
 std::vector<std::pair<uint16_t, std::string>> SpaceChaser::romFiles() const
@@ -85,39 +102,11 @@ uint8_t SpaceChaser::in(const uint8_t port) {
 	uint8_t result = 0;
 	switch (port) {
 	case 0:
-		return 0xff;
-		break;
+		return _port0.get();
 	case 1:
-		if (_controller->joystick1(ae::controller::ArcadeController::joystick_control::left))
-			result |= 0x20;
-		if (_controller->joystick1(ae::controller::ArcadeController::joystick_control::right))
-			result |= 0x40;
-		if (_controller->joystick1(ae::controller::ArcadeController::joystick_control::down))
-			result |= 0x08;
-		if (_controller->joystick1(ae::controller::ArcadeController::joystick_control::up))
-			result |= 0x80;
-		if (_controller->joystick1(ae::controller::ArcadeController::joystick_control::fire))
-			result |= 0x10;
-		if (_controller->coin())
-			result |= 0x01;
-		if (_controller->button(ae::controller::ArcadeController::button_control::start2))
-			result |= 0x02;
-		if (_controller->button(ae::controller::ArcadeController::button_control::start1))
-			result |= 0x04;
-		return result;
+		return _port1.get();
 	case 2:
-		result = _port2;
-		if (_controller->joystick2(ae::controller::ArcadeController::joystick_control::left))
-			result |= 0x20;
-		if (_controller->joystick2(ae::controller::ArcadeController::joystick_control::right))
-			result |= 0x40;
-		if (_controller->joystick2(ae::controller::ArcadeController::joystick_control::down))
-			result |= 0x02;
-		if (_controller->joystick2(ae::controller::ArcadeController::joystick_control::up))
-			result |= 0x04;
-		if (_controller->joystick2(ae::controller::ArcadeController::joystick_control::fire))
-			result |= 0x10;
-		return result;
+		return _port2.get();
 	case 3:
 		return _shifter->readValue();
 	default:

@@ -25,9 +25,9 @@ namespace ae
 
 			void load_palettes();
 			void draw();
-			void draw_tile(uint32_t*, const uint8_t, const uint8_t, const uint8_t, const uint8_t) const;
-			void draw_sprite(uint32_t*, const uint8_t, const uint8_t, const uint8_t, const uint8_t, const bool, const bool) const;
-			virtual void updateDisplay(uint32_t*);
+			void draw_tile(const uint8_t, const uint8_t, const uint8_t, const uint8_t) const;
+			void draw_sprite(const uint8_t, const uint8_t, const uint8_t, const uint8_t, const bool, const bool) const;
+			virtual void updateDisplay();
 
 			virtual void loadMemory();
 			bool writeMemory(const uint16_t, const uint8_t);
@@ -41,8 +41,7 @@ namespace ae
 			bool sound_enabled;
 			bool flip_screen;
 
-			ae::gui::RasterDisplay* _raster;
-			uint32_t* _src;
+			ae::display::RasterDisplay* _raster;
 
 			std::chrono::steady_clock::time_point StartTime;
 
@@ -73,7 +72,7 @@ namespace ae
 
 			emulator::SystemInfo getSystemInfo() const override;
 			void init() override;
-			void run(ae::gui::RasterDisplay*) override;
+			void run(ae::display::RasterDisplay*) override;
 		};
 	}
 }

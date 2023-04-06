@@ -51,6 +51,8 @@ namespace ae::gui {
 
 		ImFont* fontTitle() { return _fontTitle; }
 		ImTextureID loadTexture(const string&);
+		ImTextureID createTexture(const uint16_t, const uint16_t);
+		void refreshTexture(ImTextureID, const uint8_t*);
 		bool processEvent();
 		void renderFrame();
 	};

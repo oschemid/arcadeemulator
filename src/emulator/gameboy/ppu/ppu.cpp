@@ -10,11 +10,10 @@ Ppu::Ppu() :
 	_mode(Ppu::NONE),
 	_dmatransfer(0)
 {
-	_src = new uint32_t[160 * 144];
 	_vram = new uint8_t[0x2000];
 }
 
-void Ppu::init(ae::gui::RasterDisplay* raster)
+void Ppu::init(ae::display::RasterDisplay* raster)
 {
 	_raster = raster;
 }
@@ -99,7 +98,7 @@ void Ppu::setRegister(const MemoryMap io, const uint8_t v)
 		_registers.stat |= v & 0x78;
 		break;
 	case MemoryMap::REGISTER_LY:
-		throw std::runtime_error("Trying to write ly");
+//		throw std::runtime_error("Trying to write ly");
 //		_registers.ly = v;
 		break;
 	case MemoryMap::REGISTER_SCY:
@@ -172,16 +171,16 @@ uint8_t Ppu::tileLow(const uint8_t id, const uint8_t row, const bool isSprite) c
 void Ppu::pixel(const uint8_t x, const uint8_t y, const uint8_t c) {
 	switch (c) {
 	case 0x00:
-		_src[x + 160 * y] = 0xff0fbc9b;
+		_raster->set(x, y, { .red = 0x9b, .green = 0xbc, .blue = 0x0f }); // src[x + 160 * y] = 0xff0fbc9b;
 		break;
 	case 0x01:
-		_src[x + 160 * y] = 0xff0fac8b;
+		_raster->set(x, y, { .red = 0x8b, .green = 0xac, .blue = 0x0f }); // src[x + 160 * y] = 0xff0fac8b;
 		break;
 	case 0x02:
-		_src[x + 160 * y] = 0xff306230;
+		_raster->set(x, y, { .red = 0x30, .green = 0x62, .blue = 0x30 }); //src[x + 160 * y] = 0xff306230;
 		break;
 	case 0x03:
-		_src[x + 160 * y] = 0xff0f380f;
+		_raster->set(x, y, { .red = 0x0f, .green = 0x38, .blue = 0x0f }); //src[x + 160 * y] = 0xff0f380f;
 		break;
 	}
 }
@@ -257,5 +256,5 @@ uint8_t Ppu::executeOne() {
 }
 
 void Ppu::draw() {
-	_raster->refresh((uint8_t*)_src);
+	_raster->refresh();
 }

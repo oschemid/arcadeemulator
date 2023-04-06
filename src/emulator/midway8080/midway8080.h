@@ -4,10 +4,28 @@
 #include "xprocessors.h"
 #include "mb14241.h"
 #include <vector>
+#include <bitset>
+#include "../../controller/arcadecontroller.h"
 
 
 namespace ae::midway8080
 {
+	class Port
+	{
+	public:
+		Port(const uint8_t);
+		void set(uint8_t, const string&);
+		void reset();
+
+		void init(const emulator::Game&);
+		void tick(const ae::controller::ArcadeController&);
+		uint8_t get() const;
+	protected:
+		using definition = std::tuple<uint8_t, string>;
+
+		std::bitset<8> _port;
+		std::vector<definition> _definition;
+	};
 	class GameBoard
 	{
 	public:
@@ -42,7 +60,7 @@ namespace ae::midway8080
 
 		emulator::SystemInfo getSystemInfo() const override;
 		void init() override;
-		void run(ae::gui::RasterDisplay*) override;
+		void run(ae::display::RasterDisplay*) override;
 
 	protected:
 		xprocessors::Cpu::Ptr _cpu{ nullptr };
@@ -50,7 +68,7 @@ namespace ae::midway8080
 		emulator::Game _game;
 		uint8_t* _memory{ nullptr };
 		bool _romextended{ false };
-		uint32_t* _src;
+		ae::display::RasterDisplay* _raster;
 
 		void updateDisplay();
 	};

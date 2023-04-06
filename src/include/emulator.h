@@ -1,17 +1,14 @@
 #pragma once
 #include "types.h"
 #include "registry.h"
-#include "../gui/widgets.h"
+#include "display.h"
 
 
 namespace ae::emulator
 {
 	struct SystemInfo
 	{
-		struct Geometry {
-			uint16_t width;
-			uint16_t height;
-		} geometry;
+		geometry_t geometry;
 	};
 
 	class Game
@@ -20,7 +17,7 @@ namespace ae::emulator
 		const string& hardware() const { return _hardware; }
 		const string& version() const { return _version; }
 		const string& romsfile() const { return _romsfile; }
-		uint8_t settings(const string& name) const { return _settings.find(name)->second; }
+		uint8_t settings(const string& name) const { auto res = _settings.find(name); if (res == _settings.end()) throw std::out_of_range("Unknown"); return res->second; }
 
 		Game(const string& h,
 			 const string& v,
@@ -47,7 +44,7 @@ namespace ae::emulator
 		virtual void init() = 0;
 
 		virtual SystemInfo getSystemInfo() const = 0;
-		virtual void run(ae::gui::RasterDisplay*) = 0;
+		virtual void run(ae::display::RasterDisplay*) = 0;
 
 	protected:
 		Emulator() = default;

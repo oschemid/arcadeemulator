@@ -158,6 +158,7 @@
     <ClCompile Include="libraries\xos-processors\src\cpu\z80family\z80opcodes_cb.cpp" />
     <ClCompile Include="libraries\xos-processors\src\cpu\z80family\z80opcodes_ed.cpp" />
     <ClCompile Include="src\controller\arcadecontroller.cpp" />
+    <ClCompile Include="src\display\display.cpp" />
     <ClCompile Include="src\emulator\emulator.cpp" />
     <ClCompile Include="src\emulator\gameboy\apu.cpp" />
     <ClCompile Include="src\emulator\gameboy\channel.cpp" />
@@ -224,8 +225,10 @@
     <ClInclude Include="src\gui\widgets.h" />
     <ClInclude Include="src\emulator\midway8080\midway8080.h" />
     <ClInclude Include="src\include\dipswitch.h" />
+    <ClInclude Include="src\include\display.h" />
     <ClInclude Include="src\include\emulator.h" />
     <ClInclude Include="src\include\file.h" />
+    <ClInclude Include="src\include\game.h" />
     <ClInclude Include="src\include\registry.h" />
     <ClInclude Include="src\settings\console.h" />
     <ClInclude Include="src\settings\library.h" />

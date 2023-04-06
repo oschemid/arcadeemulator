@@ -291,33 +291,6 @@ void Engine::FramePresent() {
     _vulkanwindow.SemaphoreIndex = (_vulkanwindow.SemaphoreIndex + 1) % _vulkanwindow.ImageCount; // Now we can use the next set of semaphores
 }
 
-RasterDisplay::RasterDisplay(Engine* engine) :
-    _engine{ engine }
-{}
-
-RasterDisplay::~RasterDisplay()
-{
-    //_device.freeCommandBuffers(_pool, { _buffer });
-    //_device.destroyCommandPool(_pool);
-    //_device.freeMemory(_imageMemory);
-    //_device.destroyImage(_image);
-}
-
-void RasterDisplay::init(const uint16_t width, const uint16_t height)
-{
-    _textureID = _engine->createTexture(width, height);
-}
-
-void RasterDisplay::refresh(uint8_t* src)
-{
-    _engine->fillTextureFromBuffer(_textureID, src);
-}
-
-
-RasterDisplay* Engine::getRasterDisplay() {
-    return new RasterDisplay(this);
-}
-
 uint32_t Engine::findMemoryType(const uint32_t type, const vk::MemoryPropertyFlags properties)
 {
     const vk::PhysicalDeviceMemoryProperties memoryproperties = _gpu.getMemoryProperties();

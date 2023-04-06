@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "emulator.h"
+#include "display.h"
 #include "src/gui/vulkan/engine.h"
 #include "src/gui/gui.h"
 #include "src/gui/widgets.h"
@@ -43,14 +44,12 @@ int main(int argc, char** argv)
 	std::thread* t2 = nullptr;
 	bool done = false;
 	ae::emulator::Emulator::Ptr si = nullptr;
-	ae::gui::RasterDisplay* raster = nullptr;
-	ae::gui::RasterDisplay* raster2 = nullptr;
+	ae::DisplayWidget* r1 = nullptr;
+	ae::DisplayWidget* r2 = nullptr;
 //	ae::gameboy::debug::Debugger* debugger = nullptr;
 	std::string n1 = "TEST";
 	std::string n2 = "TILEMAP";
-	ae::RasterDisplay* r1;
-	ae::RasterDisplay* r2;
-
+	ae::display::RasterDisplay* raster = nullptr;
 	while (!done)
 	{
 		done = gui.processEvent();
@@ -71,9 +70,9 @@ int main(int argc, char** argv)
 				si = ae::emulator::create(sidebar.getSelected().id(),game);
 				si->init();
 				ae::emulator::SystemInfo requirements = si->getSystemInfo();
-				raster = engine.getRasterDisplay();
-				raster->init(requirements.geometry.width, requirements.geometry.height);
-				r1 = new ae::RasterDisplay(n1, raster->getID(), requirements.geometry.width*2, requirements.geometry.height*2);
+				raster = new ae::display::RasterDisplay(requirements.geometry);
+				raster->init();
+				r1 = new ae::DisplayWidget(n1, raster, requirements.geometry.width, requirements.geometry.height);
 				gui.addWidget("rasterdisplay", r1);
 				t = new std::thread([&si, &t, &raster]() { si->run(raster); t->detach(); });
 

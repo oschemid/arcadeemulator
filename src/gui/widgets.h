@@ -1,4 +1,5 @@
 #pragma once
+#include "display.h"
 #include "gui.h"
 #include "../settings/console.h"
 #include "../settings/library.h"
@@ -35,14 +36,15 @@ namespace ae {
 		void resetSelected() { _selected = nullptr; _action = ""; }
 	};
 
-	class RasterDisplay : public gui::widgets::Widget {
+	class DisplayWidget : public gui::widgets::Widget {
 	protected:
 		string _name;
-		ImTextureID _textureid;
+		display::RasterDisplay* _raster{ nullptr };
+		ImTextureID _textureid{ nullptr };
 		ImVec2 _texturesize;
 
 	public:
-		RasterDisplay(const string&, const ImTextureID, const uint16_t, const uint16_t);
+		DisplayWidget(const string&, display::RasterDisplay*, const uint16_t, const uint16_t);
 		void draw(gui::GuiManager*) override;
 	};
 }

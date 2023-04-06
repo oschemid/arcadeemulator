@@ -17,12 +17,12 @@ namespace ae::midway8080
 		void out(const uint8_t, const uint8_t) override;
 		uint8_t in(const uint8_t) override;
 
-		void controllerTick() override { _controller->tick(); }
+		void controllerTick() override { _controller->tick(); _port0.tick(*_controller); _port1.tick(*_controller); }
 		rgb_t color(const uint8_t, const uint8_t, const bool) const override;
 
 	protected:
 		ae::controller::ArcadeController::Ptr _controller{ nullptr };
-
-		uint8_t _port1{ 0 };
+		Port _port0{ 0 };
+		Port _port1{ 0 };
 	};
 }

@@ -8,14 +8,27 @@ static ae::midway8080::RegistryHandler reg{ "amazingmaze", [] { return std::uniq
 AmazingMaze::AmazingMaze() :
 	GameBoard{ DisplayOrientation::Horizontal }
 {
+	_port0.set(0, "_JOY1_LEFT");
+	_port0.set(1, "_JOY1_RIGHT");
+	_port0.set(2, "_JOY1_DOWN");
+	_port0.set(3, "_JOY1_UP");
+	_port0.set(4, "_JOY2_LEFT");
+	_port0.set(5, "_JOY2_RIGHT");
+	_port0.set(6, "_JOY2_DOWN");
+	_port0.set(7, "_JOY2_UP");
+
+	_port1.set(4, "coinage");
+	_port1.set(6, "gametime");
+	_port1.set(3, "_COIN");
+	_port1.set(0, "_START1");
+	_port1.set(1, "_START2");
 }
 
 void AmazingMaze::init(const emulator::Game& settings)
 {
 	_controller = ae::controller::ArcadeController::create();
-
-	_port1 |= settings.settings("coinage") << 4;
-	_port1 |= settings.settings("gametime") << 6;
+	_port0.init(settings);
+	_port1.init(settings);
 }
 
 std::vector<std::pair<uint16_t, std::string>> AmazingMaze::romFiles() const
@@ -36,33 +49,9 @@ uint8_t AmazingMaze::in(const uint8_t port) {
 	uint8_t result{ 0 };
 	switch (port) {
 	case 0:
-		result = 0;
-		if (_controller->joystick1(ae::controller::ArcadeController::joystick_control::left))
-			result |= 0x01;
-		if (_controller->joystick1(ae::controller::ArcadeController::joystick_control::right))
-			result |= 0x02;
-		if (_controller->joystick1(ae::controller::ArcadeController::joystick_control::down))
-			result |= 0x04;
-		if (_controller->joystick1(ae::controller::ArcadeController::joystick_control::up))
-			result |= 0x08;
-		if (_controller->joystick2(ae::controller::ArcadeController::joystick_control::left))
-			result |= 0x10;
-		if (_controller->joystick2(ae::controller::ArcadeController::joystick_control::right))
-			result |= 0x20;
-		if (_controller->joystick2(ae::controller::ArcadeController::joystick_control::down))
-			result |= 0x40;
-		if (_controller->joystick2(ae::controller::ArcadeController::joystick_control::up))
-			result |= 0x80;
-		return result;
+		return _port0.get();
 	case 1:
-		result = _port1;
-		if (_controller->coin())
-			result |= 0x08;
-		if (_controller->button(ae::controller::ArcadeController::button_control::start2))
-			result |= 0x02;
-		if (_controller->button(ae::controller::ArcadeController::button_control::start1))
-			result |= 0x01;
-		return result;
+		return _port1.get();
 	default:
 		return result;
 	}

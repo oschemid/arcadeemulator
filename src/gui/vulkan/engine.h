@@ -26,22 +26,6 @@ namespace ae::gui {
 		SDL_Window* get() const { return _window; }
 	};
 
-	class RasterDisplay {
-	protected:
-		Engine *_engine;
-		ImTextureID _textureID;
-
-	public:
-		RasterDisplay(Engine*);
-		~RasterDisplay();
-
-		void init(const uint16_t, const uint16_t);
-		void refresh(uint8_t*);
-		ImTextureID getID() const {
-			return _textureID;
-		};
-	};
-
 	class Engine {
 	protected:
 		struct Texture
@@ -114,7 +98,5 @@ namespace ae::gui {
 		void fillTextureFromBuffer(const ImTextureID&, const unsigned char*);
 
 		void render(ImDrawData*);
-
-		RasterDisplay* getRasterDisplay();
 	};
 }

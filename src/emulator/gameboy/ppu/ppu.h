@@ -1,5 +1,6 @@
 #pragma once
 #include "types.h"
+#include "display.h"
 #include "xprocessors.h"
 #include "../memorymap.h"
 #include "../../../gui/vulkan/engine.h"
@@ -13,7 +14,7 @@ namespace ae::gameboy
 	public:
 		Ppu();
 
-		void init(ae::gui::RasterDisplay*);
+		void init(ae::display::RasterDisplay*);
 
 		uint8_t readOAM(const uint16_t) const;
 		void writeOAM(const uint16_t, const uint8_t);
@@ -106,8 +107,7 @@ namespace ae::gameboy
 
 		uint16_t _dots;
 
-		ae::gui::RasterDisplay* _raster;
-		uint32_t* _src;
+		ae::display::RasterDisplay* _raster;
 		
 		uint8_t _dmatransfer;
 		uint16_t _dmaaddress;

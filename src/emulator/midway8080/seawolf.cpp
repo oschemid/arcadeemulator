@@ -1,4 +1,6 @@
 #include "seawolf.h"
+#include "SDL2/SDL.h"
+
 
 using namespace ae::midway8080;
 

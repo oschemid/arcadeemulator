@@ -150,8 +150,6 @@ bool ae::machine::Pacman::writeMemory(const uint16_t p, const uint8_t v) {
 }
 void ae::machine::Pacman::init()
 {
-	_src = new uint32_t[224 * 288];
-
 	cpu = xprocessors::Cpu::create("Z80");
 	memory = newMemory(0x5000);
 	videorom = newMemory(0x2000);
@@ -224,8 +222,7 @@ void ae::machine::Pacman::load_palettes() {
 	}
 }
 
-void ae::machine::Pacman::draw_tile(uint32_t* pixels,
-									const uint8_t x,
+void ae::machine::Pacman::draw_tile(const uint8_t x,
 									const uint8_t y,
 									const uint8_t tile,
 									const uint8_t palette) const {
@@ -239,14 +236,13 @@ void ae::machine::Pacman::draw_tile(uint32_t* pixels,
 	};
 	for (uint8_t i = 0; i < 64; ++i) {
 		const uint8_t p = tiles[tile * 64 + i];
-		pixels[(x * 8 + offset_x) + (y * 8 + offset_y) * 224] = colors_tile[p];
+		_raster->set(x * 8 + offset_x, y * 8 + offset_y, colors_tile[p]);
 		if (++offset_x == 8) {
 			offset_x = 0; offset_y++;
 		}
 	}
 }
-void ae::machine::Pacman::draw_sprite(uint32_t* pixels,
-									  const uint8_t x,
+void ae::machine::Pacman::draw_sprite(const uint8_t x,
 									  const uint8_t y,
 									  const uint8_t sprite,
 									  const uint8_t palette,
@@ -270,10 +266,10 @@ void ae::machine::Pacman::draw_sprite(uint32_t* pixels,
 		const uint8_t p = sprites[sprite * 256 + i];
 		if (paletterom->read(0x100 + (4 * (palette & 0x3f) + p)) == 0)
 			continue;
-		pixels[(x1 + ((flip_x) ? 15 - px : px)) + (y1 + ((flip_y) ? 15 - py : py)) * 224] = colors_tile[p];
+		_raster->set(x1 + ((flip_x) ? 15 - px : px), y1 + ((flip_y) ? 15 - py : py), colors_tile[p]);
 	}
 }
-void ae::machine::Pacman::updateDisplay(uint32_t* pixels) {
+void ae::machine::Pacman::updateDisplay() {
 	uint16_t address = 0x4002;
 	uint16_t x=2;
 	uint16_t y=5;
@@ -282,7 +278,7 @@ void ae::machine::Pacman::updateDisplay(uint32_t* pixels) {
 	for (uint16_t i = 0; i < 56; ++i) {
 		const uint8_t tile = memory->read(address);
 		const uint8_t palette = memory->read(address + 0x400);
-		draw_tile(pixels, 27 - (i % 28), 34 + (i / 28), tile, palette);
+		draw_tile(27 - (i % 28), 34 + (i / 28), tile, palette);
 		address++;
 		if (i == 28) address += 4;
 	}
@@ -292,7 +288,7 @@ void ae::machine::Pacman::updateDisplay(uint32_t* pixels) {
 	for (uint16_t i = 0; i < 28 * 32; ++i) {
 		const uint8_t tile = memory->read(address);
 		const uint8_t palette = memory->read(address + 0x400);
-		draw_tile(pixels, 27 - (i / 32), 2 + (i % 32), tile, palette);
+		draw_tile(27 - (i / 32), 2 + (i % 32), tile, palette);
 		address++;
 	}
 
@@ -301,7 +297,7 @@ void ae::machine::Pacman::updateDisplay(uint32_t* pixels) {
 	for (uint16_t i = 0; i < 56; ++i) {
 		const uint8_t tile = memory->read(address);
 		const uint8_t palette = memory->read(address + 0x400);
-		draw_tile(pixels, 27 - (i % 28), (i / 28), tile, palette);
+		draw_tile(27 - (i % 28), (i / 28), tile, palette);
 		address++;
 		if (i == 28) address += 4;
 	}
@@ -312,13 +308,13 @@ void ae::machine::Pacman::updateDisplay(uint32_t* pixels) {
 		const uint8_t palette = memory->read(0x4ff1 + 2 * i);
 		const uint16_t x = spritesxy[2 * i];
 		const uint16_t y = spritesxy[1 + 2 * i];
-		draw_sprite(pixels, x, y, spriteflips >> 2, palette, spriteflips & 2, spriteflips & 1);
+		draw_sprite(x, y, spriteflips >> 2, palette, spriteflips & 2, spriteflips & 1);
 	}
 }
 
 extern uint64_t getNanoSeconds(std::chrono::time_point<std::chrono::high_resolution_clock>* start);
 
-void ae::machine::Pacman::run(ae::gui::RasterDisplay* raster)
+void ae::machine::Pacman::run(ae::display::RasterDisplay* raster)
 {
 	_raster = raster;
 
@@ -365,8 +361,8 @@ void ae::machine::Pacman::run(ae::gui::RasterDisplay* raster)
 }
 
 void ae::machine::Pacman::draw() {
-	updateDisplay(_src);
-	_raster->refresh((uint8_t*)_src);
+	updateDisplay();
+	_raster->refresh();
 }
 
 void ae::machine::Pacman::loadMemory() {

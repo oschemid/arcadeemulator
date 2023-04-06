@@ -72,6 +72,22 @@ ImTextureID GuiManager::loadTexture(const string& filename) {
     return entry->second;
 }
 
+ImTextureID GuiManager::createTexture(const uint16_t width, const uint16_t height) {
+    string name = std::to_string(width) + "x" + std::to_string(height);
+    auto entry = _textures.find(name);
+    if (entry == _textures.end()) {
+        ImTextureID id = _engine->createTexture(width, height);
+        _textures.insert({ name, id });
+        return id;
+    }
+    return entry->second;
+}
+
+void GuiManager::refreshTexture(ImTextureID textureID, const uint8_t* src)
+{
+    _engine->fillTextureFromBuffer(textureID, src);
+}
+
 widgets::Sidebar::Sidebar(const uint16_t width) : Widget(), _width(width) {
 }
 

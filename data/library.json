@@ -18,7 +18,7 @@
     "versions": [
       {
         "version": "original",
-        "roms":  "pacman.zip"
+        "roms": "pacman.zip"
       }
     ]
   },
@@ -31,6 +31,28 @@
       {
         "version": "original",
         "roms": "roms/gameboy/alleyway.gb"
+      }
+    ]
+  },
+  {
+    "id": "3",
+    "title": "Bomb Jack",
+    "console": "gameboy",
+    "versions": [
+      {
+        "version": "original",
+        "roms": "roms/gameboy/BombJack.gb"
+      }
+    ]
+  },
+  {
+    "id": "3",
+    "title": "Motocross Maniacs",
+    "console": "gameboy",
+    "versions": [
+      {
+        "version": "original",
+        "roms": "roms/gameboy/MotocrossManiacs.gb"
       }
     ]
   },
@@ -70,8 +92,35 @@
         ]
       },
       {
+        "version": "sisv3",
+        "roms": "spaceinvaders/sisv3.zip",
+        "settings": [
+          {
+            "id": "coinInfo",
+            "name": "Display Coin",
+            "type": "list",
+            "value": 1,
+            "values": [ "False", "True" ]
+          },
+          {
+            "id": "ships",
+            "name": "Ships",
+            "type": "list",
+            "value": 0,
+            "values": [ "3", "4", "5", "6" ]
+          },
+          {
+            "id": "extra",
+            "name": "Extra Ship",
+            "type": "list",
+            "value": 0,
+            "values": [ "1500", "1000" ]
+          }
+        ]
+      },
+      {
         "version": "sitv",
-        "roms": "spaceinvaders/sitv.zip",
+        "roms": "invaders.zip",
         "settings": [
           {
             "id": "coinInfo",
@@ -99,7 +148,7 @@
       {
         "version": "midway",
         "default": true,
-        "roms": "spaceinvaders/invaders.zip",
+        "roms": "invaders.zip",
         "settings": [
           {
             "id": "coinInfo",
@@ -150,7 +199,7 @@
             "name": "Ships",
             "type": "list",
             "value": 0,
-            "values": ["3", "4"]
+            "values": [ "3", "4" ]
           }
         ]
       }
@@ -195,6 +244,43 @@
             "type": "list",
             "value": 0,
             "values": [ "6 mins", "4 mins" ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "8",
+    "title": "Alien Invaders",
+    "console": {
+      "name": "midway8080",
+      "hardware": "alieninvaders"
+    },
+    "versions": [
+      {
+        "version": "alieninv",
+        "roms": "invaders.zip",
+        "settings": [
+          {
+            "id": "penceCoinage",
+            "name": "Pence ?",
+            "type": "list",
+            "value": 1,
+            "values": [ "False", "True" ]
+          },
+          {
+            "id": "ships",
+            "name": "Ships",
+            "type": "list",
+            "value": 0,
+            "values": [ "3", "4" ]
+          },
+          {
+            "id": "coinage",
+            "name": "Coinage",
+            "type": "list",
+            "value": 0,
+            "values": [ "2C/1C 50p/3C", "1C/1C 50p/5C" ]
           }
         ]
       }
