@@ -1,49 +1,25 @@
 #pragma once
-
 #include "types.h"
-#include <functional>
-#include "SDL2/SDL.h"
 
 
-namespace ae
+namespace ae::display
 {
-	class Display {
+	class RasterDisplay
+	{
 	public:
-		typedef std::function<void(uint32_t*)> updatefn;
+		RasterDisplay(const geometry_t);
+		~RasterDisplay();
 
-	public:
-		virtual bool setSize(const uint16_t, const uint16_t) = 0;
-		virtual bool registerCallback(updatefn) = 0;
-
-		virtual bool setPixel(const uint16_t, const uint16_t, const uint32_t) = 0;
-		virtual bool init() = 0;
-		virtual bool update(const SDL_Rect) = 0;
-
-	public:
-		static Display* create();
-	};
-
-	class Layout {
-	public:
-		typedef std::vector<std::pair<rgb_t, rect_t>> zones;
+		void init();
+		void set(const uint16_t, const uint16_t, const rgb_t);
+		void set(const uint16_t, const uint16_t, const uint32_t);
+		void refresh() { _refresh = true; }
+		bool needRefresh() const { return _refresh; }
+		uint32_t* getBuffer() { _refresh = false; return _buffer; }
 
 	protected:
-		uint16_t _width;
-		uint16_t _height;
-		zones _zones;
-		SDL_Texture* _texture;
-
-	public:
-		Layout();
-		~Layout();
-
-		bool setSize(const uint16_t, const uint16_t);
-		bool setZones(zones);
-
-		bool init();
-		bool update(const SDL_Rect);
-
-	public:
-		static Layout* create();
+		uint32_t* _buffer{ nullptr };
+		geometry_t _geometry;
+		bool _refresh{ false };
 	};
 }

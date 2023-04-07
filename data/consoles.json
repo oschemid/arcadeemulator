@@ -1,0 +1,14 @@
+[
+  {
+    "id": "pacman",
+    "name":  "Pacman"
+  },
+  {
+    "id": "gameboy",
+    "name": "Gameboy"
+  },
+  {
+    "id": "midway8080",
+    "name": "Midway/Taito 8080"
+  }
+]

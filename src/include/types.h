@@ -4,6 +4,8 @@
 #include <cstdint>
 #include <functional>
 #include <fstream>
+#include "nlohmann/json.hpp"
+
 
 
 namespace ae {
@@ -11,9 +13,14 @@ namespace ae {
 	using std::uint8_t;
 	using std::uint16_t;
 	using std::size_t;
+	using json = nlohmann::json;
 
-	typedef std::function<uint8_t(const uint8_t)> fnuint8_t;
+	using fnuint8_t = std::function<uint8_t(const uint8_t)>;
 
+	struct geometry_t {
+		uint16_t width;
+		uint16_t height;
+	};
 	struct rgb_t {
 		uint8_t red;
 		uint8_t green;

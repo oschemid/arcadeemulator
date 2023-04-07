@@ -1,0 +1,289 @@
+[
+  {
+    "id": "1",
+    "title": "Tetris",
+    "console": "gameboy",
+    "cover": "roms/gameboy/tetris.jpg",
+    "versions": [
+      {
+        "version": "original",
+        "roms": "roms/gameboy/tetris.gb"
+      }
+    ]
+  },
+  {
+    "id": "2",
+    "title": "Pacman",
+    "console": "pacman",
+    "versions": [
+      {
+        "version": "original",
+        "roms": "pacman.zip"
+      }
+    ]
+  },
+  {
+    "id": "3",
+    "title": "Alleyway",
+    "console": "gameboy",
+    "cover": "roms/gameboy/alleyway.jpg",
+    "versions": [
+      {
+        "version": "original",
+        "roms": "roms/gameboy/alleyway.gb"
+      }
+    ]
+  },
+  {
+    "id": "3",
+    "title": "Bomb Jack",
+    "console": "gameboy",
+    "versions": [
+      {
+        "version": "original",
+        "roms": "roms/gameboy/BombJack.gb"
+      }
+    ]
+  },
+  {
+    "id": "3",
+    "title": "Motocross Maniacs",
+    "console": "gameboy",
+    "versions": [
+      {
+        "version": "original",
+        "roms": "roms/gameboy/MotocrossManiacs.gb"
+      }
+    ]
+  },
+  {
+    "id": "4",
+    "title": "Space Invaders",
+    "console": {
+      "name": "midway8080",
+      "hardware": "spaceinvaders"
+    },
+    "versions": [
+      {
+        "version": "sisv2",
+        "roms": "spaceinvaders/sisv2.zip",
+        "settings": [
+          {
+            "id": "coinInfo",
+            "name": "Display Coin",
+            "type": "list",
+            "value": 1,
+            "values": [ "False", "True" ]
+          },
+          {
+            "id": "ships",
+            "name": "Ships",
+            "type": "list",
+            "value": 0,
+            "values": [ "3", "4", "5", "6" ]
+          },
+          {
+            "id": "extra",
+            "name": "Extra Ship",
+            "type": "list",
+            "value": 0,
+            "values": [ "1500", "1000" ]
+          }
+        ]
+      },
+      {
+        "version": "sisv3",
+        "roms": "spaceinvaders/sisv3.zip",
+        "settings": [
+          {
+            "id": "coinInfo",
+            "name": "Display Coin",
+            "type": "list",
+            "value": 1,
+            "values": [ "False", "True" ]
+          },
+          {
+            "id": "ships",
+            "name": "Ships",
+            "type": "list",
+            "value": 0,
+            "values": [ "3", "4", "5", "6" ]
+          },
+          {
+            "id": "extra",
+            "name": "Extra Ship",
+            "type": "list",
+            "value": 0,
+            "values": [ "1500", "1000" ]
+          }
+        ]
+      },
+      {
+        "version": "sitv",
+        "roms": "invaders.zip",
+        "settings": [
+          {
+            "id": "coinInfo",
+            "name": "Display Coin",
+            "type": "list",
+            "value": 1,
+            "values": [ "False", "True" ]
+          },
+          {
+            "id": "ships",
+            "name": "Ships",
+            "type": "list",
+            "value": 0,
+            "values": [ "3", "4", "5", "6" ]
+          },
+          {
+            "id": "extra",
+            "name": "Extra Ship",
+            "type": "list",
+            "value": 0,
+            "values": [ "1500", "1000" ]
+          }
+        ]
+      },
+      {
+        "version": "midway",
+        "default": true,
+        "roms": "invaders.zip",
+        "settings": [
+          {
+            "id": "coinInfo",
+            "name": "Display Coin",
+            "type": "list",
+            "value": 1,
+            "values": [ "False", "True" ]
+          },
+          {
+            "id": "ships",
+            "name": "Ships",
+            "type": "list",
+            "value": 0,
+            "values": [ "3", "4", "5", "6" ]
+          },
+          {
+            "id": "extra",
+            "name": "Extra Ship",
+            "type": "list",
+            "value": 0,
+            "values": [ "1500", "1000" ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "5",
+    "title": "Space Chaser",
+    "console": {
+      "name": "midway8080",
+      "hardware": "spacechaser"
+    },
+    "versions": [
+      {
+        "version": "CV",
+        "roms": "spacechaser/schasercv.zip",
+        "settings": [
+          {
+            "id": "difficulty",
+            "name": "Difficulty",
+            "type": "list",
+            "value": 0,
+            "values": [ "Normal", "Hard" ]
+          },
+          {
+            "id": "ships",
+            "name": "Ships",
+            "type": "list",
+            "value": 0,
+            "values": [ "3", "4" ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "6",
+    "title": "Sea Wolf",
+    "console": {
+      "name": "midway8080",
+      "hardware": "seawolf"
+    },
+    "versions": [
+      {
+        "version": "default",
+        "roms": "seawolf/seawolf.zip"
+      }
+    ]
+  },
+  {
+    "id": "7",
+    "title": "Amazing Maze",
+    "console": {
+      "name": "midway8080",
+      "hardware": "amazingmaze"
+    },
+    "versions": [
+      {
+        "version": "default",
+        "roms": "maze.zip",
+        "settings": [
+          {
+            "id": "coinage",
+            "name": "Coin",
+            "type": "list",
+            "value": 0,
+            "values": [ "One coin One credit", "Two coins One credit", "One coin Two credits", "Two coins Two redits" ]
+          },
+          {
+            "id": "gametime",
+            "name": "Two player time",
+            "type": "list",
+            "value": 0,
+            "values": [ "6 mins", "4 mins" ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "8",
+    "title": "Alien Invaders",
+    "console": {
+      "name": "midway8080",
+      "hardware": "alieninvaders"
+    },
+    "versions": [
+      {
+        "version": "alieninv",
+        "roms": "invaders.zip",
+        "settings": [
+          {
+            "id": "penceCoinage",
+            "name": "Pence ?",
+            "type": "list",
+            "value": 1,
+            "values": [ "False", "True" ]
+          },
+          {
+            "id": "ships",
+            "name": "Ships",
+            "type": "list",
+            "value": 0,
+            "values": [ "3", "4" ]
+          },
+          {
+            "id": "coinage",
+            "name": "Coinage",
+            "type": "list",
+            "value": 0,
+            "values": [ "2C/1C 50p/3C", "1C/1C 50p/5C" ]
+          }
+        ]
+      }
+    ]
+  }
+]
