@@ -144,7 +144,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2main.lib;%(AdditionalDependencies);vulkan-1.lib</AdditionalDependencies>
+      <AdditionalDependencies>SDL2main.lib;%(AdditionalDependencies);vulkan-1.lib;crypt32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(VcpkgRoot)\installed\$(VcpkgTriplet)\lib\manual-link\;%(AdditionalLibraryDirectories);$(VULKAN_SDK)/Lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -172,6 +172,7 @@
     <ClCompile Include="src\emulator\midway8080\seawolf.cpp" />
     <ClCompile Include="src\emulator\midway8080\spacechaser.cpp" />
     <ClCompile Include="src\emulator\midway8080\spaceinvaders.cpp" />
+    <ClCompile Include="src\emulator\namco\rallyx.cpp" />
     <ClCompile Include="src\emulator\old\pacman.cpp" />
     <ClCompile Include="src\gui\vulkan\engine.cpp" />
     <ClCompile Include="src\gui\gui.cpp" />
@@ -219,6 +220,7 @@
     <ClInclude Include="src\emulator\midway8080\seawolf.h" />
     <ClInclude Include="src\emulator\midway8080\spacechaser.h" />
     <ClInclude Include="src\emulator\midway8080\spaceinvaders.h" />
+    <ClInclude Include="src\emulator\namco\rallyx.h" />
     <ClInclude Include="src\emulator\old\pacman.h" />
     <ClInclude Include="src\gui\vulkan\engine.h" />
     <ClInclude Include="src\gui\gui.h" />

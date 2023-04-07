@@ -46,6 +46,8 @@ ae::machine::Pacman::Pacman(const emulator::Game&) :
 	rackadvance.addAlias(0, "On");
 	rackadvance.addAlias(1, "Off");
 	rackadvance.setValue(1);
+
+	_clockPerMs = 3072;
 }
 
 ae::emulator::SystemInfo ae::machine::Pacman::getSystemInfo() const
@@ -148,9 +150,10 @@ bool ae::machine::Pacman::writeMemory(const uint16_t p, const uint8_t v) {
 	}
 	return true;
 }
-void ae::machine::Pacman::init()
+void ae::machine::Pacman::init(ae::display::RasterDisplay* raster)
 {
 	cpu = xprocessors::Cpu::create("Z80");
+	_raster = raster;
 	memory = newMemory(0x5000);
 	videorom = newMemory(0x2000);
 	paletterom = newMemory(0x200);
@@ -206,8 +209,6 @@ void ae::machine::Pacman::init()
 	cpu->out([this](const uint8_t p, const uint8_t v) { if (p == 0) interrupt_vector = v; return; });
 	cpu->read([this](const uint16_t p) { return this->readMemory(p); });
 	cpu->write([this](const uint16_t p, const uint8_t v) { return this->writeMemory(p, v); });
-
-	StartTime = std::chrono::high_resolution_clock::now();
 }
 
 
@@ -314,50 +315,24 @@ void ae::machine::Pacman::updateDisplay() {
 
 extern uint64_t getNanoSeconds(std::chrono::time_point<std::chrono::high_resolution_clock>* start);
 
-void ae::machine::Pacman::run(ae::display::RasterDisplay* raster)
+uint8_t ae::machine::Pacman::tick()
 {
-	_raster = raster;
+	static uint64_t deltaDisplay{ 0 };
+	const uint64_t clockDisplay= 1000 / 60 * _clockPerMs;
 
-//	auto StartTime = std::chrono::high_resolution_clock::now();
-	uint64_t CurrentTime = 0;
+	uint64_t previous = cpu->elapsed_cycles();
+	cpu->executeOne();
+	uint8_t deltaClock = cpu->elapsed_cycles() - previous;
 
-	const uint8_t* Keyboard = SDL_GetKeyboardState(NULL);
-
-	while (0 == 0) {
-		CurrentTime = getNanoSeconds(&StartTime);
-		if (CurrentTime - LastThrottle < 1000000) {		// 1ms
-			if (ClockCount < ClocksPerMS + ClockCompensation) {
-				cpu->executeOne();
-				ClockCount = cpu->elapsed_cycles();
-			}
+	if (deltaDisplay > clockDisplay) { // 60 Hz
+		if (interrupt_enabled) {
+			draw();
+			cpu->interrupt(interrupt_vector);
 		}
-		else {
-			ClockCompensation += ClocksPerMS * (CurrentTime - LastThrottle) / 1000000;
-			LastThrottle = CurrentTime;
-		}
-		if (CurrentTime - LastDisplay > 1000000000) {
-			float a = (float)ClockCount / (CurrentTime / 1000);
-			std::cout << a << std::endl;
-			LastDisplay = CurrentTime;
-		}
-		if (CurrentTime - LastDraw > 1000000000 / 60 || LastDraw > CurrentTime) {
-			LastDraw = CurrentTime;
-
-			bool interrupt = false;
-			if (interrupt_enabled) {
-				draw();
-				interrupt = cpu->interrupt(interrupt_vector);
-			}
-		}
-		if (CurrentTime - LastInput > 1000000000 / 30 || LastInput > CurrentTime) { // 30 Hz - Manage Events
-			LastInput = CurrentTime;
-			while (SDL_PollEvent(&ev)) {
-			}
-			if (Keyboard[SDL_SCANCODE_ESCAPE]) {
-				return;
-			}
-		}
+		deltaDisplay -= clockDisplay;
 	}
+	deltaDisplay += deltaClock;
+	return deltaClock;
 }
 
 void ae::machine::Pacman::draw() {

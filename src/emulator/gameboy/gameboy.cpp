@@ -13,6 +13,7 @@ ae::gameboy::Gameboy::Gameboy(const emulator::Game& game) :
 	cpu(nullptr),
 	_game(game)
 {
+	_clockPerMs = 4194;
 }
 
 ae::emulator::SystemInfo ae::gameboy::Gameboy::getSystemInfo() const
@@ -22,7 +23,7 @@ ae::emulator::SystemInfo ae::gameboy::Gameboy::getSystemInfo() const
 	};
 }
 
-void ae::gameboy::Gameboy::init()
+void ae::gameboy::Gameboy::init(ae::display::RasterDisplay* raster)
 {
 	cpu = xprocessors::Cpu::create("lr35902");
 	_bootrom = std::make_shared<BootRom>(string("roms/gameboy/bootroms/dmg_rom.bin"));
@@ -53,57 +54,20 @@ void ae::gameboy::Gameboy::init()
 	_apu.out([this](const uint8_t p, const uint8_t v) { return _mmu->out(p, v, Mmu::origin::apu); });
 
 	_apu.init();
+	_ppu.init(raster);
 }
 
-extern uint64_t getNanoSeconds(std::chrono::time_point<std::chrono::high_resolution_clock>* start);
-
-void ae::gameboy::Gameboy::run(ae::display::RasterDisplay* raster)
+uint8_t ae::gameboy::Gameboy::tick()
 {
-	_ppu.init(raster);
+	uint64_t previous = cpu->elapsed_cycles();
+	cpu->executeOne();
+	uint64_t deltaClock = cpu->elapsed_cycles() - previous;
 
-	auto StartTime = std::chrono::high_resolution_clock::now();
-
-	uint64_t CurrentTime = 0;
-	uint64_t LastDraw = 0;
-	uint8_t DrawFull = 0;
-	uint64_t LastInput = 0;
-	uint64_t LastThrottle = 0;
-	uint64_t LastDisplay = 0;
-	uint32_t ClocksPerMS = 4194304 / 1000;
-	uint64_t ClockCompensation = 0;
-	uint64_t ClockCount = 0;
-	SDL_Event ev;
-
-	const uint8_t* Keyboard = SDL_GetKeyboardState(NULL);
-	bool stopped = false;
-
-	while (0 == 0) {
-		CurrentTime = getNanoSeconds(&StartTime);
-		if (CurrentTime - LastThrottle < 1000000) {		// 1ms
-			if (ClockCount < ClocksPerMS + ClockCompensation) {
-				uint64_t previousClockCount = ClockCount;
-				if (!stopped)
-					cpu->executeOne();
-				ClockCount = cpu->elapsed_cycles();
-				for (uint8_t i = 0; i < ClockCount - previousClockCount; i++) {
-					_mmu->tick();
-					_apu.tick();
-					_ppu.executeOne();
-					_serial.tick();
-				}
-			}
-		}
-		else {
-			ClockCompensation += ClocksPerMS * (CurrentTime - LastThrottle) / 1000000;
-			LastThrottle = CurrentTime;
-		}
-		if (CurrentTime - LastInput > 1000000000 / 30 || LastInput > CurrentTime) { // 30 Hz - Manage Events
-			LastInput = CurrentTime;
-			while (SDL_PollEvent(&ev)) {
-			}
-			if (Keyboard[SDL_SCANCODE_ESCAPE]) {
-				return;
-			}
-		}
+	for (uint8_t i = 0; i < deltaClock; i++) {
+		_mmu->tick();
+		_apu.tick();
+		_ppu.executeOne();
+		_serial.tick();
 	}
+	return deltaClock;
 }

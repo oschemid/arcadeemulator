@@ -59,8 +59,8 @@ namespace ae::midway8080
 		virtual ~Midway8080();
 
 		emulator::SystemInfo getSystemInfo() const override;
-		void init() override;
-		void run(ae::display::RasterDisplay*) override;
+		void init(ae::display::RasterDisplay*) override;
+		uint8_t tick() override;
 
 	protected:
 		xprocessors::Cpu::Ptr _cpu{ nullptr };

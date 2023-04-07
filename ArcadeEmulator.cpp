@@ -68,13 +68,13 @@ int main(int argc, char** argv)
 					                    version->_romspath,
 					                    settings);
 				si = ae::emulator::create(sidebar.getSelected().id(),game);
-				si->init();
 				ae::emulator::SystemInfo requirements = si->getSystemInfo();
 				raster = new ae::display::RasterDisplay(requirements.geometry);
 				raster->init();
 				r1 = new ae::DisplayWidget(n1, raster, requirements.geometry.width, requirements.geometry.height);
 				gui.addWidget("rasterdisplay", r1);
-				t = new std::thread([&si, &t, &raster]() { si->run(raster); t->detach(); });
+				si->init(raster);
+				t = new std::thread([&si, &t]() { si->run(); t->detach(); });
 
 				//raster2 = engine.getRasterDisplay();
 				//raster2->init(256,256);

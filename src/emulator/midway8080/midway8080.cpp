@@ -90,6 +90,7 @@ Midway8080::Midway8080(const emulator::Game& game) :
 	_game(game)
 {
 	_cartridge = GameBoard::create(game.hardware());
+	_clockPerMs = 1997;
 }
 
 Midway8080::~Midway8080()
@@ -109,9 +110,10 @@ ae::emulator::SystemInfo Midway8080::getSystemInfo() const
 	};
 }
 
-void Midway8080::init()
+void Midway8080::init(ae::display::RasterDisplay* raster)
 {
 	_cpu = xprocessors::Cpu::create("i8080");
+	_raster = raster;
 	const bool romExtended = _cartridge->romExtended();
 	_memory = new uint8_t[(romExtended)? 0x6000 :0x4000]{ 0 };
 
@@ -133,57 +135,34 @@ void Midway8080::init()
 
 extern uint64_t getNanoSeconds(std::chrono::time_point<std::chrono::high_resolution_clock>* start);
 
-void Midway8080::run(ae::display::RasterDisplay* raster)
+uint8_t Midway8080::tick()
 {
-	_raster = raster;
-	auto StartTime = std::chrono::high_resolution_clock::now();
+	static uint64_t deltaDisplay{ 0 };
+	static uint64_t deltaController{ 0 };
+	static uint8_t draw{ 0 };
+	uint64_t previous = _cpu->elapsed_cycles();
+	_cpu->executeOne();
+	uint8_t deltaClock = _cpu->elapsed_cycles() - previous;
 
-	uint64_t CurrentTime = 0;
-	uint64_t LastDraw = 0;
-	uint8_t DrawFull = 0;
-	uint64_t LastInput = 0;
-	uint64_t LastThrottle = 0;
-	uint64_t LastDisplay = 0;
-	uint32_t ClocksPerMS = 1997;
-	uint64_t ClockCompensation = 0;
-	uint64_t ClockCount = 0;
-	SDL_Event ev;
-
-	const uint8_t* Keyboard = SDL_GetKeyboardState(NULL);
-
-	while (0 == 0) {
-		CurrentTime = getNanoSeconds(&StartTime);
-		if (CurrentTime - LastThrottle < 1000000) {		// 1ms
-			if (ClockCount < ClocksPerMS + ClockCompensation)
-				ClockCount += _cpu->executeOne();
+	if (deltaDisplay > 16641) { // 120 Hz
+		if (draw) {
+			updateDisplay();
+			_raster->refresh();
+			_cpu->interrupt(2);
 		}
-		else {
-			ClockCompensation += ClocksPerMS * (CurrentTime - LastThrottle) / 1000000;
-			LastThrottle = CurrentTime;
-		}
-		if (CurrentTime - LastDraw > 1000000000 / 120 || LastDraw > CurrentTime) { // 120 Hz - Manage Screen (Half screen in a cycle, then end screen in another)
-			LastDraw = CurrentTime;
-
-			bool interrupt = false;
-			if (DrawFull) {
-				updateDisplay();
-				raster->refresh();
-				interrupt = _cpu->interrupt(2);
-			}
-			else
-				interrupt = _cpu->interrupt(1);
-			DrawFull = 1 - DrawFull;
-		}
-		if (CurrentTime - LastInput > 1000000000 / 30 || LastInput > CurrentTime) { // 30 Hz - Manage Events
-			LastInput = CurrentTime;
-			while (SDL_PollEvent(&ev)) {
-			}
-			if (Keyboard[SDL_SCANCODE_ESCAPE]) {
-				return;
-			}
-			_cartridge->controllerTick();
-		}
+		else
+			_cpu->interrupt(1);
+		draw = 1 - draw;
+		deltaDisplay -= 16641;
 	}
+	deltaDisplay += deltaClock;
+
+	if (deltaController > 66566) { // 30 Hz
+		_cartridge->controllerTick();
+		deltaController -= 66566;
+	}
+	deltaController += deltaClock;
+	return deltaClock;
 }
 
 void Midway8080::updateDisplay()

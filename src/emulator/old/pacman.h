@@ -43,18 +43,6 @@ namespace ae
 
 			ae::display::RasterDisplay* _raster;
 
-			std::chrono::steady_clock::time_point StartTime;
-
-			uint64_t LastDraw = 0;
-			uint8_t DrawFull = 0;
-			uint64_t LastInput = 0;
-			uint64_t LastThrottle = 0;
-			uint64_t LastDisplay = 0;
-			uint32_t ClocksPerMS = 3720;
-			uint64_t ClockCompensation = 0;
-			uint64_t ClockCount = 0;
-			SDL_Event ev;
-
 		public:
 			ae::IMemory* memory;
 			ae::IMemory* videorom;
@@ -71,8 +59,8 @@ namespace ae
 			virtual ~Pacman() = default;
 
 			emulator::SystemInfo getSystemInfo() const override;
-			void init() override;
-			void run(ae::display::RasterDisplay*) override;
+			void init(ae::display::RasterDisplay*) override;
+			uint8_t tick() override;
 		};
 	}
 }

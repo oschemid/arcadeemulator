@@ -41,13 +41,15 @@ namespace ae::emulator
 
 	public:
 		virtual ~Emulator() = default;
-		virtual void init() = 0;
-
 		virtual SystemInfo getSystemInfo() const = 0;
-		virtual void run(ae::display::RasterDisplay*) = 0;
+		virtual void init(ae::display::RasterDisplay*) = 0;
+		virtual uint8_t tick() = 0;
+
+		void run();
 
 	protected:
 		Emulator() = default;
+		uint64_t _clockPerMs{ 0 };
 	};
 
 	Emulator::Ptr create(const string&, const Game&);
