@@ -219,7 +219,6 @@ void ae::machine::Pacman::load_palettes() {
 		uint8_t g = ((data >> 3) & 1) * 0x21 + ((data >> 4) & 1) * 0x47 + ((data >> 5) & 1) * 0x97;
 		uint8_t b = ((data >> 6) & 1) * 0x51 + ((data >> 7) & 1) * 0xae;
 		colors[i] = 0xff000000 | (b << 16) | (g << 8) | r;
-		//colors[i] = (r << 24) | (g << 16) | (b << 8) | 0xff;
 	}
 }
 

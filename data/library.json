@@ -285,5 +285,16 @@
         ]
       }
     ]
+  },
+  {
+    "id": "2",
+    "title": "RallyX",
+    "console": "rallyx",
+    "versions": [
+      {
+        "version": "original",
+        "roms": "rallyx.zip"
+      }
+    ]
   }
 ]

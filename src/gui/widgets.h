@@ -41,10 +41,11 @@ namespace ae {
 		string _name;
 		display::RasterDisplay* _raster{ nullptr };
 		ImTextureID _textureid{ nullptr };
-		ImVec2 _texturesize;
+		ImVec2 _imagesize;
+		float _zoom;
 
 	public:
-		DisplayWidget(const string&, display::RasterDisplay*, const uint16_t, const uint16_t);
+		DisplayWidget(const string&, display::RasterDisplay*, const float);
 		void draw(gui::GuiManager*) override;
 	};
 }

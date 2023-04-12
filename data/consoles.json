@@ -10,5 +10,9 @@
   {
     "id": "midway8080",
     "name": "Midway/Taito 8080"
+  },
+  {
+    "id": "rallyx",
+    "name": "Namco"
   }
 ]

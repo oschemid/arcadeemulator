@@ -133,8 +133,6 @@ void Midway8080::init(ae::display::RasterDisplay* raster)
 	_cpu->out([this](const uint8_t p, const uint8_t v) { return _cartridge->out(p, v); });
 }
 
-extern uint64_t getNanoSeconds(std::chrono::time_point<std::chrono::high_resolution_clock>* start);
-
 uint8_t Midway8080::tick()
 {
 	static uint64_t deltaDisplay{ 0 };

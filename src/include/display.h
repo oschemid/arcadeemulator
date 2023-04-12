@@ -15,6 +15,7 @@ namespace ae::display
 		void set(const uint16_t, const uint16_t, const uint32_t);
 		void refresh() { _refresh = true; }
 		bool needRefresh() const { return _refresh; }
+		geometry_t getGeometry() const { return _geometry; }
 		uint32_t* getBuffer() { _refresh = false; return _buffer; }
 
 	protected:

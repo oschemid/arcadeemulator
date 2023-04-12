@@ -71,7 +71,7 @@ int main(int argc, char** argv)
 				ae::emulator::SystemInfo requirements = si->getSystemInfo();
 				raster = new ae::display::RasterDisplay(requirements.geometry);
 				raster->init();
-				r1 = new ae::DisplayWidget(n1, raster, requirements.geometry.width, requirements.geometry.height);
+				r1 = new ae::DisplayWidget(n1, raster, 2.);
 				gui.addWidget("rasterdisplay", r1);
 				si->init(raster);
 				t = new std::thread([&si, &t]() { si->run(); t->detach(); });
@@ -97,44 +97,5 @@ int main(int argc, char** argv)
 		gui.renderFrame();
 	}
 	return 0;
-
-	// UI creation
-	//if (!ae::ui::init())
-	//	return 1;
-
-	//ae::IMachine* si = nullptr;
-
-	//ae::ui::menu::response r = ae::ui::menu::response::NOTHING;
-
-	//while (r != ae::ui::menu::response::QUIT) {
-	//	ae::ui::menu my_menu;
-	//	r = my_menu.run(si);
-	//	switch (r) {
-	//	case ae::ui::menu::response::LAUNCH:
-	//		si->init();
-	//		si->run();
-	//		break;
-	//	case ae::ui::menu::response::GAMESELECTION:
-	//	{
-	//		ae::ui::InterfaceGameSelection i((si == nullptr) ? "" : si->getID());
-	//		i.run();
-	//		if (i.getSelection() != "") {
-	//			if (si)
-	//				delete si;
-	//			si = ae::IMachine::create(i.getSelection());
-	//		}
-	//	}
-	//	break;
-	//	case ae::ui::menu::response::GAMESETTINGS:
-	//	{
-	//		ae::ui::InterfaceGameSettings i(si);
-	//		i.run();
-	//	}
-	//	break;
-	//	}
-	//}
-	//ae::ui::destroy();
-	//_CrtDumpMemoryLeaks();
-	//return 0;
 }
 

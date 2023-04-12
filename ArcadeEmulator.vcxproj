@@ -187,6 +187,7 @@
     <ClCompile Include="src\sound\sound.cpp" />
     <ClCompile Include="src\memory\memory.cpp" />
     <ClCompile Include="src\tools\file.cpp" />
+    <ClCompile Include="src\display\tilemap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="libraries\xos-processors\include\mb14241.h" />
@@ -230,8 +231,8 @@
     <ClInclude Include="src\include\display.h" />
     <ClInclude Include="src\include\emulator.h" />
     <ClInclude Include="src\include\file.h" />
-    <ClInclude Include="src\include\game.h" />
     <ClInclude Include="src\include\registry.h" />
+    <ClInclude Include="src\include\tilemap.h" />
     <ClInclude Include="src\settings\console.h" />
     <ClInclude Include="src\settings\library.h" />
     <ClInclude Include="src\sound\sound.h" />

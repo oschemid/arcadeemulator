@@ -165,17 +165,20 @@ void GameSelection::draw(gui::GuiManager* gui) {
     ImGui::End();
 }
 
-DisplayWidget::DisplayWidget(const string& name, display::RasterDisplay* raster, const uint16_t width, const uint16_t height) : _name(name), _raster(raster), _texturesize(ImVec2(width,height))
-{}
+DisplayWidget::DisplayWidget(const string& name, display::RasterDisplay* raster, const float zoom) : _name(name), _raster(raster), _zoom(zoom)
+{
+}
 
 void DisplayWidget::draw(gui::GuiManager* manager) {
     if (!_textureid) {
-        _textureid = manager->createTexture(_texturesize.x, _texturesize.y);
+        geometry_t geometry = _raster->getGeometry();
+        _textureid = manager->createTexture(geometry.width, geometry.height);
+        _imagesize = ImVec2(geometry.width * _zoom, geometry.height * _zoom);
     }
     if (_raster->needRefresh()) {
         manager->refreshTexture(_textureid, (uint8_t*)(_raster->getBuffer()));
     }
     ImGui::Begin(_name.c_str());
-    ImGui::Image(_textureid, _texturesize);
+    ImGui::Image(_textureid, _imagesize);
     ImGui::End();
 }
