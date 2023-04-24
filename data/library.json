@@ -18,6 +18,69 @@
     "versions": [
       {
         "version": "original",
+        "roms": "pacman.zip",
+        "settings": [
+          {
+            "id": "coinage",
+            "name": "Coinage",
+            "type": "list",
+            "value": 1,
+            "values": [ "Free", "1C/1C", "1C/2C", "2C/1C" ]
+          },
+          {
+            "id": "lives",
+            "name": "Lives",
+            "type": "list",
+            "value": 2,
+            "values": [ "1", "2", "3", "5" ]
+          },
+          {
+            "id": "bonus",
+            "name": "Bonus",
+            "type": "list",
+            "value": 0,
+            "values": [ "10000 points", "15000 points", "20000 points", "no" ]
+          },
+          {
+            "id": "difficulty",
+            "name": "Difficulty",
+            "type": "list",
+            "value": 1,
+            "values": [ "Hard", "Normal" ]
+          },
+          {
+            "id": "ghostname",
+            "name": "Ghost names",
+            "type": "list",
+            "value": 1,
+            "values": [ "Alternate", "Normal" ]
+          },
+          {
+            "id": "rackadvance",
+            "name": "Rackadvance",
+            "type": "list",
+            "value": 1,
+            "values": [ "On", "Off" ]
+          },
+          {
+            "id": "boardtest",
+            "name": "Board test",
+            "type": "list",
+            "value": 1,
+            "values": [ "On", "Off" ]
+          }
+
+        ]
+      }
+    ]
+  },
+  {
+    "id": "2",
+    "title": "Pacman",
+    "console": "pacmano",
+    "versions": [
+      {
+        "version": "original",
         "roms": "pacman.zip"
       }
     ]
@@ -293,7 +356,16 @@
     "versions": [
       {
         "version": "original",
-        "roms": "rallyx.zip"
+        "roms": "rallyx.zip",
+        "settings": [
+          {
+            "id": "service",
+            "name": "Service",
+            "type": "list",
+            "value": 0,
+            "values": [ "False", "True" ]
+          }
+        ]
       }
     ]
   }

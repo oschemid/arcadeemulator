@@ -6,7 +6,7 @@
 #include "SDL2/SDL.h"
 
 
-static ae::emulator::Emulator::registry reg("pacman", [](const ae::emulator::Game& game) { return std::make_unique<ae::machine::Pacman>(game); });
+static ae::emulator::Emulator::registry reg("pacmano", [](const ae::emulator::Game& game) { return std::make_unique<ae::machine::Pacman>(game); });
 
 
 ae::machine::Pacman::Pacman(const emulator::Game&) :
@@ -67,6 +67,8 @@ uint8_t ae::machine::Pacman::readMemory(const uint16_t p) const {
 		return dip();
 	if ((p_mirror >= 0x5060) && (p_mirror <= 0x506F))
 		return spritesxy[p_mirror - 0x5060];
+	if (p_mirror == 0x23D8)
+		return memory->read(p_mirror);
 	return memory->read(p_mirror);
 }
 

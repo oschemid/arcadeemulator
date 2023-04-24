@@ -2,6 +2,9 @@
 #include "types.h"
 #include "registry.h"
 #include "display.h"
+#include "tilemap.h"
+#include <vector>
+#include <map>
 
 
 namespace ae::emulator
@@ -44,8 +47,11 @@ namespace ae::emulator
 		virtual SystemInfo getSystemInfo() const = 0;
 		virtual void init(ae::display::RasterDisplay*) = 0;
 		virtual uint8_t tick() = 0;
-
 		void run();
+
+		// Debug methods
+		virtual std::map<string, ae::tilemap::Tiles> getTiles() const { return std::map<string, ae::tilemap::Tiles>(); }
+		virtual std::vector<palette_t> getPalettes() const { return std::vector<palette_t>(); }
 
 	protected:
 		Emulator() = default;

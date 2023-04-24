@@ -2,6 +2,7 @@
 #include "types.h"
 #include "midway8080.h"
 #include "../../controller/arcadecontroller.h"
+#include "io.h"
 
 
 namespace ae::midway8080
@@ -22,7 +23,7 @@ namespace ae::midway8080
 
 	protected:
 		ae::controller::ArcadeController::Ptr _controller{ nullptr };
-		Port _port0{ 0 };
-		Port _port1{ 0 };
+		ae::io::Port _port0{ 0 };
+		ae::io::Port _port1{ 0 };
 	};
 }

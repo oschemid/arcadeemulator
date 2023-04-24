@@ -3,6 +3,7 @@
 #include "midway8080.h"
 #include "mb14241.h"
 #include "../../controller/arcadecontroller.h"
+#include "io.h"
 
 
 namespace ae::midway8080
@@ -20,9 +21,9 @@ namespace ae::midway8080
 		ae::controller::ArcadeController::Ptr _controller{ nullptr };
 
 		string _version;
-		Port _port0{ 0 };
-		Port _port1{ 0 };
-		Port _port2{ 0 };
+		ae::io::Port _port0{ 0 };
+		ae::io::Port _port1{ 0 };
+		ae::io::Port _port2{ 0 };
 
 	public:
 		void out(const uint8_t, const uint8_t) override;

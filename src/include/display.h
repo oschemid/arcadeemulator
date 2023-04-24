@@ -13,13 +13,14 @@ namespace ae::display
 		void init();
 		void set(const uint16_t, const uint16_t, const rgb_t);
 		void set(const uint16_t, const uint16_t, const uint32_t);
-		void refresh() { _refresh = true; }
+		void refresh() { _current = 1 - _current; _refresh = true; }
 		bool needRefresh() const { return _refresh; }
-		geometry_t getGeometry() const { return _geometry; }
-		uint32_t* getBuffer() { _refresh = false; return _buffer; }
+		geometry_t getGeometry() const { return (_geometry.rotation == geometry_t::rotation_t::NONE) ? _geometry : geometry_t{.width = _geometry.height, .height=_geometry.width}; }
+		uint32_t* getBuffer() { _refresh = false; return _buffers[1-_current]; }
 
 	protected:
-		uint32_t* _buffer{ nullptr };
+		uint8_t _current{ 0 };
+		std::array<uint32_t*,2> _buffers{ nullptr };
 		geometry_t _geometry;
 		bool _refresh{ false };
 	};

@@ -3,29 +3,11 @@
 #include "emulator.h"
 #include "xprocessors.h"
 #include "mb14241.h"
-#include <vector>
-#include <bitset>
 #include "../../controller/arcadecontroller.h"
 
 
 namespace ae::midway8080
 {
-	class Port
-	{
-	public:
-		Port(const uint8_t);
-		void set(uint8_t, const string&);
-		void reset();
-
-		void init(const emulator::Game&);
-		void tick(const ae::controller::ArcadeController&);
-		uint8_t get() const;
-	protected:
-		using definition = std::tuple<uint8_t, string>;
-
-		std::bitset<8> _port;
-		std::vector<definition> _definition;
-	};
 	class GameBoard
 	{
 	public:

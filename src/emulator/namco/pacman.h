@@ -8,11 +8,11 @@
 
 namespace ae::namco
 {
-	class RallyX : public emulator::Emulator
+	class Pacman : public emulator::Emulator
 	{
 	public:
-		RallyX(const emulator::Game&);
-		virtual ~RallyX();
+		Pacman(const emulator::Game&);
+		virtual ~Pacman();
 
 		emulator::SystemInfo getSystemInfo() const override;
 		void init(ae::display::RasterDisplay*) override;
@@ -31,24 +31,21 @@ namespace ae::namco
 		tilemap::TileMap* _tilemap{ nullptr };
 		ae::controller::ArcadeController::Ptr _controller;
 		ae::io::Port _port0{ 0 };
-		ae::io::Port _port2{ 0xc0 };
+		ae::io::Port _port1{ 0 };
+		ae::io::Port _port2{ 0 };
 
 		void initVideoRom();
 
 		uint8_t* _rom{ nullptr };
-		uint8_t* _videoram{ nullptr };
 		uint8_t* _ram{ nullptr };
-		
+
 		bool _interrupt_enabled{ false };
 		uint8_t _interrupt_vector{ 0 };
 		ae::tilemap::Tiles _tiles;
 		ae::tilemap::Tiles _sprites;
 		palette_t _palette;
 		std::vector<palette_t> _lookup;
-		uint8_t _scrollX{ 0 };
-		uint8_t _scrollY{ 0 };
-
-		uint8_t* _radarattr{ nullptr };
+		uint8_t* _spritesxy;
 
 		uint8_t read(const uint16_t) const;
 		void write(const uint16_t, const uint8_t);
@@ -56,6 +53,5 @@ namespace ae::namco
 		void draw();
 		void drawBackground(const uint8_t);
 		void drawSprites();
-		void drawSidebar();
 	};
 }

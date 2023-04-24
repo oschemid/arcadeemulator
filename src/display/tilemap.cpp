@@ -3,18 +3,10 @@
 
 namespace ae::tilemap
 {
-	std::vector<Tile> decodeTiles(const uint16_t tile_count, const uint8_t tile_size, const uint8_t* src)
+	Tiles decodeTiles(const uint16_t tile_count, const uint8_t tile_size, const uint8_t* src, const std::vector<uint16_t>& xoffset, const std::vector<uint16_t>& yoffset)
 	{
-		assert(tile_size == 8);
-
-		static std::array<uint16_t, 8> xoffset = { 8,8,8,8,0,0,0,0 };
-		static std::array<uint16_t, 8> yoffset = { 0,1,2,3,4,5,6,7 };
-
-		// 8 8 8 8 0 0 0 0 // (80 08) (40 04) (20 02) (10 01) 
-		// 9 9 9 9 1 1 1 1
-		// ...
 		auto psrc = src;
-		std::vector<Tile> tiles;
+		Tiles tiles;
 		for (uint16_t tileno = 0; tileno < tile_count; ++tileno)
 		{
 			Tile tile = Tile(tile_size);
@@ -40,8 +32,53 @@ namespace ae::tilemap
 				}
 			}
 			tiles.push_back(tile);
-			psrc += 16;
+			psrc += tile_size * tile_size / 4;
 		}
 		return tiles;
+	}
+
+	void TileMap::drawTile(display::RasterDisplay& raster, const Tile& tile, const uint16_t x, const uint16_t y, const palette_t palette, const bool flipX, const bool flipY)
+	{
+		const uint8_t size = tile.size();
+		if ((x >= _width) || (y >= _height))
+			return;
+		for (uint8_t my = 0; my < size; ++my)
+		{
+			int16_t yy = (flipY) ? y + size - my - 1 : y + my;
+
+			if ((yy < 0) || (yy >= _height))
+				continue;
+			for (uint8_t mx = 0; mx < size; ++mx)
+			{
+				int16_t xx = (flipX) ? x + size - mx - 1 : x + mx;
+				if ((xx < 0) || (xx >= _width))
+					continue;
+				rgb_t col = palette[tile.pixel(mx, my)];
+				raster.set(xx, yy, col);
+			}
+		}
+	}
+	void TileMap::drawMaskTile(display::RasterDisplay& raster, const Tile& tile, const uint16_t x, const uint16_t y, const palette_t palette, const bool flipX, const bool flipY)
+	{
+		const uint8_t size = tile.size();
+		if ((x >= _width) || (y >= _height))
+			return;
+		for (uint8_t my = 0; my < size; ++my)
+		{
+			int16_t yy = (flipY) ? y + size - my - 1 : y + my;
+
+			if ((yy < 0) || (yy >= _height))
+				continue;
+			for (uint8_t mx = 0; mx < size; ++mx)
+			{
+				int16_t xx = (flipX) ? x + size - mx - 1 : x + mx;
+				if ((xx < 0) || (xx >= _width))
+					continue;
+				rgba_t col = palette[tile.pixel(mx, my)];
+				if (col.alpha > 0) {
+					raster.set(xx, yy, static_cast<rgb_t>(col));
+				}
+			}
+		}
 	}
 }

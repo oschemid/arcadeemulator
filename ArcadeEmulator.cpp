@@ -13,8 +13,8 @@
 #include "src/settings/console.h"
 #include "imgui_impl_sdl2.h"
 
-//#include "src/emulator/gameboy/debugger/tilemap.h"
-//#include "src/emulator/gameboy/gameboy.h"
+#include "src/gui/debugger.h"
+
 
 int main(int argc, char** argv)
 {
@@ -39,16 +39,16 @@ int main(int argc, char** argv)
 	window.init();
 	engine.init();
 	gui.init();
+	std::string n1 = "TEST";
+	std::string n2 = "TILES";
 
 	std::thread* t = nullptr;
 	std::thread* t2 = nullptr;
 	bool done = false;
 	ae::emulator::Emulator::Ptr si = nullptr;
 	ae::DisplayWidget* r1 = nullptr;
-	ae::DisplayWidget* r2 = nullptr;
-//	ae::gameboy::debug::Debugger* debugger = nullptr;
-	std::string n1 = "TEST";
-	std::string n2 = "TILEMAP";
+	ae::TileMapWidget r2(n2, &gui);
+
 	ae::display::RasterDisplay* raster = nullptr;
 	while (!done)
 	{
@@ -76,16 +76,13 @@ int main(int argc, char** argv)
 				si->init(raster);
 				t = new std::thread([&si, &t]() { si->run(); t->detach(); });
 
-				//raster2 = engine.getRasterDisplay();
-				//raster2->init(256,256);
-				//r2 = new ae::RasterDisplay(n2, raster2->getID());
-				//gui.addWidget("tilemap", r2);
+				//r2.reset(si.get());
+				//gui.addWidget("tilemap", &r2);
 				//debugger = new ae::gameboy::debug::Debugger(static_cast<ae::gameboy::Gameboy*>(&(*si)), raster2);
 				//t2 = new std::thread([&debugger, &t2]() { debugger->run(); t2->detach(); });
 			}
 			else {
 				if ((t)&&(!(t->joinable()))) {
-//					delete si;
 					si = nullptr;
 					delete t;
 					gameselection.resetSelected();

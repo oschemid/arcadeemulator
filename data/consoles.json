@@ -1,7 +1,11 @@
 [
   {
     "id": "pacman",
-    "name":  "Pacman"
+    "name": "Pacman"
+  },
+  {
+    "id": "pacmano",
+    "name": "Pacman Old"
   },
   {
     "id": "gameboy",

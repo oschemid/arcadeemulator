@@ -2,6 +2,9 @@
 #include "SDL2/SDL.h"
 #include "file.h"
 
+#include <iostream>
+
+
 
 using namespace ae::namco;
 
@@ -10,10 +13,26 @@ static const ae::string archive = "roms/namco/rallyx.zip";
 
 static ae::emulator::Emulator::registry reg("rallyx", [](const ae::emulator::Game& game) { return std::make_unique<ae::namco::RallyX>(game); });
 
+static std::vector<uint16_t> xoffset8 = { 8,8,8,8,0,0,0,0 };
+static std::vector<uint16_t> yoffset8 = { 0,1,2,3,4,5,6,7 };
+static std::vector<uint16_t> xoffset16 = { 8,8,8,8,16,16,16,16,24,24,24,24,0,0,0,0 };
+static std::vector<uint16_t> yoffset16 = { 0,1,2,3,4,5,6,7,32,33,34,35,36,37,38,39 };
 
-RallyX::RallyX(const emulator::Game&)
+
+RallyX::RallyX(const emulator::Game& game)
 {
 	_clockPerMs = 3072;
+	_port0.set(1, "_JOY1_FIRE");
+	_port0.set(2, "_JOY1_LEFT");
+	_port0.set(3, "_JOY1_RIGHT");
+	_port0.set(4, "_JOY1_DOWN");
+	_port0.set(5, "_JOY1_UP");
+	_port0.set(6, "_START1");
+	_port0.set(7, "_COIN");
+	_port0.init(game);
+
+	_port2.set(0, "service");
+	_port2.init(game);
 }
 
 RallyX::~RallyX()
@@ -23,7 +42,7 @@ RallyX::~RallyX()
 ae::emulator::SystemInfo RallyX::getSystemInfo() const
 {
 	return ae::emulator::SystemInfo{
-		.geometry = {.width = 256, .height = 256}
+		.geometry = {.width = 288, .height = 224}
 	};
 }
 
@@ -31,20 +50,30 @@ void RallyX::initVideoRom()
 {
 	uint8_t* videorom = new uint8_t[0x1120];
 	filemanager::readRoms(archive, { {0,"8e"}, {0x1000,"rx1-1.11n"}, {0x1020,"rx1-7.8p"} }, videorom);
-	_tiles = ae::tilemap::decodeTiles(256, 8, videorom);
-	
+	_tiles = ae::tilemap::decodeTiles(256, 8, videorom, xoffset8, yoffset8);
+	_sprites = ae::tilemap::decodeTiles(0x40, 16, videorom, xoffset16, yoffset16);
 	for (uint8_t i = 0; i < 32; ++i)
 	{
 		const uint8_t data = videorom[0x1000 + i];
 		const uint8_t r = (data & 1) * 0x21 + ((data >> 1) & 1) * 0x47 + ((data >> 2) & 1) * 0x97;
 		const uint8_t g = ((data >> 3) & 1) * 0x21 + ((data >> 4) & 1) * 0x47 + ((data >> 5) & 1) * 0x97;
 		const uint8_t b = ((data >> 6) & 1) * 0x21 + ((data >> 7) & 1) * 0x47;
-		_palette.push_back({ .red = r, .green = g, .blue = b });
+		const uint8_t a = (i == 0) ? 0 : 0xff;
+		_palette.push_back({ .red = r, .green = g, .blue = b, .alpha=a });
 	}
-	for (uint16_t i = 0; i < 256; ++i)
+	for (uint16_t i = 0; i < 64; ++i)
 	{
-		const uint8_t data = videorom[0x1020 + i];
-		_lookup.push_back(_palette[data & 0x3f]);
+		palette_t palette;
+		const uint8_t data1 = videorom[0x1020 + 4 * i];
+		const uint8_t data2 = videorom[0x1021 + 4 * i];
+		const uint8_t data3 = videorom[0x1022 + 4 * i];
+		const uint8_t data4 = videorom[0x1023 + 4 * i];
+		palette.push_back(_palette[data1 & 0x3f]);
+		palette.push_back(_palette[data2 & 0x3f]);
+		palette.push_back(_palette[data3 & 0x3f]);
+		palette.push_back(_palette[data4 & 0x3f]);
+
+		_lookup.push_back(palette);
 	}
 	delete[] videorom;
 }
@@ -53,9 +82,11 @@ void RallyX::init(ae::display::RasterDisplay* raster)
 {
 	_cpu = xprocessors::Cpu::create("Z80");
 	_display = raster;
+	_tilemap = new tilemap::TileMap(288, 224);
 	_rom = new uint8_t[0x4000];
 	filemanager::readRoms(archive, {{0,"1b"}, {0,"rallyxn.1e"}, {0,"rallyxn.1h"}, {0,"rallyxn.1k"}}, _rom);
 
+	_controller = ae::controller::ArcadeController::create();
 	initVideoRom();
 
 	_videoram = new uint8_t[0x1000];
@@ -76,12 +107,13 @@ uint8_t RallyX::read(const uint16_t address) const
 		return _videoram[address - 0x8000];
 	if ((address >= 0x9800) && (address < 0xA000))
 		return _ram[address - 0x9800];
-	if (address == 0xa000)
-		return 0xff; //input
+	if (address == 0xa000) 
+		return (~_port0.get())&0xff; //input
 	if (address == 0xa080)
-		return 0xfe; //input
+		return 0xff; //input + upright
 	if (address == 0xa100)
-		return 0; //dip
+		return _port2.get();
+	return 0;
 	throw std::runtime_error("Error");
 }
 void RallyX::write(const uint16_t address, const uint8_t value)
@@ -106,6 +138,18 @@ void RallyX::write(const uint16_t address, const uint8_t value)
 		_radarattr[address & 0x000f] = value;
 		return;
 	}
+	switch (address)
+	{
+	case 0xa181:
+		_interrupt_enabled = ((value & 1) == 1) ? true : false;
+		break;
+	case 0xa130:
+		_scrollX = value;
+		break;
+	case 0xa140:
+		_scrollY = value;
+		break;
+	}
 //	throw std::runtime_error("Error");
 }
 
@@ -120,80 +164,86 @@ uint8_t RallyX::tick()
 
 	if (deltaDisplay > clockDisplay) { // 60 Hz
 		draw();
-		_cpu->interrupt(_interrupt_vector);
+		if (_interrupt_enabled)
+			_cpu->interrupt(_interrupt_vector);
 		deltaDisplay -= clockDisplay;
+		_controller->tick(); _port0.tick(*_controller);;
 	}
 	deltaDisplay += deltaClock;
 
 	return deltaClock;
 }
 
-void RallyX::drawBackground()
+void RallyX::drawBackground(const uint8_t priority)
 {
+	int16_t scrollX = 3 - _scrollX;
+	int16_t scrollY = -_scrollY - 16;
+
 	for (uint16_t offset = 0; offset < 0x400; ++offset)
 	{
 		uint8_t tile = _videoram[0x400 + offset];
 		uint8_t color = _videoram[0xc00 + offset];
+		if ((color & 0x20) >> 5 != priority)
+			continue;
 		uint8_t xFlip = ~color & 0x40;
 		uint8_t yFlip = color & 0x80;
 		color &= 0x3f;
 
 		int16_t x = (offset % 32) * 8;
+		x += scrollX;
+		if (x < -7) x += 256;
 		int16_t y = (offset / 32) * 8;
+		y += scrollY;
+		if (y < -7) y += 256;
 
-		for(int8_t sx=0;sx<8;++sx)
-			for (int8_t sy = 0; sy < 8; ++sy)
-			{
-				auto col1 = _tiles[tile].pixel(sx, sy);
-				rgb_t col = _lookup[(color<<2) + col1];
-				_display->set(x + sx, y + sy, col);
-			}
+		_tilemap->drawTile(*_display, _tiles[tile], x, y, _lookup[color], xFlip>0, yFlip>0);
+		_tilemap->drawTile(*_display, _tiles[tile], x-256, y, _lookup[color], xFlip>0, yFlip>0);
 	}
-	//INT32 sx, sy, Code, Colour, x, y, xFlip, yFlip;
+}
 
-	//INT32 Displacement = (rallyx) ? 1 : 0;
-	//INT32 scrollx = -(xScroll - 3 * Displacement);
-	//INT32 scrolly = -(yScroll + 16);
+void RallyX::drawSidebar()
+{
+	for (uint16_t my = 0; my < 32; my++)
+	{
+		for (uint16_t mx = 0; mx < 8; mx++)
+		{
+			uint16_t offset = mx + (my << 5);
+			uint8_t tile = _videoram[offset];
+			uint8_t color = _videoram[0x800 + offset];
+			uint8_t xFlip = ~color & 0x40;
+			uint8_t yFlip = color & 0x80;
+			color &= 0x3f;
 
-	//for (INT32 offs = 0x3ff; offs >= 0; offs--) {
-	//	Code = DrvVideoRam[0x400 + offs];
-	//	Colour = DrvVideoRam[0xc00 + offs];
+			int16_t x = mx * 8-32;
+			if (x < 0) x += 64;
+			x += 224;
+			int16_t y = my * 8-16;
+			
+			_tilemap->drawTile(*_display, _tiles[tile], x, y, _lookup[color], xFlip > 0, yFlip > 0);
+		}
+	}
+}
 
-	//	if (((Colour & 0x20) >> 5) != priority) continue;
+void RallyX::drawSprites()
+{
+	for (uint16_t offset = 0x14; offset < 0x20; offset+=2)
+	{
+		uint8_t tile = (_videoram[offset] & 0xfc) >> 2;
+		uint8_t xFlip = _videoram[offset] & 1;
+		uint8_t yFlip = _videoram[offset] & 2;
+		uint8_t color = _videoram[0x800 + offset+1]& 0x3f;
+		int16_t x = _videoram[offset + 1] + ((_videoram[0x800 + offset + 1] & 0x80) << 1) - 1;
+		int16_t y = 241 - _videoram[0x800 + offset] - 1 - 16;
 
-	//	x += scrollx;
-	//	y += scrolly;
-
-	//	if (x < -7) x += 256;
-	//	if (y < -7) y += 256;
-
-	//	if (x >= nScreenWidth || y >= nScreenHeight) continue;
-
-	//	if (xFlip) {
-	//		if (yFlip) {
-	//			Render8x8Tile_FlipXY_Clip(pTransDraw, Code, x, y, Colour, 2, 0, DrvChars);
-	//			Render8x8Tile_FlipXY_Clip(pTransDraw, Code, x - 256, y, Colour, 2, 0, DrvChars);
-	//		}
-	//		else {
-	//			Render8x8Tile_FlipX_Clip(pTransDraw, Code, x, y, Colour, 2, 0, DrvChars);
-	//			Render8x8Tile_FlipX_Clip(pTransDraw, Code, x - 256, y, Colour, 2, 0, DrvChars);
-	//		}
-	//	}
-	//	else {
-	//		if (yFlip) {
-	//			Render8x8Tile_FlipY_Clip(pTransDraw, Code, x, y, Colour, 2, 0, DrvChars);
-	//			Render8x8Tile_FlipY_Clip(pTransDraw, Code, x - 256, y, Colour, 2, 0, DrvChars);
-	//		}
-	//		else {
-	//			Render8x8Tile_Clip(pTransDraw, Code, x, y, Colour, 2, 0, DrvChars);
-	//			Render8x8Tile_Clip(pTransDraw, Code, x - 256, y, Colour, 2, 0, DrvChars);
-	//		}
-	//	}
-	//}
+		_tilemap->drawMaskTile(*_display, _sprites[tile], x, y, _lookup[color], xFlip > 0, yFlip > 0);
+	}
 }
 
 void RallyX::draw()
 {
-	drawBackground();
+	drawBackground(0);
+	drawSprites();
+	drawBackground(1);
+	drawSidebar();
 	_display->refresh();
 }

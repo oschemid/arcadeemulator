@@ -3,6 +3,7 @@
 #include "midway8080.h"
 #include "mb14241.h"
 #include "../../controller/arcadecontroller.h"
+#include "io.h"
 
 
 namespace ae::midway8080
@@ -24,9 +25,9 @@ namespace ae::midway8080
 		xprocessors::MB14241::Ptr _shifter{ nullptr };
 		ae::controller::ArcadeController::Ptr _controller{ nullptr };
 
-		Port _port0{ 0 };
-		Port _port1{ 0 };
-		Port _port2{ 0 };
+		ae::io::Port _port0{ 0 };
+		ae::io::Port _port1{ 0 };
+		ae::io::Port _port2{ 0 };
 
 		uint8_t* _colorram;
 	};

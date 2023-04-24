@@ -10,21 +10,37 @@ RasterDisplay::RasterDisplay(const geometry_t g) :
 
 RasterDisplay::~RasterDisplay()
 {
-	if (_buffer)
-		delete[] _buffer;
+	if (_buffers[0])
+		delete[] _buffers[0];
+	if (_buffers[1])
+		delete[] _buffers[1];
 }
 
 void RasterDisplay::init()
 {
-	_buffer = new uint32_t[_geometry.width * _geometry.height];
+	_buffers[0] = new uint32_t[_geometry.width * _geometry.height];
+	_buffers[1] = new uint32_t[_geometry.width * _geometry.height];
 }
 
 void RasterDisplay::set(const uint16_t x, const uint16_t y, const rgb_t color)
 {
-	_buffer[y*_geometry.width+x] = 0xff000000 | (color.blue << 16) | (color.green << 8) | color.red;
+	assert(x < _geometry.width);
+	assert(y < _geometry.height);
+	uint16_t offset;
+	if (_geometry.rotation == geometry_t::rotation_t::NONE)
+		offset = y * _geometry.width + x;
+	else
+		offset = x * _geometry.height + (_geometry.height - y-1);
+
+	_buffers[_current][offset] = 0xff000000 | (color.blue << 16) | (color.green << 8) | color.red;
 }
 
 void RasterDisplay::set(const uint16_t x, const uint16_t y, const uint32_t color)
 {
-	_buffer[y * _geometry.width + x] = color;
+	uint16_t offset;
+	if (_geometry.rotation == geometry_t::rotation_t::NONE)
+		offset = y * _geometry.width + x;
+	else
+		offset = x * _geometry.height + (_geometry.height - y - 1);
+	_buffers[_current][offset] = color;
 }

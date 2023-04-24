@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <functional>
 #include <fstream>
+#include <vector>
 #include "nlohmann/json.hpp"
 
 
@@ -20,12 +21,27 @@ namespace ae {
 	struct geometry_t {
 		uint16_t width;
 		uint16_t height;
+		enum class rotation_t {
+			NONE, 
+			ROT90
+		} rotation;
 	};
 	struct rgb_t {
 		uint8_t red;
 		uint8_t green;
 		uint8_t blue;
 	};
+	struct rgba_t {
+		uint8_t red;
+		uint8_t green;
+		uint8_t blue;
+		uint8_t alpha{ 0xff };
+
+		operator rgb_t() const { return rgb_t{ .red = red, .green = green, .blue = blue }; }
+	};
+
+	using palette_t = std::vector<rgba_t>;
+
 	struct rect_t {
 		uint16_t left;
 		uint16_t top;
