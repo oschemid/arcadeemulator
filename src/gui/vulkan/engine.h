@@ -7,6 +7,10 @@
 
 #include "SDL2/SDL.h"
 #include "imgui_impl_vulkan.h"
+#include <map>
+
+
+using aos::string;
 
 
 namespace ae::gui {

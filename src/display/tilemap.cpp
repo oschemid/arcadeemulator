@@ -74,7 +74,7 @@ namespace ae::tilemap
 				int16_t xx = (flipX) ? x + size - mx - 1 : x + mx;
 				if ((xx < 0) || (xx >= _width))
 					continue;
-				rgba_t col = palette[tile.pixel(mx, my)];
+				aos::rgba_t col = palette[tile.pixel(mx, my)];
 				if (col.alpha > 0) {
 					raster.set(xx, yy, static_cast<rgb_t>(col));
 				}

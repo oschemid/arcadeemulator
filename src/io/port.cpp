@@ -19,15 +19,20 @@ void Port::reset()
 	_definition.clear();
 }
 
-void Port::init(const emulator::Game& game)
+void Port::init(const aos::emulator::GameConfiguration& game)
 {
+	const std::vector<aos::emulator::DipSwitch> dipswitch = game.switches;
 	for (auto& [bit, str, inverted] : _definition)
 	{
 		try
 		{
-			_port &= ~(1 << bit);
-			uint8_t value = game.settings(str) << bit;
-			_port |= (inverted) ? ~value : value;
+			for (auto& d : dipswitch) {
+				if (d.name == str) {
+					_port &= ~(1 << bit);
+					uint8_t value = d.value << bit;
+					_port |= (inverted) ? ~value : value;
+				}
+			}
 		}
 		catch (std::out_of_range)
 		{
@@ -41,6 +46,7 @@ void Port::tick(const ae::controller::ArcadeController& controller)
 	{
 		{ "_COIN", [](const ae::controller::ArcadeController& c) { return c.coin(); }},
 		{ "_COIN2", [](const ae::controller::ArcadeController& c) { return c.coin2(); }},
+		{ "_COIN3", [](const ae::controller::ArcadeController& c) { return c.coin3(); }},
 		{ "_START1", [](const ae::controller::ArcadeController& c) { return c.button(ae::controller::ArcadeController::button_control::start1); }},
 		{ "_START2", [](const ae::controller::ArcadeController& c) { return c.button(ae::controller::ArcadeController::button_control::start2); }},
 		{ "_JOY1_FIRE", [](const ae::controller::ArcadeController& c) { return c.joystick1(ae::controller::ArcadeController::joystick_control::fire); }},
@@ -66,5 +72,5 @@ void Port::tick(const ae::controller::ArcadeController& controller)
 
 uint8_t Port::get() const
 {
-	return _port.to_ulong();
+	return static_cast<uint8_t>(_port.to_ulong());
 }

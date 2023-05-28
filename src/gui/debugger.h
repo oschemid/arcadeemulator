@@ -5,7 +5,7 @@
 #include "display.h"
 
 
-using ae::emulator::Emulator;
+using aos::emulator::Emulator;
 
 namespace ae {
 	class TileMapWidget : public gui::widgets::Widget {

@@ -1,5 +1,12 @@
 #pragma once
 #include "types.h"
+#include <array>
+
+using aos::string;
+using aos::uint8_t;
+using aos::uint16_t;
+using aos::rgb_t;
+using aos::geometry_t;
 
 
 namespace ae::display
@@ -20,7 +27,7 @@ namespace ae::display
 
 	protected:
 		uint8_t _current{ 0 };
-		std::array<uint32_t*,2> _buffers{ nullptr };
+		std::array<std::uint32_t*,2> _buffers{ nullptr };
 		geometry_t _geometry;
 		bool _refresh{ false };
 	};

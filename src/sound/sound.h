@@ -2,6 +2,8 @@
 #include <SDL2/SDL.h>
 #include "../include/types.h"
 
+using aos::string;
+
 
 namespace ae {
 	class Sound {

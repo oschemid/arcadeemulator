@@ -2,6 +2,7 @@
 
 using namespace ae::gameboy;
 
+
 void Ppu::startModeOamSearch()
 {
 	_modeOamSearch.init();
@@ -78,11 +79,11 @@ void Ppu::fetchModePixelTransfer()
 		_modePixelTransfer.state = Mode3::SPRITE_HIGH;
 		break;
 	case Mode3::SPRITE_HIGH:
-		_modePixelTransfer.tile.high = tileHigh(_modePixelTransfer.tile.id, _registers.ly-(_modePixelTransfer.sprite.y-16), true);
+		_modePixelTransfer.tile.high = tileHigh(_modePixelTransfer.tile.id, sprite_row(_modePixelTransfer.sprite), true);
 		_modePixelTransfer.state = Mode3::SPRITE_LOW;
 		break;
 	case Mode3::SPRITE_LOW:
-		_modePixelTransfer.tile.low = tileLow(_modePixelTransfer.tile.id, _registers.ly+16-_modePixelTransfer.sprite.y, true);
+		_modePixelTransfer.tile.low = tileLow(_modePixelTransfer.tile.id, sprite_row(_modePixelTransfer.sprite), true);
 		_modePixelTransfer.state = Mode3::SPRITE_PUSH;
 		break;
 	case Mode3::SPRITE_PUSH:

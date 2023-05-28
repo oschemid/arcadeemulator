@@ -1,17 +1,14 @@
 #include "rallyx.h"
 #include "SDL2/SDL.h"
 #include "file.h"
-
+#include "registry.h"
 #include <iostream>
 
 
 
 using namespace ae::namco;
 
-static const ae::string archive = "roms/namco/rallyx.zip";
-
-
-static ae::emulator::Emulator::registry reg("rallyx", [](const ae::emulator::Game& game) { return std::make_unique<ae::namco::RallyX>(game); });
+static const aos::string archive = "roms/namco/rallyx.zip";
 
 static std::vector<uint16_t> xoffset8 = { 8,8,8,8,0,0,0,0 };
 static std::vector<uint16_t> yoffset8 = { 0,1,2,3,4,5,6,7 };
@@ -19,7 +16,7 @@ static std::vector<uint16_t> xoffset16 = { 8,8,8,8,16,16,16,16,24,24,24,24,0,0,0
 static std::vector<uint16_t> yoffset16 = { 0,1,2,3,4,5,6,7,32,33,34,35,36,37,38,39 };
 
 
-RallyX::RallyX(const emulator::Game& game)
+RallyX::RallyX(const aos::emulator::GameConfiguration& game)
 {
 	_clockPerMs = 3072;
 	_port0.set(1, "_JOY1_FIRE");
@@ -39,9 +36,9 @@ RallyX::~RallyX()
 {
 }
 
-ae::emulator::SystemInfo RallyX::getSystemInfo() const
+aos::emulator::SystemInfo RallyX::getSystemInfo() const
 {
-	return ae::emulator::SystemInfo{
+	return aos::emulator::SystemInfo{
 		.geometry = {.width = 288, .height = 224}
 	};
 }
@@ -160,7 +157,7 @@ uint8_t RallyX::tick()
 
 	uint64_t previous = _cpu->elapsed_cycles();
 	_cpu->executeOne();
-	uint8_t deltaClock = _cpu->elapsed_cycles() - previous;
+	uint64_t deltaClock = _cpu->elapsed_cycles() - previous;
 
 	if (deltaDisplay > clockDisplay) { // 60 Hz
 		draw();
@@ -171,7 +168,7 @@ uint8_t RallyX::tick()
 	}
 	deltaDisplay += deltaClock;
 
-	return deltaClock;
+	return static_cast<uint8_t>(deltaClock);
 }
 
 void RallyX::drawBackground(const uint8_t priority)
@@ -247,3 +244,13 @@ void RallyX::draw()
 	drawSidebar();
 	_display->refresh();
 }
+
+static ae::RegistryHandler<aos::emulator::GameDriver> rallyx{ "rallyx", {
+	.name = "RallyX",
+	.emulator = "namco",
+	.creator = [](const aos::emulator::GameConfiguration& config) { return std::make_unique<ae::namco::RallyX>(config); },
+	.configuration = {
+		.switches = {{ "service", 1, "Service", {"False", "True"} }
+		  }
+	}
+}};

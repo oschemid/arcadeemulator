@@ -1,29 +1,37 @@
 #pragma once
 #include "types.h"
 #include "midway8080.h"
+#include "emulator.h"
 #include "../../controller/arcadecontroller.h"
 #include "io.h"
 
 
-namespace ae::midway8080
+namespace aos::midway8080
 {
-	class AmazingMaze : public GameBoard
+	class AmazingMaze : public Midway8080
 	{
 	public:
-		AmazingMaze();
-		virtual ~AmazingMaze() = default;
-		void init(const emulator::Game&) override;
-		std::vector<std::pair<uint16_t, string>> romFiles() const override;
+		AmazingMaze(vector<pair<uint16_t, string>>,
+			const emulator::GameConfiguration&);
+		virtual ~AmazingMaze();
 
-		void out(const uint8_t, const uint8_t) override;
-		uint8_t in(const uint8_t) override;
+		emulator::SystemInfo getSystemInfo() const override {
+			return emulator::SystemInfo{
+				.geometry = {.width = 256, .height = 224}
+			};
+		}
 
-		void controllerTick() override { _controller->tick(); _port0.tick(*_controller); _port1.tick(*_controller); }
-		rgb_t color(const uint8_t, const uint8_t, const bool) const override;
+		void init(ae::display::RasterDisplay*) override;
+		uint8_t tick() override;
 
 	protected:
-		ae::controller::ArcadeController::Ptr _controller{ nullptr };
+		vector<pair<uint16_t, string>> _roms;
 		ae::io::Port _port0{ 0 };
 		ae::io::Port _port1{ 0 };
+		ae::controller::ArcadeController::Ptr _controller{ nullptr };
+
+		uint8_t in(const uint8_t);
+		void out(const uint8_t, const uint8_t);
+		void updateDisplay();
 	};
 }

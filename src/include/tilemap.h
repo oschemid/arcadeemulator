@@ -1,8 +1,11 @@
 #pragma once
 
 #include "types.h"
+#include <cassert>
 #include "display.h"
 #include <vector>
+
+using aos::palette_t;
 
 
 namespace ae::tilemap

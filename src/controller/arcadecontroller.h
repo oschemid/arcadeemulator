@@ -18,6 +18,7 @@ namespace ae::controller
 		bool button(const button_control ctrl) const { return _buttons[ctrl]; }
 		bool coin() const { return _coin; }
 		bool coin2() const { return _coin2; }
+		bool coin3() const { return _coin3; }
 
 		using Ptr = std::unique_ptr<ArcadeController>;
 
@@ -31,5 +32,6 @@ namespace ae::controller
 		std::bitset<2> _buttons{ 0 };
 		bool _coin{ false };
 		bool _coin2{ false };
+		bool _coin3{ false };
 	};
 }

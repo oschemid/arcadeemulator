@@ -5,16 +5,13 @@
 #include <functional>
 #include <fstream>
 #include <vector>
-#include "nlohmann/json.hpp"
 
 
-
-namespace ae {
+namespace aos {
 	using std::string;
 	using std::uint8_t;
 	using std::uint16_t;
 	using std::size_t;
-	using json = nlohmann::json;
 
 	using fnuint8_t = std::function<uint8_t(const uint8_t)>;
 

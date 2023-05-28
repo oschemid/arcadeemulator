@@ -2,19 +2,21 @@
 #include "file.h"
 #include "minizip-ng/unzip.h"
 
+using aos::string;
 
-ae::File::File(const string& filename) :
+
+aos::File::File(const string& filename) :
 	_ifs(filename, std::ios::binary | std::ios::ate) {
 	auto end = _ifs.tellg();
 	_ifs.seekg(0, std::ios::beg);
 	_size = std::size_t(end - _ifs.tellg());
 }
 
-ae::File::~File() {
+aos::File::~File() {
 	_ifs.close();
 }
 
-bool ae::File::read(const uint16_t offset, const uint16_t size, const uint8_t* data) {
+bool aos::File::read(const uint16_t offset, const uint16_t size, const uint8_t* data) {
 	if (offset + size > _size)
 		throw std::runtime_error("Error in file size");
 	_ifs.seekg(offset, std::ios::beg);
@@ -45,7 +47,7 @@ void ae::filemanager::readRoms(const string& filename, std::vector<std::pair<uin
 		int error = UNZ_OK;
 		do
 		{
-			error = unzReadCurrentFile(zipfile, destination + offset, info.uncompressed_size);
+			error = unzReadCurrentFile(zipfile, destination + offset, static_cast<uint32_t>(info.uncompressed_size));
 			offset += error;
 		} while (error > 0);
 		unzCloseCurrentFile(zipfile);

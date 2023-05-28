@@ -1,46 +1,38 @@
 #pragma once
 #include "types.h"
-#include "registry.h"
 #include "display.h"
 #include "tilemap.h"
 #include <vector>
 #include <map>
 
+using aos::string;
+using aos::geometry_t;
+using std::vector;
+using std::pair;
 
-namespace ae::emulator
+
+namespace aos::emulator
 {
 	struct SystemInfo
 	{
 		geometry_t geometry;
 	};
-
-	class Game
+	struct DipSwitch
 	{
-	public:
-		const string& hardware() const { return _hardware; }
-		const string& version() const { return _version; }
-		const string& romsfile() const { return _romsfile; }
-		uint8_t settings(const string& name) const { auto res = _settings.find(name); if (res == _settings.end()) throw std::out_of_range("Unknown"); return res->second; }
-
-		Game(const string& h,
-			 const string& v,
-			 const string& r,
-			 std::map<string, uint8_t> s) : 
-			_hardware{ h },
-			_version{ v }, _romsfile{ r }, _settings{ s } {}
-	protected:
-		string _hardware;
-		string _version;
-		string _romsfile;
-		std::map<string, uint8_t> _settings;
+		string name;
+		uint8_t value;
+		string description;
+		vector<string> values;
+	};
+	struct GameConfiguration
+	{
+		vector<DipSwitch> switches;
 	};
 
 	class Emulator
 	{
 	public:
 		using Ptr = std::unique_ptr<Emulator>;
-		using creator_fn = std::function<Ptr(const Game&)>;
-		using registry = ae::RegistryHandler<Ptr, creator_fn>;
 
 	public:
 		virtual ~Emulator() = default;
@@ -58,5 +50,14 @@ namespace ae::emulator
 		uint64_t _clockPerMs{ 0 };
 	};
 
-	Emulator::Ptr create(const string&, const Game&);
+	using creator_fn = std::function<Emulator::Ptr(const GameConfiguration&)>;
+
+	struct GameDriver
+	{
+		string name;
+		string emulator;
+		creator_fn creator;
+		vector<pair<uint16_t, string>> roms;
+		GameConfiguration configuration;
+	};
 }

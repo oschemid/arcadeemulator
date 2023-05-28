@@ -8,13 +8,13 @@
 
 namespace ae::namco
 {
-	class Pacman : public emulator::Emulator
+	class Pacman : public aos::emulator::Emulator
 	{
 	public:
-		Pacman(const emulator::Game&);
+		Pacman(const aos::emulator::GameConfiguration&);
 		virtual ~Pacman();
 
-		emulator::SystemInfo getSystemInfo() const override;
+		aos::emulator::SystemInfo getSystemInfo() const override;
 		void init(ae::display::RasterDisplay*) override;
 		uint8_t tick() override;
 
@@ -45,7 +45,8 @@ namespace ae::namco
 		ae::tilemap::Tiles _sprites;
 		palette_t _palette;
 		std::vector<palette_t> _lookup;
-		uint8_t* _spritesxy;
+		uint8_t* _spritesxy{ nullptr };
+		bool _flip{ false };
 
 		uint8_t read(const uint16_t) const;
 		void write(const uint16_t, const uint8_t);

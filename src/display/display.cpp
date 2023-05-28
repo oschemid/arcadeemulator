@@ -1,4 +1,5 @@
 #include "display.h"
+#include <cassert>
 
 
 using namespace ae::display;

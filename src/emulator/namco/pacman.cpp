@@ -1,6 +1,7 @@
 #include "pacman.h"
 #include "SDL2/SDL.h"
 #include "file.h"
+#include "registry.h"
 
 #include <iostream>
 
@@ -8,10 +9,8 @@
 
 using namespace ae::namco;
 
-static const ae::string archive = "roms/namco/pacman.zip";
+static const aos::string archive = "roms/namco/puckman.zip";
 
-
-static ae::emulator::Emulator::registry reg("pacman", [](const ae::emulator::Game& game) { return std::make_unique<ae::namco::Pacman>(game); });
 
 static std::vector<uint16_t> xoffset8 = { 8,8,8,8,0,0,0,0 };
 static std::vector<uint16_t> yoffset8 = { 0,1,2,3,4,5,6,7 };
@@ -19,11 +18,10 @@ static std::vector<uint16_t> xoffset16 = { 8,8,8,8,16,16,16,16,24,24,24,24,0,0,0
 static std::vector<uint16_t> yoffset16 = { 0,1,2,3,4,5,6,7,32,33,34,35,36,37,38,39 };
 
 
-Pacman::Pacman(const emulator::Game& game)
+Pacman::Pacman(const aos::emulator::GameConfiguration& game)
 {
 	_clockPerMs = 3072;
 
-	_port0 = 0x80;
 	_port0.set(0, "_JOY1_UP", true);
 	_port0.set(1, "_JOY1_LEFT", true);
 	_port0.set(2, "_JOY1_RIGHT", true);
@@ -31,9 +29,9 @@ Pacman::Pacman(const emulator::Game& game)
 	_port0.set(4, "rackadvance");
 	_port0.set(5, "_COIN", true);
 	_port0.set(6, "_COIN2", true);
+	_port0.set(7, "_COIN3", true);
 	_port0.init(game);
 
-	_port1 = 0x80;
 	_port1.set(0, "_JOY1_UP", true);
 	_port1.set(1, "_JOY1_LEFT", true);
 	_port1.set(2, "_JOY1_RIGHT", true);
@@ -41,6 +39,7 @@ Pacman::Pacman(const emulator::Game& game)
 	_port1.set(4, "boardtest");
 	_port1.set(5, "_START1", true);
 	_port1.set(6, "_START2", true);
+	_port1.set(7, "cabinet");
 	_port1.init(game);
 
 	_port2.set(0, "coinage");
@@ -53,11 +52,19 @@ Pacman::Pacman(const emulator::Game& game)
 
 Pacman::~Pacman()
 {
+	if (_tilemap)
+		delete _tilemap;
+	if (_rom)
+		delete[] _rom;
+	if (_ram)
+		delete[] _ram;
+	if (_spritesxy)
+		delete[] _spritesxy;
 }
 
-ae::emulator::SystemInfo Pacman::getSystemInfo() const
+aos::emulator::SystemInfo Pacman::getSystemInfo() const
 {
-	return ae::emulator::SystemInfo{
+	return aos::emulator::SystemInfo{
 		.geometry = {.width = 288, .height = 224, .rotation = geometry_t::rotation_t::ROT90 }
 	};
 }
@@ -65,7 +72,7 @@ ae::emulator::SystemInfo Pacman::getSystemInfo() const
 void Pacman::initVideoRom()
 {
 	uint8_t* videorom = new uint8_t[0x2200];
-	filemanager::readRoms(archive, { {0,"pacman.5e"}, {0,"pacman.5f"}, {0,"pm1-1.7f"}, {0,"pm1-4.4a"} }, videorom);
+	filemanager::readRoms(archive, { {0,"hangly/pacman.5e"}, {0,"hangly/pacman.5f"}, {0,"pm1-1.7f"}, {0,"pm1-4.4a"} }, videorom);
 	_tiles = ae::tilemap::decodeTiles(256, 8, videorom, xoffset8, yoffset8);
 	_sprites = ae::tilemap::decodeTiles(0x40, 16, videorom+0x1000, xoffset16, yoffset16);
 
@@ -102,7 +109,7 @@ void Pacman::init(ae::display::RasterDisplay* raster)
 	_display = raster;
 	_tilemap = new tilemap::TileMap(288, 224);
 	_rom = new uint8_t[0x4000];
-	filemanager::readRoms(archive, { {0,"pacman.6e"}, {0,"pacman.6f"}, {0,"pacman.6h"}, {0,"pacman.6j"} }, _rom);
+	filemanager::readRoms(archive, { {0,"pacman/pacman.6e"}, {0,"newpuckx/pacman.6f"}, {0,"pacman/pacman.6h"}, {0,"pacman/pacman.6j"} }, _rom);
 	_ram = new uint8_t[0x1000]{ 0 };
 	_spritesxy = new uint8_t[0x10]{ 0 };
 
@@ -147,6 +154,11 @@ void Pacman::write(const uint16_t address, const uint8_t value)
 		_interrupt_enabled = ((value & 1) == 1) ? true : false;
 		return;
 	}
+	if (address_mirror == 0x5003)
+	{
+		_flip = ((value & 1) == 1) ? true: false;
+		return;
+	}
 	if (address_mirror < 0x5060)
 		return;
 	if (address_mirror < 0x5070)
@@ -163,7 +175,7 @@ uint8_t Pacman::tick()
 
 	uint64_t previous = _cpu->elapsed_cycles();
 	_cpu->executeOne();
-	uint8_t deltaClock = _cpu->elapsed_cycles() - previous;
+	uint64_t deltaClock = _cpu->elapsed_cycles() - previous;
 
 	if (deltaDisplay > clockDisplay) { // 60 Hz
 		draw();
@@ -174,20 +186,20 @@ uint8_t Pacman::tick()
 	}
 	deltaDisplay += deltaClock;
 
-	return deltaClock;
+	return static_cast<uint8_t>(deltaClock);
 }
 
 void Pacman::drawBackground(const uint8_t priority)
 {
 	uint16_t address = 0x02;
-	uint16_t x = 2;
-	uint16_t y = 5;
 
 	// bottom of screen
 	for (uint16_t i = 0; i < 56; ++i) {
 		const uint8_t tile = _ram[address];
 		const uint8_t palette = _ram[address + 0x400] & 0x3f;
-			_tilemap->drawTile(*_display, _tiles[tile], (34 + (i / 28)) * 8, (i % 28)*8, _lookup[palette], false, false);
+		const uint16_t x = (_flip) ? 1 - i / 28 : 34 + i / 28;
+		const uint16_t y = (_flip) ? 27 - (i % 28) : i % 28;
+		_tilemap->drawTile(*_display, _tiles[tile], x * 8, y * 8, _lookup[palette], (_flip)? true : false, (_flip)? true : false);
 		address++;
 		if (i == 27) address += 4;
 	}
@@ -197,7 +209,9 @@ void Pacman::drawBackground(const uint8_t priority)
 	for (uint16_t i = 0; i < 28 * 32; ++i) {
 		const uint8_t tile = _ram[address];
 		const uint8_t palette = _ram[address + 0x400] & 0x3f;
-		_tilemap->drawTile(*_display, _tiles[tile], (2 + (i % 32)) * 8, (i /32)*8, _lookup[palette], false, false);
+		const uint16_t x = (_flip) ? 33 - i % 32 : 2 + i % 32;
+		const uint16_t y = (_flip) ? 27 - (i / 32) : i / 32;
+		_tilemap->drawTile(*_display, _tiles[tile], x * 8, y * 8, _lookup[palette], (_flip) ? true : false, (_flip) ? true : false);
 		address++;
 	}
 
@@ -206,7 +220,9 @@ void Pacman::drawBackground(const uint8_t priority)
 	for (uint16_t i = 0; i < 56; ++i) {
 		const uint8_t tile = _ram[address];
 		const uint8_t palette = _ram[address + 0x400] & 0x3f;
-		_tilemap->drawTile(*_display, _tiles[tile], (i / 28) * 8, (i % 28)*8, _lookup[palette], false, false);
+		const uint16_t x = (_flip) ? 35 - i / 28 : i / 28;
+		const uint16_t y = (_flip) ? 27 - (i % 28) : i % 28;
+		_tilemap->drawTile(*_display, _tiles[tile], x * 8, y * 8, _lookup[palette], (_flip) ? true : false, (_flip) ? true : false);
 		address++;
 		if (i == 27) address += 4;
 	}
@@ -230,3 +246,22 @@ void Pacman::draw()
 	drawSprites();
 	_display->refresh();
 }
+
+static ae::RegistryHandler<aos::emulator::GameDriver> pacman{ "pacman", {
+	.name = "Pacman",
+	.emulator = "namco",
+	.creator = [](const aos::emulator::GameConfiguration& config) { return std::make_unique<ae::namco::Pacman>(config); },
+	.roms = {
+	},
+	.configuration = {
+		.switches = {{ "coinage", 1, "Coinage", {"Free", "1C/1C", "1C/2C", "2C/1C"} },
+					 { "lives", 2, "Lives", {"1", "2", "3", "5"} },
+					 { "bonus", 0, "Bonus", {"10000 points", "15000 points", "20000 points", "no"} },
+					 { "difficulty", 1, "Difficulty", {"Hard", "Normal"} },
+					 { "ghostname", 1, "Ghost names", {"Alternate", "Normal"} },
+					 { "rackadvance", 1, "Rackadvance", {"On", "Off"} },
+					 { "boardtest", 1, "Board test", {"On", "Off"} },
+					 { "cabinet", 1, "Cabinet", {"Table", "Upright"} }
+		  }
+	}
+}};

@@ -15,7 +15,7 @@ namespace ae::io
 		void set(uint8_t, const string&, bool=false);
 		void reset();
 
-		void init(const emulator::Game&);
+		void init(const aos::emulator::GameConfiguration&);
 		void tick(const ae::controller::ArcadeController&);
 		uint8_t get() const;
 	protected:

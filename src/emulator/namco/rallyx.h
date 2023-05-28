@@ -8,13 +8,13 @@
 
 namespace ae::namco
 {
-	class RallyX : public emulator::Emulator
+	class RallyX : public aos::emulator::Emulator
 	{
 	public:
-		RallyX(const emulator::Game&);
+		RallyX(const aos::emulator::GameConfiguration&);
 		virtual ~RallyX();
 
-		emulator::SystemInfo getSystemInfo() const override;
+		aos::emulator::SystemInfo getSystemInfo() const override;
 		void init(ae::display::RasterDisplay*) override;
 		uint8_t tick() override;
 

@@ -4,21 +4,42 @@
 #include "time.h"
 #include <iostream>
 #include "SDL2/SDL.h"
+#include "library.h"
+#include "registry.h"
 
 
-static ae::emulator::Emulator::registry reg("gameboy", [](const ae::emulator::Game& game) { return std::make_unique<ae::gameboy::Gameboy>(game); });
+static ae::RegistryHandler<aos::emulator::GameDriver> tetris{ "tetris", {
+	.name = "Tetris",
+	.emulator = "gameboy",
+	.creator = [](const aos::emulator::GameConfiguration& config) { return std::make_unique<ae::gameboy::Gameboy>("roms/gameboy/tetris.gb"); },
+}};
+static ae::RegistryHandler<aos::emulator::GameDriver> alleyway{ "alleyway", {
+	.name = "Alleyway",
+	.emulator = "gameboy",
+	.creator = [](const aos::emulator::GameConfiguration& config) { return std::make_unique<ae::gameboy::Gameboy>("roms/gameboy/alleyway.gb"); },
+}};
+static ae::RegistryHandler<aos::emulator::GameDriver> bombjack{ "bombjack", {
+	.name = "Bomb Jack",
+	.emulator = "gameboy",
+	.creator = [](const aos::emulator::GameConfiguration& config) { return std::make_unique<ae::gameboy::Gameboy>("roms/gameboy/bombjack.gb"); },
+}};
+static ae::RegistryHandler<aos::emulator::GameDriver> boxxle{ "boxxle", {
+	.name = "Boxxle",
+	.emulator = "gameboy",
+	.creator = [](const aos::emulator::GameConfiguration& config) { return std::make_unique<ae::gameboy::Gameboy>("roms/gameboy/boxxle.gb"); },
+}};
+static aos::library::Console Gameboy{ "gameboy", "Gameboy" };
 
-
-ae::gameboy::Gameboy::Gameboy(const emulator::Game& game) :
+ae::gameboy::Gameboy::Gameboy(const string rom) :
 	cpu(nullptr),
-	_game(game)
+	_rom(rom)
 {
 	_clockPerMs = 4194;
 }
 
-ae::emulator::SystemInfo ae::gameboy::Gameboy::getSystemInfo() const
+aos::emulator::SystemInfo ae::gameboy::Gameboy::getSystemInfo() const
 {
-	return ae::emulator::SystemInfo{
+	return aos::emulator::SystemInfo{
 		.geometry = {.width = 160, .height = 144}
 	};
 }
@@ -27,7 +48,7 @@ void ae::gameboy::Gameboy::init(ae::display::RasterDisplay* raster)
 {
 	cpu = xprocessors::Cpu::create("lr35902");
 	_bootrom = std::make_shared<BootRom>(string("roms/gameboy/bootroms/dmg_rom.bin"));
-	_cartridge = std::shared_ptr<Mbc>(Mbc::create(_game.romsfile()));
+	_cartridge = std::shared_ptr<Mbc>(Mbc::create(_rom));
 	_mmu = std::make_unique<Mmu>(_bootrom, _cartridge);
 	_mmu->registerIoCallback([this](const uint8_t io, const uint8_t v) { _apu.callback(io, v); });
 	_mmu->map(MemoryMap::REGISTER_SB, [this](const uint16_t) { return _serial.getRegister(MemoryMap::REGISTER_SB); },
@@ -69,5 +90,5 @@ uint8_t ae::gameboy::Gameboy::tick()
 		_ppu.executeOne();
 		_serial.tick();
 	}
-	return deltaClock;
+	return static_cast<uint8_t>(deltaClock);
 }

@@ -3,6 +3,7 @@
 #include "imgui_impl_sdl2.h"
 
 using namespace ae::gui;
+using aos::string;
 
 
 GuiManager::GuiManager(Engine* engine) :
