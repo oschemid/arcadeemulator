@@ -4,10 +4,11 @@ Another Arcade Emulator
 
 ## Emulated Games
 
-- Space Invaders (Taito version and TV version)
+- Space Invaders (several versions and bootleg)
 - Space Chaser (CV version)
 - Pacman
-- Gameboy Tetris
+- RallyX
+- Gameboy Tetris and Alleyway
 
 ## License
 
