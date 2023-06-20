@@ -11,7 +11,7 @@ namespace aos::midway8080
 	class SpaceChaser : public Midway8080
 	{
 	public:
-		SpaceChaser(vector<pair<uint16_t, string>>,
+		SpaceChaser(const std::vector<aos::emulator::RomConfiguration>&,
 			const emulator::GameConfiguration&);
 		virtual ~SpaceChaser();
 
@@ -26,7 +26,7 @@ namespace aos::midway8080
 
 	protected:
 		xprocessors::MB14241::Ptr _shifter{ nullptr };
-		vector<pair<uint16_t, string>> _roms;
+		std::vector<aos::emulator::RomConfiguration> _roms;
 		ae::io::Port _port0{ 0 };
 		ae::io::Port _port1{ 0 };
 		ae::io::Port _port2{ 0 };

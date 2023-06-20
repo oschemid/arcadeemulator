@@ -11,7 +11,7 @@ namespace aos::midway8080
 	class AmazingMaze : public Midway8080
 	{
 	public:
-		AmazingMaze(vector<pair<uint16_t, string>>,
+		AmazingMaze(const vector<aos::emulator::RomConfiguration>&,
 			const emulator::GameConfiguration&);
 		virtual ~AmazingMaze();
 
@@ -25,7 +25,7 @@ namespace aos::midway8080
 		uint8_t tick() override;
 
 	protected:
-		vector<pair<uint16_t, string>> _roms;
+		vector<aos::emulator::RomConfiguration> _roms;
 		ae::io::Port _port0{ 0 };
 		ae::io::Port _port1{ 0 };
 		ae::controller::ArcadeController::Ptr _controller{ nullptr };

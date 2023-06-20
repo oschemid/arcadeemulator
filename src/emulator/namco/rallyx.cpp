@@ -1,6 +1,6 @@
 #include "rallyx.h"
 #include "SDL2/SDL.h"
-#include "file.h"
+#include "tools.h"
 #include "registry.h"
 #include <iostream>
 
@@ -16,7 +16,7 @@ static std::vector<uint16_t> xoffset16 = { 8,8,8,8,16,16,16,16,24,24,24,24,0,0,0
 static std::vector<uint16_t> yoffset16 = { 0,1,2,3,4,5,6,7,32,33,34,35,36,37,38,39 };
 
 
-RallyX::RallyX(const aos::emulator::GameConfiguration& game)
+RallyX::RallyX(const vector<aos::emulator::RomConfiguration>& roms, const aos::emulator::GameConfiguration& game) : _roms(roms)
 {
 	_clockPerMs = 3072;
 	_port0.set(1, "_JOY1_FIRE");
@@ -46,7 +46,11 @@ aos::emulator::SystemInfo RallyX::getSystemInfo() const
 void RallyX::initVideoRom()
 {
 	uint8_t* videorom = new uint8_t[0x1120];
-	filemanager::readRoms(archive, { {0,"8e"}, {0x1000,"rx1-1.11n"}, {0x1020,"rx1-7.8p"} }, videorom);
+	size_t offset = 0;
+	for (const auto& rom : _roms) {
+		if (rom.start == 1)
+			offset += rom.rom.read(videorom + offset);
+	}
 	_tiles = ae::tilemap::decodeTiles(256, 8, videorom, xoffset8, yoffset8);
 	_sprites = ae::tilemap::decodeTiles(0x40, 16, videorom, xoffset16, yoffset16);
 	for (uint8_t i = 0; i < 32; ++i)
@@ -81,7 +85,12 @@ void RallyX::init(ae::display::RasterDisplay* raster)
 	_display = raster;
 	_tilemap = new tilemap::TileMap(288, 224);
 	_rom = new uint8_t[0x4000];
-	filemanager::readRoms(archive, {{0,"1b"}, {0,"rallyxn.1e"}, {0,"rallyxn.1h"}, {0,"rallyxn.1k"}}, _rom);
+
+	size_t offset = 0;
+	for (const auto& rom : _roms) {
+		if (rom.start == 0)
+			offset += rom.rom.read(_rom + offset);
+	}
 
 	_controller = ae::controller::ArcadeController::create();
 	initVideoRom();
@@ -248,7 +257,16 @@ void RallyX::draw()
 static ae::RegistryHandler<aos::emulator::GameDriver> rallyx{ "rallyx", {
 	.name = "RallyX",
 	.emulator = "namco",
-	.creator = [](const aos::emulator::GameConfiguration& config) { return std::make_unique<ae::namco::RallyX>(config); },
+	.creator = [](const aos::emulator::GameConfiguration& config, const vector<aos::emulator::RomConfiguration>& roms) { return std::make_unique<ae::namco::RallyX>(roms, config); },
+	.roms = {
+		{ 0, 0x1000, 0x5882700d },
+		{ 0, 0x1000, 0xed1eba2b },
+		{ 0, 0x1000, 0x4f98dd1c },
+		{ 0, 0x1000, 0x9aacccf0 },
+		{ 1, 0x1000, 0x277c1de5 },
+		{ 1, 0x20, 0xc7865434 },
+		{ 1, 0x100, 0x834d4fda }
+	},
 	.configuration = {
 		.switches = {{ "service", 1, "Service", {"False", "True"} }
 		  }

@@ -1,8 +1,89 @@
 #include "types.h"
-#include "file.h"
+#include "tools.h"
 #include "minizip-ng/unzip.h"
+#include <filesystem>
+#include <map>
+
 
 using aos::string;
+namespace fs = std::filesystem;
+
+
+namespace aos::tools
+{
+	RomManager::RomManager(const string& path) :
+		_path(path) 
+	{
+	}
+
+	void RomManager::preload()
+	{
+		_roms.clear();
+		loadRomDirectory(fs::directory_entry(_path));
+	}
+	Rom RomManager::find(const uint16_t size, const uint32_t crc) const
+	{
+		for (const auto& rom : _roms) {
+			if ((rom.size == size) && (rom.crc32 == crc))
+				return rom;
+		}
+		return Rom();
+	}
+	void RomManager::loadRomDirectory(const fs::directory_entry& entry)
+	{
+		for (const auto& entry : fs::directory_iterator(entry.path())) {
+			if (entry.is_regular_file())
+				loadRomFile(entry);
+			else if (entry.is_directory())
+				loadRomDirectory(entry);
+		}
+	}
+	void RomManager::loadRomFile(const fs::directory_entry& entry)
+	{
+		if (entry.path().extension() == ".zip")
+		{
+			loadRomZip(entry);
+		}
+		else
+		{
+			File file(entry.path().string());
+			uint8_t* buffer = new uint8_t[file.getSize()];
+			file.read(0,file.getSize(),buffer);
+			Rom rom;
+			rom.filename = entry.path().string();
+			rom.size = entry.file_size();
+			rom.crc32 = ae::filemanager::Crc32(buffer, file.getSize());
+			_roms.push_back(rom);
+			delete[] buffer;
+		}
+	}
+	void RomManager::loadRomZip(const fs::directory_entry& entry)
+	{
+		unzFile zipfile = unzOpen64(entry.path().string().c_str());
+		if (!zipfile)
+			throw std::runtime_error("Archive doesn't exist");
+		if (unzGoToFirstFile(zipfile) == UNZ_OK) {
+			do {
+				if (unzOpenCurrentFile(zipfile) == UNZ_OK) {
+					unz_file_info64 info;
+					unzGetCurrentFileInfo64(zipfile, &info, nullptr, 0, nullptr, 0, nullptr, 0);
+					char* filename = new char[info.size_filename + 1];
+					unzGetCurrentFileInfo64(zipfile, &info, filename, info.size_filename+1, nullptr, 0, nullptr, 0);
+					Rom rom;
+					rom.archive = entry.path().string();
+					rom.filename = filename;
+					rom.size = info.uncompressed_size;
+					rom.crc32 = info.crc;
+					_roms.push_back(rom);
+
+					delete[] filename;
+					unzCloseCurrentFile(zipfile);
+				}
+			} while (unzGoToNextFile(zipfile) == UNZ_OK);
+		}
+		unzClose(zipfile);
+	}
+}
 
 
 aos::File::File(const string& filename) :
@@ -25,32 +106,35 @@ bool aos::File::read(const uint16_t offset, const uint16_t size, const uint8_t* 
 }
 
 
-void ae::filemanager::readRoms(const string& filename, std::vector<std::pair<uint16_t,string>> mapping, uint8_t* destination)
+size_t aos::tools::Rom::read(uint8_t* destination) const
 {
-	unzFile zipfile = unzOpen64(filename.c_str());
-	if (!zipfile)
-		throw std::runtime_error("Archive doesn't exist");
-
-	size_t offset = 0;
-	for (auto map : mapping)
+	if (archive.empty())
 	{
-		const string f = map.second;
-		const uint16_t initial_offset = map.first;
-		if (initial_offset > 0)
-			offset = initial_offset;
+		File file(filename);
+		file.read(0, static_cast<uint16_t>(size), destination);
+	}
+	else
+	{
+		size_t offset = 0;
+		unzFile zipfile = unzOpen64(archive.c_str());
+		if (!zipfile)
+			throw std::runtime_error("Archive doesn't exist");
 		unz_file_info64 info;
-		if (unzLocateFile(zipfile, f.c_str(), nullptr) == UNZ_END_OF_LIST_OF_FILE)
+		if (unzLocateFile(zipfile, filename.c_str(), nullptr) == UNZ_END_OF_LIST_OF_FILE)
 			throw std::runtime_error("Bad archive");
 		if (unzOpenCurrentFile(zipfile) != UNZ_OK)
 			throw std::runtime_error("Bad archive 2");
-		unzGetCurrentFileInfo64(zipfile, &info, nullptr,0,nullptr,0,nullptr,0);
+		unzGetCurrentFileInfo64(zipfile, &info, nullptr, 0, nullptr, 0, nullptr, 0);
 		int error = UNZ_OK;
 		do
 		{
 			error = unzReadCurrentFile(zipfile, destination + offset, static_cast<uint32_t>(info.uncompressed_size));
 			offset += error;
 		} while (error > 0);
-		unzCloseCurrentFile(zipfile);
+		unzClose(zipfile);
 	}
-	unzClose(zipfile);
+	return size;
 }
+
+void ae::filemanager::readRoms(const string&, std::vector<std::pair<uint16_t, string>>, uint8_t*)
+{}

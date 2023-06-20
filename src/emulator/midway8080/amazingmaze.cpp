@@ -1,12 +1,12 @@
 #include "amazingmaze.h"
 #include "registry.h"
-#include "file.h"
+#include "tools.h"
 
 
 using namespace aos::midway8080;
 
 
-AmazingMaze::AmazingMaze(vector<pair<uint16_t, string>> roms, const aos::emulator::GameConfiguration& config) :
+AmazingMaze::AmazingMaze(const vector<aos::emulator::RomConfiguration>& roms, const aos::emulator::GameConfiguration& config) :
 	aos::midway8080::Midway8080{ },
 	_roms{ roms }
 {
@@ -37,8 +37,12 @@ void AmazingMaze::init(ae::display::RasterDisplay* raster)
 
 	_memory = new uint8_t[0x4000]{ 0 };
 
-	string path = "roms/midway8080/maze.zip";
-	ae::filemanager::readRoms(path, _roms, _memory);
+	size_t offset = 0;
+	for (const auto& rom : _roms) {
+		if (rom.start > 0)
+			offset = rom.start;
+		offset += rom.rom.read(_memory + offset);
+	}
 
 	_cpu->read([this](const uint16_t p) { return _memory[p & 0x3fff]; });
 	_cpu->write([this](const uint16_t p, const uint8_t v) { if ((p & 0x3fff) > 0x1fff) _memory[p & 0x3fff] = v; });
@@ -119,13 +123,10 @@ void AmazingMaze::updateDisplay()
 static ae::RegistryHandler<aos::emulator::GameDriver> amazingmaze("amazingmaze", {
 	.name = "Amazing Maze",
 	.emulator = "midway8080",
-	.creator = [](const aos::emulator::GameConfiguration& config) { return std::make_unique<aos::midway8080::AmazingMaze>(vector<pair<uint16_t,string>>({
-			{ 0,"maze.h" },
-			{ 0,"maze.g" }
-		}), config); },
+	.creator = [](const aos::emulator::GameConfiguration& config, const vector<aos::emulator::RomConfiguration>& rom) { return std::make_unique<aos::midway8080::AmazingMaze>(rom, config); },
 	.roms = {
-			{ 0,"maze.h" },
-			{ 0,"maze.g" }
+			{ 0,0x800,0xf2860cff },
+			{ 0,0x800,0x65fad839 }
 			},
 	.configuration = {
 		.switches = {{ "coinage", 0, "Coin", {"One coin One credit", "Two coins One credit", "One coin Two credits", "Two coins Two redits"} },

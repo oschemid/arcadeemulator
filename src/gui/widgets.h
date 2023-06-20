@@ -10,7 +10,7 @@ namespace aos {
 		ConsolesSidebar(library::Consoles&);
 		void drawContents() override;
 
-		library::Console* getSelected() const { if (_selected != "") return aos::library::getConsole(_selected); return nullptr; }
+		library::Console* getSelected() const { if (_selected != "") return aos::library::getConsoles().get(_selected); return nullptr; }
 
 	protected:
 		string _selected;
@@ -30,7 +30,7 @@ namespace aos {
 		library::Game* _selected;
 		library::Console* _console;
 
-		void drawTile(library::Game&, VkDescriptorSet);
+		void drawTile(ae::gui::GuiManager*, library::Game&);
 		void drawSettings(library::Game&);
 	};
 }

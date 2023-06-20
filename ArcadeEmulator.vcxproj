@@ -189,6 +189,7 @@
     <ClCompile Include="src\sound\sound.cpp" />
     <ClCompile Include="src\tools\file.cpp" />
     <ClCompile Include="src\display\tilemap.cpp" />
+    <ClCompile Include="src\tools\hash.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="libraries\xos-processors\include\mb14241.h" />
@@ -230,7 +231,7 @@
     <ClInclude Include="src\emulator\midway8080\midway8080.h" />
     <ClInclude Include="src\include\display.h" />
     <ClInclude Include="src\include\emulator.h" />
-    <ClInclude Include="src\include\file.h" />
+    <ClInclude Include="src\include\tools.h" />
     <ClInclude Include="src\include\library.h" />
     <ClInclude Include="src\include\io.h" />
     <ClInclude Include="src\include\registry.h" />
@@ -241,8 +242,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
-    <None Include="data\consoles.json" />
-    <None Include="data\library.json" />
+    <None Include="data\gameboy.json" />
     <None Include="docs\cpu\8080-Programmers-Manual.pdf" />
     <None Include="docs\cpu\z80-documented.pdf" />
     <None Include="docs\cpu\Z80-User-Manual.pdf" />

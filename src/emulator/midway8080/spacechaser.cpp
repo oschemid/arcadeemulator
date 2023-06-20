@@ -1,11 +1,11 @@
 #include "spacechaser.h"
 #include "registry.h"
-#include "file.h"
+#include "tools.h"
 
 using namespace aos::midway8080;
 
 
-SpaceChaser::SpaceChaser(vector<pair<uint16_t, string>> roms, const aos::emulator::GameConfiguration& config) :
+SpaceChaser::SpaceChaser(const std::vector<aos::emulator::RomConfiguration>& roms, const aos::emulator::GameConfiguration& config) :
 	aos::midway8080::Midway8080{ },
 	_roms{ roms }
 {
@@ -41,8 +41,12 @@ void SpaceChaser::init(ae::display::RasterDisplay* raster)
 	_memory = new uint8_t[0x8000]{ 0 };
 	_colorram = new uint8_t[0x2000];
 
-	string path = "roms/midway8080/schaser.zip";
-	ae::filemanager::readRoms(path, _roms, _memory);
+	size_t offset = 0;
+	for (const auto& rom : _roms) {
+		if (rom.start > 0)
+			offset = rom.start;
+		offset += rom.rom.read(_memory + offset);
+	}
 
 	_cpu->read([this](const uint16_t p) { if (p >= 0xc000) return readColorRam(p-0xc400); else return _memory[p & 0x7fff]; });
 	_cpu->write([this](const uint16_t p, const uint8_t v) { if (p >= 0xc000) writeColorRam(p-0xc400, v); else if ((p & 0x3fff) > 0x1fff) _memory[p & 0x3fff] = v; });
@@ -176,29 +180,18 @@ uint8_t SpaceChaser::in(const uint8_t port) {
 static ae::RegistryHandler<aos::emulator::GameDriver> spacechaser("spacechaser", {
 	.name = "Space Chaser",
 	.emulator = "midway8080",
-	.creator = [](const aos::emulator::GameConfiguration& config) { return std::make_unique<aos::midway8080::SpaceChaser>(vector<pair<uint16_t,string>>({
-					{ 0,"schasercv/1" },
-			{ 0,"schasercv/2" },
-			{ 0,"schasercv/3" },
-			{ 0,"schasercv/4" },
-			{ 0,"schasercv/5" },
-			{ 0,"schasercv/6" },
-			{ 0,"schasercv/7" },
-			{ 0,"schasercv/8" },
-			{ 0x4000,"schasercv/9" },
-			{ 0,"schasercv/10" }
-		}), config); },
+	.creator = [](const aos::emulator::GameConfiguration& config, const vector<aos::emulator::RomConfiguration>& rom) { return std::make_unique<aos::midway8080::SpaceChaser>(rom, config); },
 	.roms = {
-			{ 0,"schasercv/1" },
-			{ 0,"schasercv/2" },
-			{ 0,"schasercv/3" },
-			{ 0,"schasercv/4" },
-			{ 0,"schasercv/5" },
-			{ 0,"schasercv/6" },
-			{ 0,"schasercv/7" },
-			{ 0,"schasercv/8" },
-			{ 0x4000,"schasercv/9" },
-			{ 0,"schasercv/10" }
+			{ 0, 0x400, 0xbec2b16b },
+			{ 0, 0x400, 0x9d25e608 },
+			{ 0, 0x400, 0x113d0635 },
+			{ 0, 0x400, 0xf3a43c8d },
+			{ 0, 0x400, 0x47c84f23 },
+			{ 0, 0x400, 0x02ff2199 },
+			{ 0, 0x400, 0x87d06b88 },
+			{ 0, 0x400, 0x6dfaad08 },
+			{ 0x4000, 0x400, 0x3d1a2ae3 },
+			{ 0, 0x400, 0x037edb99 }
 			},
 	.configuration = {
 		.switches = {{ "difficulty", 0, "Difficulty", {"Normal", "Hard"} },

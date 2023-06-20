@@ -1,6 +1,6 @@
 #include "pacman.h"
 #include "SDL2/SDL.h"
-#include "file.h"
+#include "tools.h"
 #include "registry.h"
 
 #include <iostream>
@@ -18,7 +18,8 @@ static std::vector<uint16_t> xoffset16 = { 8,8,8,8,16,16,16,16,24,24,24,24,0,0,0
 static std::vector<uint16_t> yoffset16 = { 0,1,2,3,4,5,6,7,32,33,34,35,36,37,38,39 };
 
 
-Pacman::Pacman(const aos::emulator::GameConfiguration& game)
+Pacman::Pacman(const vector<aos::emulator::RomConfiguration>& roms, const aos::emulator::GameConfiguration& game) :
+	_roms(roms)
 {
 	_clockPerMs = 3072;
 
@@ -72,7 +73,11 @@ aos::emulator::SystemInfo Pacman::getSystemInfo() const
 void Pacman::initVideoRom()
 {
 	uint8_t* videorom = new uint8_t[0x2200];
-	filemanager::readRoms(archive, { {0,"hangly/pacman.5e"}, {0,"hangly/pacman.5f"}, {0,"pm1-1.7f"}, {0,"pm1-4.4a"} }, videorom);
+	size_t offset = 0;
+	for (const auto& rom : _roms) {
+		if (rom.start == 1)
+			offset += rom.rom.read(videorom + offset);
+	}
 	_tiles = ae::tilemap::decodeTiles(256, 8, videorom, xoffset8, yoffset8);
 	_sprites = ae::tilemap::decodeTiles(0x40, 16, videorom+0x1000, xoffset16, yoffset16);
 
@@ -109,7 +114,13 @@ void Pacman::init(ae::display::RasterDisplay* raster)
 	_display = raster;
 	_tilemap = new tilemap::TileMap(288, 224);
 	_rom = new uint8_t[0x4000];
-	filemanager::readRoms(archive, { {0,"pacman/pacman.6e"}, {0,"newpuckx/pacman.6f"}, {0,"pacman/pacman.6h"}, {0,"pacman/pacman.6j"} }, _rom);
+
+	size_t offset = 0;
+	for (const auto& rom : _roms) {
+		if (rom.start == 0)
+			offset += rom.rom.read(_rom + offset);
+	}
+
 	_ram = new uint8_t[0x1000]{ 0 };
 	_spritesxy = new uint8_t[0x10]{ 0 };
 
@@ -250,8 +261,16 @@ void Pacman::draw()
 static ae::RegistryHandler<aos::emulator::GameDriver> pacman{ "pacman", {
 	.name = "Pacman",
 	.emulator = "namco",
-	.creator = [](const aos::emulator::GameConfiguration& config) { return std::make_unique<ae::namco::Pacman>(config); },
+	.creator = [](const aos::emulator::GameConfiguration& config, const vector<aos::emulator::RomConfiguration>& roms) { return std::make_unique<ae::namco::Pacman>(roms, config); },
 	.roms = {
+		{ 0, 0x1000, 0xc1e6ab10 },
+		{ 0, 0x1000, 0x1a6fb2d4 },
+		{ 0, 0x1000, 0xbcdd1beb },
+		{ 0, 0x1000, 0x817d94e3 },
+		{ 1, 0x1000, 0x0c944964 },
+		{ 1, 0x1000, 0x958fedf9 },
+		{ 1, 0x20, 0x2fc650bd },
+		{ 1, 0x100, 0x3eb3a8e4 }
 	},
 	.configuration = {
 		.switches = {{ "coinage", 1, "Coinage", {"Free", "1C/1C", "1C/2C", "2C/1C"} },

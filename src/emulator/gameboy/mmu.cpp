@@ -26,7 +26,7 @@ void Mmu::tick()
 	if ((++_div & 0x1fff) == 0)
 		notify(io::div, _div >> 8);
 	if (_tac & 0x04) {
-		uint8_t period = 0;
+		uint16_t period = 0;
 		switch (_tac & 0x03) {
 		case 0:
 			period = 1024;
@@ -229,7 +229,6 @@ uint8_t Mmu::read(const uint16_t address, const origin caller) const {
 	return _rams[address];
 }
 
-#include <iostream>
 bool Mmu::write(const uint16_t address, const uint8_t value, const origin caller) {
 	// ROM cartridge
 	if (address < MemoryMap::VRAM)
@@ -274,9 +273,6 @@ bool Mmu::write(const uint16_t address, const uint8_t value, const origin caller
 			else
 				return out(address & 0xff, value, caller);
 		}
-		if (address == 0xffff)
-			std::cout << "out " << std::hex << "FFFF - " << (int)value << std::endl;
-
 		_rams[address] = value;
 		return true;
 	}

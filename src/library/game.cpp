@@ -3,17 +3,15 @@
 
 namespace aos::library
 {
-	Games& getGames()
+	Game::Game(const aos::string n) :
+		_name{ n },
+		_selected{ "Original" }
 	{
-		static Games _games;
-		return _games;
 	}
 
-	Game::Game(const aos::string n,
-		aos::emulator::GameDriver e) :
-		_name{ n },
-		_emulator{ e }
+	void Game::add(const aos::emulator::GameDriver& g)
 	{
-		getGames().insert({ n, e });
+		string version = (g.version.empty())? "Original" : g.version;
+		_emulators.insert({ version, g });
 	}
 }

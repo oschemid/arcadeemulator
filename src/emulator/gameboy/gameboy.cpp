@@ -11,23 +11,24 @@
 static ae::RegistryHandler<aos::emulator::GameDriver> tetris{ "tetris", {
 	.name = "Tetris",
 	.emulator = "gameboy",
-	.creator = [](const aos::emulator::GameConfiguration& config) { return std::make_unique<ae::gameboy::Gameboy>("roms/gameboy/tetris.gb"); },
+	.creator = [](const aos::emulator::GameConfiguration& config, const vector<aos::emulator::RomConfiguration>&) { return std::make_unique<ae::gameboy::Gameboy>("roms/gameboy/tetris.gb"); },
 }};
 static ae::RegistryHandler<aos::emulator::GameDriver> alleyway{ "alleyway", {
 	.name = "Alleyway",
 	.emulator = "gameboy",
-	.creator = [](const aos::emulator::GameConfiguration& config) { return std::make_unique<ae::gameboy::Gameboy>("roms/gameboy/alleyway.gb"); },
+	.creator = [](const aos::emulator::GameConfiguration& config, const vector<aos::emulator::RomConfiguration>&) { return std::make_unique<ae::gameboy::Gameboy>("roms/gameboy/alleyway.gb"); },
 }};
 static ae::RegistryHandler<aos::emulator::GameDriver> bombjack{ "bombjack", {
 	.name = "Bomb Jack",
 	.emulator = "gameboy",
-	.creator = [](const aos::emulator::GameConfiguration& config) { return std::make_unique<ae::gameboy::Gameboy>("roms/gameboy/bombjack.gb"); },
+	.creator = [](const aos::emulator::GameConfiguration& config, const vector<aos::emulator::RomConfiguration>&) { return std::make_unique<ae::gameboy::Gameboy>("roms/gameboy/bombjack.gb"); },
 }};
 static ae::RegistryHandler<aos::emulator::GameDriver> boxxle{ "boxxle", {
 	.name = "Boxxle",
 	.emulator = "gameboy",
-	.creator = [](const aos::emulator::GameConfiguration& config) { return std::make_unique<ae::gameboy::Gameboy>("roms/gameboy/boxxle.gb"); },
+	.creator = [](const aos::emulator::GameConfiguration& config, const vector<aos::emulator::RomConfiguration>&) { return std::make_unique<ae::gameboy::Gameboy>("roms/gameboy/boxxle.gb"); },
 }};
+
 static aos::library::Console Gameboy{ "gameboy", "Gameboy" };
 
 ae::gameboy::Gameboy::Gameboy(const string rom) :

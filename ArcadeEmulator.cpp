@@ -15,6 +15,7 @@
 #include "imgui_impl_sdl2.h"
 
 #include "src/gui/debugger.h"
+#include "tools.h"
 
 
 int main(int argc, char** argv)
@@ -28,24 +29,9 @@ int main(int argc, char** argv)
 	ae::gui::Engine engine(&window);
 	ae::gui::GuiManager gui(&engine);
 
-	std::vector<aos::library::Game> games;
-	for(auto& g : ae::Registry<aos::emulator::GameDriver>::instance().get())
-	{
-		try
-		{
-			auto console = aos::library::getConsole(g.second.emulator);
-			if (console)
-			{
-				console->add(aos::library::Game(g.first, g.second));
-			}
-		}
-		catch (std::exception&)
-		{
-		}
-	}
-	auto consol = aos::library::getConsoles();
-
-	aos::ConsolesSidebar sidebar(consol);
+	aos::library::getConsoles().init();
+	
+	aos::ConsolesSidebar sidebar(aos::library::getConsoles());
 	aos::GameSelection gameselection;
 	gui.addWidget("sidebar", &sidebar);
 	gui.addWidget("gameselection", &gameselection);
@@ -71,8 +57,7 @@ int main(int argc, char** argv)
 		if (gameselection.getSelected()) {
 			if (!si) {
 				aos::library::Game* selected = gameselection.getSelected();
-//				ae::emulator::Game game("aze", "original", "rallyx.zip", config);
-				si = selected->driver().creator(selected->driver().configuration);
+				si = selected->driver().creator(selected->driver().configuration, selected->driver().roms);
 				aos::emulator::SystemInfo requirements = si->getSystemInfo();
 				raster = new ae::display::RasterDisplay(requirements.geometry);
 				raster->init();

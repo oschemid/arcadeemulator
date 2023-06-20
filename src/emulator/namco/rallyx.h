@@ -11,7 +11,8 @@ namespace ae::namco
 	class RallyX : public aos::emulator::Emulator
 	{
 	public:
-		RallyX(const aos::emulator::GameConfiguration&);
+		RallyX(const vector<aos::emulator::RomConfiguration>&,
+			const aos::emulator::GameConfiguration&);
 		virtual ~RallyX();
 
 		aos::emulator::SystemInfo getSystemInfo() const override;
@@ -30,6 +31,7 @@ namespace ae::namco
 		display::RasterDisplay* _display{ nullptr };
 		tilemap::TileMap* _tilemap{ nullptr };
 		ae::controller::ArcadeController::Ptr _controller;
+		vector<aos::emulator::RomConfiguration> _roms;
 		ae::io::Port _port0{ 0 };
 		ae::io::Port _port2{ 0xc0 };
 

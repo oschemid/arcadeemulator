@@ -1,9 +1,12 @@
 #pragma once
 #include "types.h"
+#include "tools.h"
 #include "display.h"
 #include "tilemap.h"
 #include <vector>
 #include <map>
+#include <algorithm>
+
 
 using aos::string;
 using aos::geometry_t;
@@ -28,6 +31,11 @@ namespace aos::emulator
 	{
 		vector<DipSwitch> switches;
 	};
+	struct RomConfiguration
+	{
+		uint16_t start;
+		aos::tools::Rom rom;
+	};
 
 	class Emulator
 	{
@@ -50,14 +58,18 @@ namespace aos::emulator
 		uint64_t _clockPerMs{ 0 };
 	};
 
-	using creator_fn = std::function<Emulator::Ptr(const GameConfiguration&)>;
+	using creator_fn = std::function<Emulator::Ptr(const GameConfiguration&, const vector<RomConfiguration>&)>;
 
 	struct GameDriver
 	{
 		string name;
+		string version;
 		string emulator;
 		creator_fn creator;
-		vector<pair<uint16_t, string>> roms;
+		vector<RomConfiguration> roms;
 		GameConfiguration configuration;
+
+		bool has_configuration() const { return configuration.switches.size() > 0; }
+		bool is_unavailable() const { return std::any_of(roms.begin(), roms.end(), [](const RomConfiguration& r) { return r.rom.filename.empty(); }); }
 	};
 }

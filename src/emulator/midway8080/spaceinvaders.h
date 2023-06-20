@@ -14,7 +14,7 @@ namespace aos::midway8080
 	class SpaceInvaders : public Midway8080
 	{
 	public:
-		SpaceInvaders(vector<pair<uint16_t, string>>,
+		SpaceInvaders(const vector<aos::emulator::RomConfiguration>&,
 			const emulator::GameConfiguration&,
 			std::function<rgb_t(const uint8_t, const uint8_t)> = nullptr);
 		virtual ~SpaceInvaders();
@@ -30,7 +30,7 @@ namespace aos::midway8080
 
 	protected:
 		xprocessors::MB14241::Ptr _shifter{ nullptr };
-		vector<pair<uint16_t, string>> _roms;
+		vector<aos::emulator::RomConfiguration> _roms;
 		ae::io::Port _port0{ 0 };
 		ae::io::Port _port1{ 0 };
 		ae::io::Port _port2{ 0 };
@@ -45,7 +45,7 @@ namespace aos::midway8080
 	class AlienInvaders : public SpaceInvaders
 	{
 	public:
-		AlienInvaders(vector<pair<uint16_t, string>>, const aos::emulator::GameConfiguration&);
+		AlienInvaders(const vector<aos::emulator::RomConfiguration>&, const aos::emulator::GameConfiguration&);
 		virtual ~AlienInvaders();
 	};
 }

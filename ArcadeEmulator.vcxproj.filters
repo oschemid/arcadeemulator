@@ -135,6 +135,9 @@
     <ClCompile Include="src\library\game.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
+    <ClCompile Include="src\tools\hash.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\include\machine.h">
@@ -224,7 +227,7 @@
     <ClInclude Include="src\controller\arcadecontroller.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="src\include\file.h">
+    <ClInclude Include="src\include\tools.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="src\emulator\gameboy\apu.h">
@@ -287,8 +290,7 @@
     <None Include="docs\cpu\Z80-User-Manual.pdf" />
     <None Include="docs\cpu\z80-documented.pdf" />
     <None Include="docs\machine\Pacman.pdf" />
-    <None Include="data\library.json" />
-    <None Include="data\consoles.json" />
+    <None Include="data\gameboy.json" />
   </ItemGroup>
   <ItemGroup>
     <Xsd Include="docs\machine\spaceinvaders.md">

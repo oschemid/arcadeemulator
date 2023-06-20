@@ -1,0 +1,10 @@
+[
+  {
+    "game": "Tetris",
+    "cover": "./roms/gameboy/tetris.jpg"
+  },
+  {
+    "game": "Alleyway",
+    "cover": "./roms/gameboy/alleyway.jpg"
+  }
+]
