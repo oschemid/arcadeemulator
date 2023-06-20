@@ -206,6 +206,7 @@ uint8_t Ppu::executeOne() {
 	if (_dmatransfer) {
 		_dmatransfer--;
 		writeOAM(0xfe00|_dmatransfer, _handlerRead(_dmaaddress | _dmatransfer));
+		return 0;
 	}
 
 	switch (_mode)

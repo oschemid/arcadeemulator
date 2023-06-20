@@ -69,4 +69,8 @@ void ArcadeController::tick()
 		_coin2 = true;
 	else
 		_coin2 = false;
+	if (Keyboard[SDL_SCANCODE_B])
+		_coin3 = true;
+	else
+		_coin3 = false;
 }

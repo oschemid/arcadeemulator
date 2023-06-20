@@ -4,11 +4,15 @@
 #include "mbc.h"
 #include <functional>
 #include <vector>
+#include <array>
 
 
 namespace ae::gameboy {
 	namespace io {
 		const uint8_t div = 0x04;
+		const uint8_t tima = 0x05;
+		const uint8_t tma = 0x06;
+		const uint8_t tac = 0x07;
 		const uint8_t nr10 = 0x10;
 		const uint8_t nr11 = 0x11;
 		const uint8_t nr12 = 0x12;
@@ -28,6 +32,7 @@ namespace ae::gameboy {
 		const uint8_t nr43 = 0x22;
 		const uint8_t nr44 = 0x23;
 		const uint8_t nr50 = 0x24;
+		const uint8_t nr51 = 0x25;
 		const uint8_t nr52 = 0x26;
 		const uint8_t stat = 0x41;
 		const uint8_t ly = 0x44;
@@ -36,8 +41,8 @@ namespace ae::gameboy {
 
 	class Mmu {
 	public:
-		using read_fn = std::function<uint8_t(const uint16_t)>;
-		using write_fn = std::function<void(const uint16_t, const uint8_t)>;
+		using read_fn = std::function<aos::uint8_t(const aos::uint16_t)>;
+		using write_fn = std::function<void(const aos::uint16_t, const aos::uint8_t)>;
 
 		enum class origin {
 			cpu,
@@ -64,6 +69,9 @@ namespace ae::gameboy {
 		std::shared_ptr<Mbc> _cartridge;
 		uint8_t* _rams;
 		uint16_t _div;
+		uint8_t _tima;
+		uint8_t _tma;
+		uint8_t _tac;
 
 	public:
 		Mmu(std::shared_ptr<BootRom>&, std::shared_ptr<Mbc>&);

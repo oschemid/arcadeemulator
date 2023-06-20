@@ -13,7 +13,7 @@ Mmu::Mmu(std::shared_ptr<BootRom>& bootrom,
 	_handlerReadVRAM{nullptr},
 	_handlerWriteVRAM{nullptr}
 {
-	_rams = new uint8_t[0xffff](0);
+	_rams = new uint8_t[0x10000](0);
 }
 
 Mmu::~Mmu()
@@ -25,6 +25,30 @@ void Mmu::tick()
 {
 	if ((++_div & 0x1fff) == 0)
 		notify(io::div, _div >> 8);
+	if (_tac & 0x04) {
+		uint16_t period = 0;
+		switch (_tac & 0x03) {
+		case 0:
+			period = 1024;
+			break;
+		case 1:
+			period = 16;
+			break;
+		case 2:
+			period = 64;
+			break;
+		case 3:
+			period = 256;
+			break;
+		}
+		if ((_div & (period - 1)) == 0) {
+			_tima++;
+			if (_tima == 0) {
+				_tima = _tma;
+				_rams[0xff0f] |= 4;
+			}
+		}
+	}
 }
 
 void Mmu::map(MemoryMap address, read_fn readfn, write_fn writefn)
@@ -67,6 +91,12 @@ uint8_t Mmu::in(const uint8_t io, const origin caller) const {
 		if (_handlerReadIO[io])
 			return _handlerReadIO[io](0xff00+io);
 		return 0;
+	case io::tima:
+		return _tima;
+	case io::tma:
+		return _tma;
+	case io::tac:
+		return _tac;
 	default:
 		if (io<0x80)
 			return _rams[0xff00 + io];
@@ -85,6 +115,15 @@ bool Mmu::out(const uint8_t io, const uint8_t value, const origin caller) {
 		return false;
 	case io::div:
 		_div = 0;
+		break;
+	case io::tima:
+		_tima = value;
+		break;
+	case io::tma:
+		_tma = value;
+		break;
+	case io::tac:
+		_tac = value;
 		break;
 	case io::stat:
 		if (caller == origin::ppu) {

@@ -46,7 +46,7 @@ ae::rgb_t SeaWolf::color(const uint8_t, const uint8_t, const bool bw) const
 }
 
 void periscope(uint8_t* pixels) {
-	int _periscopePosition = 0;
+	uint8_t _periscopePosition = 0;
 	for (uint8_t y = 0; y < 224; y++)
 	{
 		pixels[y * 256 + _periscopePosition*256/32 + 10] = 0xffff0000;

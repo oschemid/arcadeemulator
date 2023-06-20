@@ -3,6 +3,7 @@
 
 
 using namespace ae::gui;
+using aos::string;
 
 
 Window::Window(const string& title, const uint16_t width, const uint16_t height) : _width(width), _height(height), _title(title)

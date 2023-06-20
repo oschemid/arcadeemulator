@@ -53,6 +53,7 @@ namespace ae::gui {
 		ImTextureID loadTexture(const string&);
 		ImTextureID createTexture(const uint16_t, const uint16_t);
 		void refreshTexture(ImTextureID, const uint8_t*);
+		void removeTexture(ImTextureID);
 		bool processEvent();
 		void renderFrame();
 	};

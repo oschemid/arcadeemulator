@@ -3,31 +3,42 @@
 #include "midway8080.h"
 #include "mb14241.h"
 #include "../../controller/arcadecontroller.h"
+#include "io.h"
 
 
-namespace ae::midway8080
+namespace aos::midway8080
 {
-	class SpaceChaser : public GameBoard
+	class SpaceChaser : public Midway8080
 	{
 	public:
-		SpaceChaser();
+		SpaceChaser(const std::vector<aos::emulator::RomConfiguration>&,
+			const emulator::GameConfiguration&);
 		virtual ~SpaceChaser();
-		void init(const emulator::Game&) override;
-		rgb_t color(const uint8_t, const uint8_t, const bool) const override;
-		void out(const uint8_t, const uint8_t) override;
-		uint8_t in(const uint8_t) override;
-		std::vector<std::pair<uint16_t, string>> romFiles() const override;
-		void controllerTick() override { _controller->tick(); _port1.tick(*_controller); _port2.tick(*_controller); }
-		bool romExtended() const { return true; }
+
+		emulator::SystemInfo getSystemInfo() const override {
+			return emulator::SystemInfo{
+				.geometry = {.width = 224, .height = 256}
+			};
+		}
+
+		void init(ae::display::RasterDisplay*) override;
+		uint8_t tick() override;
 
 	protected:
 		xprocessors::MB14241::Ptr _shifter{ nullptr };
+		std::vector<aos::emulator::RomConfiguration> _roms;
+		ae::io::Port _port0{ 0 };
+		ae::io::Port _port1{ 0 };
+		ae::io::Port _port2{ 0 };
 		ae::controller::ArcadeController::Ptr _controller{ nullptr };
-
-		Port _port0{ 0 };
-		Port _port1{ 0 };
-		Port _port2{ 0 };
+		std::function<rgb_t(const uint8_t, const uint8_t)> _colorfn;
 
 		uint8_t* _colorram;
+
+		uint8_t in(const uint8_t);
+		void out(const uint8_t, const uint8_t);
+		void updateDisplay();
+		void writeColorRam(const uint16_t, const uint8_t);
+		uint8_t readColorRam(const uint16_t) const;
 	};
 }

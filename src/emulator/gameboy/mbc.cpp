@@ -2,6 +2,8 @@
 
 
 using namespace ae::gameboy;
+using aos::string;
+using aos::File;
 
 
 BootRom::BootRom(const string& filename) {

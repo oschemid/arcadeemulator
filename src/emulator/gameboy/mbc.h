@@ -1,6 +1,8 @@
 #pragma once
 #include "types.h"
 
+using aos::string;
+
 
 namespace ae {
 	namespace gameboy {

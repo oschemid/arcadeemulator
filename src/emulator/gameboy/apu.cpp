@@ -119,6 +119,8 @@ void Apu::callback(const uint8_t address, const uint8_t value) {
 		_leftvolume = (value & 0x70) >> 4;
 		_rightvolume = value & 0x07;
 		break;
+	case io::nr51:
+		break;
 	case io::nr52:
 		if (_enabled) {
 			if (!(value & 0x80))
@@ -129,17 +131,33 @@ void Apu::callback(const uint8_t address, const uint8_t value) {
 				power(true);
 		}
 		break;
+	case io::nr12:
+		if ((value&0xf8)==0)
+			_channel1.setRegister2(0);
+		break;
 	case io::nr14:
 		if (value & 0x80)
 			restart_channel1();
+		break;
+	case io::nr22:
+		if ((value&0xf8)==0)
+			_channel2.setRegister2(0);
 		break;
 	case io::nr24:
 		if (value & 0x80)
 			restart_channel2();
 		break;
+	case io::nr30:
+		if ((value & 0x80)==0)
+			_channel3.setRegister0(0);
+		break;
 	case io::nr34:
 		if (value & 0x80)
 			restart_channel3();
+		break;
+	case io::nr42:
+		if ((value&0xf8)==0)
+			_channel4.setRegister2(0);
 		break;
 	case io::nr44:
 		if (value & 0x80)

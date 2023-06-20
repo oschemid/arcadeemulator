@@ -13,14 +13,14 @@
 
 namespace ae::gameboy
 {
-	class Gameboy : public emulator::Emulator
+	class Gameboy : public aos::emulator::Emulator
 	{
 	public:
 		std::unique_ptr<Mmu> _mmu;
 		SerialLink _serial;
 		Ppu _ppu;
 
-		emulator::Game _game;
+		std::string _rom;
 		std::shared_ptr<Mbc> _cartridge;
 		std::shared_ptr<BootRom> _bootrom;
 
@@ -29,10 +29,10 @@ namespace ae::gameboy
 		xprocessors::Cpu::Ptr cpu;
 
 	public:
-		Gameboy(const emulator::Game&);
+		Gameboy(const string);
 		virtual ~Gameboy() = default;
 
-		emulator::SystemInfo getSystemInfo() const override;
+		aos::emulator::SystemInfo getSystemInfo() const override;
 		void init(ae::display::RasterDisplay*) override;
 		uint8_t tick() override;
 	};

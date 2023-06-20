@@ -55,6 +55,7 @@ namespace ae::gameboy
 			uint8_t flags;
 
 			bool isXFlip() const { return (flags & 0x20) ? true : false; }
+			bool isYFlip() const { return (flags & 0x40) ? true : false; }
 		} _oam[40];
 
 		// VRAM
@@ -100,7 +101,13 @@ namespace ae::gameboy
 			void add(const OAMSprite& s) { state = SPRITE_ID; sprite = s; }
 			bool sprite_processing() const { return ((state == SPRITE_ID) || (state == SPRITE_HIGH) || (state == SPRITE_LOW) || (state == SPRITE_PUSH)) ? true : false; }
 		} _modePixelTransfer;
-
+		uint8_t sprite_row(const OAMSprite& s) const
+		{
+			if (s.isYFlip())
+				return 7 - (_registers.ly - s.y + 16);
+			else
+				return  _registers.ly - s.y + 16;
+		}
 		void startModePixelTransfer();
 		void fetchModePixelTransfer();
 		bool tickModePixelTransfer();

@@ -3,6 +3,7 @@
 #include "imgui_impl_sdl2.h"
 
 using namespace ae::gui;
+using aos::string;
 
 
 GuiManager::GuiManager(Engine* engine) :
@@ -73,19 +74,18 @@ ImTextureID GuiManager::loadTexture(const string& filename) {
 }
 
 ImTextureID GuiManager::createTexture(const uint16_t width, const uint16_t height) {
-    string name = std::to_string(width) + "x" + std::to_string(height);
-    auto entry = _textures.find(name);
-    if (entry == _textures.end()) {
-        ImTextureID id = _engine->createTexture(width, height);
-        _textures.insert({ name, id });
-        return id;
-    }
-    return entry->second;
+    ImTextureID id = _engine->createTexture(width, height);
+    return id;
 }
 
 void GuiManager::refreshTexture(ImTextureID textureID, const uint8_t* src)
 {
     _engine->fillTextureFromBuffer(textureID, src);
+}
+
+void GuiManager::removeTexture(ImTextureID textureID)
+{
+    _engine->removeTexture(textureID);
 }
 
 widgets::Sidebar::Sidebar(const uint16_t width) : Widget(), _width(width) {

@@ -166,10 +166,12 @@ void WaveChannel::tick() {
 }
 
 float WaveChannel::sample() {
+	if ((!_enabled) || (!_dacenabled))
+		return 0.;
 	if (_volumeInit == 0)
 		return 0.;
 	float res = float(_wave[_waveIndex] >> (_volumeInit - 1)) / float(0xf);
-	return (res * 2.) - 1.;
+	return static_cast<float>((res * 2.) - 1.);
 }
 
 NoiseChannel::NoiseChannel() : 

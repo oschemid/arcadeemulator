@@ -1,56 +1,75 @@
 #pragma once
 #include "types.h"
-#include "registry.h"
+#include "tools.h"
 #include "display.h"
+#include "tilemap.h"
+#include <vector>
+#include <map>
+#include <algorithm>
 
 
-namespace ae::emulator
+using aos::string;
+using aos::geometry_t;
+using std::vector;
+using std::pair;
+
+
+namespace aos::emulator
 {
 	struct SystemInfo
 	{
 		geometry_t geometry;
 	};
-
-	class Game
+	struct DipSwitch
 	{
-	public:
-		const string& hardware() const { return _hardware; }
-		const string& version() const { return _version; }
-		const string& romsfile() const { return _romsfile; }
-		uint8_t settings(const string& name) const { auto res = _settings.find(name); if (res == _settings.end()) throw std::out_of_range("Unknown"); return res->second; }
-
-		Game(const string& h,
-			 const string& v,
-			 const string& r,
-			 std::map<string, uint8_t> s) : 
-			_hardware{ h },
-			_version{ v }, _romsfile{ r }, _settings{ s } {}
-	protected:
-		string _hardware;
-		string _version;
-		string _romsfile;
-		std::map<string, uint8_t> _settings;
+		string name;
+		uint8_t value;
+		string description;
+		vector<string> values;
+	};
+	struct GameConfiguration
+	{
+		vector<DipSwitch> switches;
+	};
+	struct RomConfiguration
+	{
+		uint16_t start;
+		aos::tools::Rom rom;
 	};
 
 	class Emulator
 	{
 	public:
 		using Ptr = std::unique_ptr<Emulator>;
-		using creator_fn = std::function<Ptr(const Game&)>;
-		using registry = ae::RegistryHandler<Ptr, creator_fn>;
 
 	public:
 		virtual ~Emulator() = default;
 		virtual SystemInfo getSystemInfo() const = 0;
 		virtual void init(ae::display::RasterDisplay*) = 0;
 		virtual uint8_t tick() = 0;
-
 		void run();
+
+		// Debug methods
+		virtual std::map<string, ae::tilemap::Tiles> getTiles() const { return std::map<string, ae::tilemap::Tiles>(); }
+		virtual std::vector<palette_t> getPalettes() const { return std::vector<palette_t>(); }
 
 	protected:
 		Emulator() = default;
 		uint64_t _clockPerMs{ 0 };
 	};
 
-	Emulator::Ptr create(const string&, const Game&);
+	using creator_fn = std::function<Emulator::Ptr(const GameConfiguration&, const vector<RomConfiguration>&)>;
+
+	struct GameDriver
+	{
+		string name;
+		string version;
+		string emulator;
+		creator_fn creator;
+		vector<RomConfiguration> roms;
+		GameConfiguration configuration;
+
+		bool has_configuration() const { return configuration.switches.size() > 0; }
+		bool is_unavailable() const { return std::any_of(roms.begin(), roms.end(), [](const RomConfiguration& r) { return r.rom.filename.empty(); }); }
+	};
 }
