@@ -174,6 +174,8 @@ aos::rgb_t spaceinvader_gels(const uint8_t x, const uint8_t y)
 
 static ae::RegistryHandler<aos::emulator::GameDriver> spaceinvaders("spaceinvaders", {
 	.name = "Space Invaders",
+	.version = "Midway",
+	.main_version = true,
 	.emulator = "midway8080",
 	.creator = [](const aos::emulator::GameConfiguration& config, const vector<aos::emulator::RomConfiguration>& roms) { return std::make_unique<aos::midway8080::SpaceInvaders>(roms, config, spaceinvader_gels); },
 	.roms = {

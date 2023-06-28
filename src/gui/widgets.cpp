@@ -91,11 +91,11 @@ void GameSelection::drawTile(ae::gui::GuiManager* gui, library::Game& game) {
         if (ImGui::MenuItem("Run"))
             _selected = &game;
         if (game.emulators().size() == 1) {
-            ImGui::MenuItem("Original", nullptr, nullptr, false);
+            ImGui::MenuItem("No version", nullptr, nullptr, false);
         }
         else {
             string selected = game.selected();
-            if (ImGui::BeginMenu(selected.c_str())) {
+            if (ImGui::BeginMenu("Version")) {
                 for (auto emulator : game.emulators()) {
                     string v = emulator.first;
                     const bool unavailable = emulator.second.is_unavailable();

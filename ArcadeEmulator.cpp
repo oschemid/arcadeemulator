@@ -65,11 +65,11 @@ int main(int argc, char** argv)
 				gui.addWidget("rasterdisplay", r1);
 				si->init(raster);
 				t = new std::thread([&si, &t]() { si->run(); t->detach(); });
-//
-//				//r2.reset(si.get());
-//				//gui.addWidget("tilemap", &r2);
-//				//debugger = new ae::gameboy::debug::Debugger(static_cast<ae::gameboy::Gameboy*>(&(*si)), raster2);
-//				//t2 = new std::thread([&debugger, &t2]() { debugger->run(); t2->detach(); });
+
+				//r2.reset(si.get());
+				//gui.addWidget("tilemap", &r2);
+				//debugger = new ae::gameboy::debug::Debugger(static_cast<ae::gameboy::Gameboy*>(&(*si)), raster2);
+				//t2 = new std::thread([&debugger, &t2]() { debugger->run(); t2->detach(); });
 			}
 			else {
 				if ((t)&&(!(t->joinable()))) {

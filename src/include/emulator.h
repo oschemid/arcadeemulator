@@ -64,6 +64,7 @@ namespace aos::emulator
 	{
 		string name;
 		string version;
+		bool main_version{ false };
 		string emulator;
 		creator_fn creator;
 		vector<RomConfiguration> roms;

@@ -35,16 +35,20 @@ namespace ae::namco
 		ae::io::Port _port0{ 0 };
 		ae::io::Port _port1{ 0 };
 		ae::io::Port _port2{ 0 };
+		ae::io::Port _port3{ 0 };
 
 		void initVideoRom();
 
 		uint8_t* _rom{ nullptr };
+		uint8_t* _rom2{ nullptr };
 		uint8_t* _ram{ nullptr };
 
 		bool _interrupt_enabled{ false };
 		uint8_t _interrupt_vector{ 0 };
 		ae::tilemap::Tiles _tiles;
 		ae::tilemap::Tiles _sprites;
+		std::vector<uint16_t>* _xoffset8;
+		std::vector<uint16_t>* _xoffset16;
 		palette_t _palette;
 		std::vector<palette_t> _lookup;
 		uint8_t* _spritesxy{ nullptr };
@@ -56,5 +60,14 @@ namespace ae::namco
 		void draw();
 		void drawBackground(const uint8_t);
 		void drawSprites();
+	};
+
+	class Ponpoko : public Pacman
+	{
+	public:
+		Ponpoko(const vector<aos::emulator::RomConfiguration>&,
+				const aos::emulator::GameConfiguration&);
+		aos::emulator::SystemInfo getSystemInfo() const override;
+		void init(ae::display::RasterDisplay*) override;
 	};
 }
