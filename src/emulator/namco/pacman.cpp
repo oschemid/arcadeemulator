@@ -1,301 +1,69 @@
-#include "pacman.h"
-#include "SDL2/SDL.h"
-#include "tools.h"
 #include "registry.h"
-
-#include <iostream>
-
-
-
-using namespace ae::namco;
+#include "pacmansystem.h"
+#include "gpu/pacmangpu.h"
 
 
-static std::vector<uint16_t> xoffset8_pacman = { 8,8,8,8,0,0,0,0 };
-static std::vector<uint16_t> xoffset8_ponpoko = { 0,0,0,0,8,8,8,8 };
-static std::vector<uint16_t> yoffset8 = { 0,1,2,3,4,5,6,7 };
-static std::vector<uint16_t> xoffset16_pacman = { 8,8,8,8,16,16,16,16,24,24,24,24,0,0,0,0 };
-static std::vector<uint16_t> xoffset16_ponpoko = { 0,0,0,0,8,8,8,8,16,16,16,16,24,24,24,24 };
-static std::vector<uint16_t> yoffset16 = { 0,1,2,3,4,5,6,7,32,33,34,35,36,37,38,39 };
+using aos::namco::PacmanSystem;
+using aos::namco::PacmanGpu;
 
 
-Pacman::Pacman(const vector<aos::emulator::RomConfiguration>& roms, const aos::emulator::GameConfiguration& game) :
-	_roms(roms),
-	_xoffset8(&xoffset8_pacman),
-	_xoffset16(&xoffset16_pacman)
-{
-	_clockPerMs = 3072;
+class Pacman : public PacmanSystem<PacmanGpu>
+	{
+	public:
+		Pacman(const vector<aos::emulator::RomConfiguration>& roms,
+			const aos::emulator::GameConfiguration& game) :
+			PacmanSystem(roms, game,
+				PacmanGpu::create({
+					.orientation = geometry_t::rotation_t::ROT90,
+					.tileModel = PacmanGpu::Configuration::TileModel::PACMAN,
+					.romModel = PacmanGpu::Configuration::RomModel::PACMAN,
+					.spriteAddress = 0xff0
+				}))
+		{
+			_port0.set(0, "_JOY1_UP", true);
+			_port0.set(1, "_JOY1_LEFT", true);
+			_port0.set(2, "_JOY1_RIGHT", true);
+			_port0.set(3, "_JOY1_DOWN", true);
+			_port0.set(4, "rackadvance");
+			_port0.set(5, "_COIN", true);
+			_port0.set(6, "_COIN2", true);
+			_port0.set(7, "_COIN3", true);
+			_port0.init(game);
 
-	_port0.set(0, "_JOY1_UP", true);
-	_port0.set(1, "_JOY1_LEFT", true);
-	_port0.set(2, "_JOY1_RIGHT", true);
-	_port0.set(3, "_JOY1_DOWN", true);
-	_port0.set(4, "rackadvance");
-	_port0.set(5, "_COIN", true);
-	_port0.set(6, "_COIN2", true);
-	_port0.set(7, "_COIN3", true);
-	_port0.init(game);
+			_port1.set(0, "_JOY1_UP", true);
+			_port1.set(1, "_JOY1_LEFT", true);
+			_port1.set(2, "_JOY1_RIGHT", true);
+			_port1.set(3, "_JOY1_DOWN", true);
+			_port1.set(4, "boardtest");
+			_port1.set(5, "_START1", true);
+			_port1.set(6, "_START2", true);
+			_port1.set(7, "cabinet");
+			_port1.init(game);
 
-	_port1.set(0, "_JOY1_UP", true);
-	_port1.set(1, "_JOY1_LEFT", true);
-	_port1.set(2, "_JOY1_RIGHT", true);
-	_port1.set(3, "_JOY1_DOWN", true);
-	_port1.set(4, "boardtest");
-	_port1.set(5, "_START1", true);
-	_port1.set(6, "_START2", true);
-	_port1.set(7, "cabinet");
-	_port1.init(game);
+			_port2.set(0, "coinage");
+			_port2.set(2, "lives");
+			_port2.set(4, "bonus");
+			_port2.set(6, "difficulty");
+			_port2.set(7, "ghostname");
+			_port2.init(game);
+		}
 
-	_port2.set(0, "coinage");
-	_port2.set(2, "lives");
-	_port2.set(4, "bonus");
-	_port2.set(6, "difficulty");
-	_port2.set(7, "ghostname");
-	_port2.init(game);
-}
-
-Pacman::~Pacman()
-{
-	if (_tilemap)
-		delete _tilemap;
-	if (_rom)
-		delete[] _rom;
-	if (_ram)
-		delete[] _ram;
-	if (_spritesxy)
-		delete[] _spritesxy;
-}
-
-aos::emulator::SystemInfo Pacman::getSystemInfo() const
-{
-	return aos::emulator::SystemInfo{
-		.geometry = {.width = 288, .height = 224, .rotation = geometry_t::rotation_t::ROT90 }
+		void mapping() override
+		{
+			_mmu.map(0, 0x3fff, 0x7fff, "cpu").rom();
+			_mmu.map(0x4000, 0x4fff, 0x7fff).readfn([this](const uint16_t a) { return _gpu->readVRAM(a); }).writefn([this](const uint16_t a, const uint8_t v) { _gpu->writeVRAM(a, v); });
+			_mmu.map(0x5000, 0x503f, 0x7fff).readfn([this](const uint16_t) { return _port0.get(); });
+			_mmu.map(0x5040, 0x507f, 0x7fff).readfn([this](const uint16_t) { return _port1.get(); });
+			_mmu.map(0x5080, 0x50bf, 0x7fff).readfn([this](const uint16_t) { return _port2.get(); });
+			_mmu.map(0x5000, 0x5000, 0x7fff).writefn([this](const uint16_t, const uint8_t value) { _interrupt_enabled = ((value & 1) == 1) ? true : false; });
+			_mmu.map(0x5003, 0x5003, 0x7fff).writefn([this](const uint16_t, const uint8_t value) { _gpu->flip(((value & 1) == 1) ? true : false); });
+			_mmu.map(0x5040, 0X505f, 0x7fff).writefn([this](const uint16_t address, const uint8_t value) { _wsg.write(address, value); });
+			_mmu.map(0x5060, 0x506f, 0x7fff).writefn([this](const uint16_t address, const uint8_t value) { _gpu->writeSpritePos(address, value); });
+		}
 	};
-}
 
-void Pacman::initVideoRom()
-{
-	uint8_t* videorom = new uint8_t[0x2200];
-	size_t offset = 0;
-	for (const auto& rom : _roms) {
-		if (rom.start == 1)
-			offset += rom.rom.read(videorom + offset);
-	}
-	_tiles = ae::tilemap::decodeTiles(256, 8, videorom, *_xoffset8, yoffset8);
-	_sprites = ae::tilemap::decodeTiles(0x40, 16, videorom+0x1000, *_xoffset16, yoffset16);
 
-	for (uint8_t i = 0; i < 32; ++i)
-	{
-		const uint8_t data = videorom[0x2000 + i];
-		const uint8_t r = (data & 1) * 0x21 + ((data >> 1) & 1) * 0x47 + ((data >> 2) & 1) * 0x97;
-		const uint8_t g = ((data >> 3) & 1) * 0x21 + ((data >> 4) & 1) * 0x47 + ((data >> 5) & 1) * 0x97;
-		const uint8_t b = ((data >> 6) & 1) * 0x51 + ((data >> 7) & 1) * 0xae;
-		const uint8_t a = (i == 0) ? 0 : 0xff;
-		_palette.push_back({ .red = r, .green = g, .blue = b, .alpha=a });
-	}
-
-	for (uint16_t i = 0; i < 64; ++i)
-	{
-		palette_t palette;
-		const uint8_t data1 = videorom[0x2020 + 4 * i];
-		const uint8_t data2 = videorom[0x2021 + 4 * i];
-		const uint8_t data3 = videorom[0x2022 + 4 * i];
-		const uint8_t data4 = videorom[0x2023 + 4 * i];
-		palette.push_back(_palette[data1 & 0x3f]);
-		palette.push_back(_palette[data2 & 0x3f]);
-		palette.push_back(_palette[data3 & 0x3f]);
-		palette.push_back(_palette[data4 & 0x3f]);
-
-		_lookup.push_back(palette);
-	}
-	delete[] videorom;
-}
-
-void Pacman::init(ae::display::RasterDisplay* raster)
-{
-	_cpu = xprocessors::Cpu::create("Z80");
-	_display = raster;
-	_tilemap = new tilemap::TileMap(288, 224);
-	_rom = new uint8_t[0x4000];
-
-	size_t offset = 0;
-	for (const auto& rom : _roms) {
-		if (rom.start > 0)
-			break;
-		if (offset == 0x4000)
-			_rom2 = new uint8_t[0x4000];
-		if (offset < 0x4000)
-			offset += rom.rom.read(_rom + offset);
-		else
-			offset += rom.rom.read(_rom2 + offset - 0x4000);
-	}
-
-	_ram = new uint8_t[0x1000]{ 0 };
-	_spritesxy = new uint8_t[0x10]{ 0 };
-
-	_controller = ae::controller::ArcadeController::create();
-	initVideoRom();
-
-	_cpu->read([this](const uint16_t p) { return this->read(p); });
-	_cpu->write([this](const uint16_t p, const uint8_t v) { this->write(p, v); });
-	_cpu->in([this](const uint8_t) { return 0; });
-	_cpu->out([this](const uint8_t p, const uint8_t v) { if (p == 0) _interrupt_vector = v; });
-}
-
-uint8_t Pacman::read(const uint16_t address) const
-{
-	uint16_t address_mirror = (_rom2)? address : address & 0x7fff;
-
-	if (address_mirror < 0x4000)
-		return _rom[address_mirror];
-	if (address_mirror < 0x5000)
-		return _ram[address_mirror - 0x4000];
-
-	if (address_mirror == 0x5000)
-		return _port0.get();
-	if (address_mirror == 0x5040)
-		return _port1.get();
-	if (address_mirror == 0x5080)
-		return _port2.get();
-	if (address_mirror == 0x50c0)
-		return _port3.get();
-	if (address_mirror < 0x8000)
-		return 0;
-	if (address_mirror < 0xc000)
-		return _rom2[address_mirror - 0x8000];
-	return 0;
-}
-
-void Pacman::write(const uint16_t address, const uint8_t value)
-{
-	uint16_t address_mirror = address & 0x7fff;
-
-	if (address_mirror < 0x4000)
-		return;
-	if (address_mirror < 0x5000)
-	{
-		_ram[address_mirror - 0x4000] = value;
-		return;
-	}
-	if (address_mirror == 0x5000)
-	{
-		_interrupt_enabled = ((value & 1) == 1) ? true : false;
-		return;
-	}
-	if (address_mirror == 0x5003)
-	{
-		_flip = ((value & 1) == 1) ? true: false;
-		return;
-	}
-	if (address_mirror < 0x5060)
-		return;
-	if (address_mirror < 0x5070)
-	{
-		_spritesxy[address_mirror - 0x5060] = value;
-		return;
-	}
-}
-
-uint8_t Pacman::tick()
-{
-	static uint64_t deltaDisplay{ 0 };
-	const uint64_t clockDisplay = 1000 / 60 * _clockPerMs;
-
-	uint64_t previous = _cpu->elapsed_cycles();
-	_cpu->executeOne();
-	uint64_t deltaClock = _cpu->elapsed_cycles() - previous;
-
-	if (deltaDisplay > clockDisplay) { // 60 Hz
-		draw();
-		if (_interrupt_enabled)
-			_cpu->interrupt(_interrupt_vector);
-		deltaDisplay -= clockDisplay;
-		_controller->tick(); _port0.tick(*_controller); _port1.tick(*_controller);
-	}
-	deltaDisplay += deltaClock;
-
-	return static_cast<uint8_t>(deltaClock);
-}
-
-void Pacman::drawBackground(const uint8_t priority)
-{
-	uint16_t address = 0x02;
-
-	// bottom of screen
-	for (uint16_t i = 0; i < 56; ++i) {
-		const uint8_t tile = _ram[address];
-		const uint8_t palette = _ram[address + 0x400] & 0x3f;
-		const uint16_t x = (_flip) ? 1 - i / 28 : 34 + i / 28;
-		const uint16_t y = (_flip) ? 27 - (i % 28) : i % 28;
-		_tilemap->drawTile(*_display, _tiles[tile], x * 8, y * 8, _lookup[palette], (_flip)? true : false, (_flip)? true : false);
-		address++;
-		if (i == 27) address += 4;
-	}
-	address += 2;
-
-	// middle of screen
-	for (uint16_t i = 0; i < 28 * 32; ++i) {
-		const uint8_t tile = _ram[address];
-		const uint8_t palette = _ram[address + 0x400] & 0x3f;
-		const uint16_t x = (_flip) ? 33 - i % 32 : 2 + i % 32;
-		const uint16_t y = (_flip) ? 27 - (i / 32) : i / 32;
-		_tilemap->drawTile(*_display, _tiles[tile], x * 8, y * 8, _lookup[palette], (_flip) ? true : false, (_flip) ? true : false);
-		address++;
-	}
-
-	address += 2;
-	// top of screen
-	for (uint16_t i = 0; i < 56; ++i) {
-		const uint8_t tile = _ram[address];
-		const uint8_t palette = _ram[address + 0x400] & 0x3f;
-		const uint16_t x = (_flip) ? 35 - i / 28 : i / 28;
-		const uint16_t y = (_flip) ? 27 - (i % 28) : i % 28;
-		_tilemap->drawTile(*_display, _tiles[tile], x * 8, y * 8, _lookup[palette], (_flip) ? true : false, (_flip) ? true : false);
-		address++;
-		if (i == 27) address += 4;
-	}
-}
-
-void Pacman::drawSprites()
-{
-	// sprites
-	for (int i = 7; i >= 0; --i) {
-		const uint8_t spriteflips = _ram[0x0ff0 + 2 * i];
-		const uint8_t palette = _ram[0x0ff1 + 2 * i] & 0x3f;
-		const uint16_t x = _spritesxy[2 * i];
-		const uint16_t y = _spritesxy[1 + 2 * i];
-		_tilemap->drawMaskTile(*_display, _sprites[spriteflips >> 2], 272-y, x-31, _lookup[palette], (spriteflips & 1) > 0, (spriteflips & 2) > 0);
-	}
-}
-
-void Pacman::draw()
-{
-	drawBackground(0);
-	drawSprites();
-	_display->refresh();
-}
-
-static ae::RegistryHandler<aos::emulator::GameDriver> puckman{ "puckman", {
-	.name = "Pacman",
-	.version = "Puckman (Japan set 1)",
-	.emulator = "namco",
-	.creator = [](const aos::emulator::GameConfiguration& config, const vector<aos::emulator::RomConfiguration>& roms) { return std::make_unique<ae::namco::Pacman>(roms, config); },
-	.roms = {
-		{ 0, 0x0800, 0xf36e88ab },
-		{ 0, 0x0800, 0x618bd9b3 },
-		{ 0, 0x0800, 0x7d177853 },
-		{ 0, 0x0800, 0xd3e8914c },
-		{ 0, 0x0800, 0x6bf4f625 },
-		{ 0, 0x0800, 0xa948ce83 },
-		{ 0, 0x0800, 0xb6289b26 },
-		{ 0, 0x0800, 0x17a88c13 },
-		{ 1, 0x0800, 0x2066a0b7 },
-		{ 1, 0x0800, 0x3591b89d },
-		{ 1, 0x0800, 0x9e39323a },
-		{ 1, 0x0800, 0x1b1d9096 },
-		{ 1, 0x20, 0x2fc650bd },
-		{ 1, 0x100, 0x3eb3a8e4 }
-	},
-	.configuration = {
+static aos::emulator::GameConfiguration pacman_configuration = {
 		.switches = {{ "coinage", 1, "Coinage", {"Free", "1C/1C", "1C/2C", "2C/1C"} },
 					 { "lives", 2, "Lives", {"1", "2", "3", "5"} },
 					 { "bonus", 0, "Bonus", {"10000 points", "15000 points", "20000 points", "no"} },
@@ -305,210 +73,685 @@ static ae::RegistryHandler<aos::emulator::GameDriver> puckman{ "puckman", {
 					 { "boardtest", 1, "Board test", {"On", "Off"} },
 					 { "cabinet", 1, "Cabinet", {"Table", "Upright"} }
 		  }
-	}
+};
+
+
+static aos::RegistryHandler<aos::emulator::GameDriver> puckman{ "puckman", {
+	.name = "Pacman",
+	.version = "Puck Man (Japan set 1)",
+	.emulator = "namco",
+	.creator = [](const aos::emulator::GameConfiguration& config, const aos::emulator::RomsConfiguration& roms) { return std::make_unique<Pacman>(roms, config); },
+	.roms = {
+		{ "cpu", 0, 0x0800, 0xf36e88ab },
+		{ "cpu", 0, 0x0800, 0x618bd9b3 },
+		{ "cpu", 0, 0x0800, 0x7d177853 },
+		{ "cpu", 0, 0x0800, 0xd3e8914c },
+		{ "cpu", 0, 0x0800, 0x6bf4f625 },
+		{ "cpu", 0, 0x0800, 0xa948ce83 },
+		{ "cpu", 0, 0x0800, 0xb6289b26 },
+		{ "cpu", 0, 0x0800, 0x17a88c13 },
+		{ "video", 0, 0x0800, 0x2066a0b7 },
+		{ "video", 0, 0x0800, 0x3591b89d },
+		{ "video", 0, 0x0800, 0x9e39323a },
+		{ "video", 0, 0x0800, 0x1b1d9096 },
+		{ "palette", 0, 0x20, 0x2fc650bd },
+		{ "palette", 0, 0x100, 0x3eb3a8e4 },
+		{ "sound", 0, 0x100, 0xa9cc86bf }
+	},
+	.configuration = pacman_configuration
 }};
 
 
-static ae::RegistryHandler<aos::emulator::GameDriver> pacman{ "pacman", {
+static aos::RegistryHandler<aos::emulator::GameDriver> puckmanb{ "puckmanb", {
 	.name = "Pacman",
-	.version = "Midway",
+	.version = "Puck Man (bootleg set 1)",
+	.emulator = "namco",
+	.creator = [](const aos::emulator::GameConfiguration& config, const aos::emulator::RomsConfiguration& roms) { return std::make_unique<Pacman>(roms, config); },
+	.roms = {
+		{ "cpu", 0, 0x1000, 0xfee263b3 },
+		{ "cpu", 0, 0x1000, 0x39d1fc83 },
+		{ "cpu", 0, 0x1000, 0x02083b03 },
+		{ "cpu", 0, 0x1000, 0x7a36fe55 },
+		{ "video", 0, 0x1000, 0x0c944964 },
+		{ "video", 0, 0x1000, 0x958fedf9 },
+		{ "palette", 0, 0x20, 0x2fc650bd },
+		{ "palette", 0, 0x100, 0x3eb3a8e4 },
+		{ "sound", 0, 0x100, 0xa9cc86bf }
+	},
+	.configuration = pacman_configuration
+}};
+
+
+static aos::RegistryHandler<aos::emulator::GameDriver> puckmanf{ "puckmanf", {
+	.name = "Pacman",
+	.version = "Puck Man (speedup hack)",
+	.emulator = "namco",
+	.creator = [](const aos::emulator::GameConfiguration& config, const aos::emulator::RomsConfiguration& roms) { return std::make_unique<Pacman>(roms, config); },
+	.roms = {
+		{ "cpu", 0, 0x1000, 0xfee263b3 },
+		{ "cpu", 0, 0x1000, 0x51b38db9 },
+		{ "cpu", 0, 0x1000, 0x02083b03 },
+		{ "cpu", 0, 0x1000, 0x7a36fe55 },
+		{ "video", 0, 0x1000, 0x0c944964 },
+		{ "video", 0, 0x1000, 0x958fedf9 },
+		{ "palette", 0, 0x20, 0x2fc650bd },
+		{ "palette", 0, 0x100, 0x3eb3a8e4 },
+		{ "sound", 0, 0x100, 0xa9cc86bf }
+	},
+	.configuration = pacman_configuration
+}};
+
+
+static aos::RegistryHandler<aos::emulator::GameDriver> puckmanh{ "puckmanh", {
+	.name = "Pacman",
+	.version = "Puck Man (bootleg set 2)",
+	.emulator = "namco",
+	.creator = [](const aos::emulator::GameConfiguration& config, const aos::emulator::RomsConfiguration& roms) { return std::make_unique<Pacman>(roms, config); },
+	.roms = {
+		{ "cpu", 0, 0x1000, 0x5fe8610a },
+		{ "cpu", 0, 0x1000, 0x61d38c6c },
+		{ "cpu", 0, 0x1000, 0x4e7ef99f },
+		{ "cpu", 0, 0x1000, 0x8939ddd2 },
+		{ "video", 0, 0x800, 0x2229ab07 },
+		{ "video", 0, 0x800, 0x3591b89d },
+		{ "video", 0, 0x800, 0x9e39323a },
+		{ "video", 0, 0x800, 0x1b1d9096 },
+		{ "palette", 0, 0x20, 0x2fc650bd },
+		{ "palette", 0, 0x100, 0x3eb3a8e4 },
+		{ "sound", 0, 0x100, 0xa9cc86bf }
+	},
+	.configuration = pacman_configuration
+}};
+
+
+static aos::RegistryHandler<aos::emulator::GameDriver> puckmod{ "puckmod", {
+	.name = "Pacman",
+	.version = "Puck Man (Japan set 2)",
+	.emulator = "namco",
+	.creator = [](const aos::emulator::GameConfiguration& config, const aos::emulator::RomsConfiguration& roms) { return std::make_unique<Pacman>(roms, config); },
+	.roms = {
+		{ "cpu", 0, 0x1000, 0xfee263b3 },
+		{ "cpu", 0, 0x1000, 0x39d1fc83 },
+		{ "cpu", 0, 0x1000, 0x02083b03 },
+		{ "cpu", 0, 0x1000, 0x7d98d5f5 },
+		{ "video", 0, 0x1000, 0x0c944964 },
+		{ "video", 0, 0x1000, 0x958fedf9 },
+		{ "palette", 0, 0x20, 0x2fc650bd },
+		{ "palette", 0, 0x100, 0x3eb3a8e4 },
+		{ "sound", 0, 0x100, 0xa9cc86bf }
+	},
+	.configuration = pacman_configuration
+}};
+
+
+static aos::RegistryHandler<aos::emulator::GameDriver> pacman{ "pacman", {
+	.name = "Pacman",
+	.version = "Pac-Man (Midway)",
 	.main_version = true,
 	.emulator = "namco",
-	.creator = [](const aos::emulator::GameConfiguration& config, const vector<aos::emulator::RomConfiguration>& roms) { return std::make_unique<ae::namco::Pacman>(roms, config); },
+	.creator = [](const aos::emulator::GameConfiguration& config, const aos::emulator::RomsConfiguration& roms) { return std::make_unique<Pacman>(roms, config); },
 	.roms = {
-		{ 0, 0x1000, 0xc1e6ab10 },
-		{ 0, 0x1000, 0x1a6fb2d4 },
-		{ 0, 0x1000, 0xbcdd1beb },
-		{ 0, 0x1000, 0x817d94e3 },
-		{ 1, 0x1000, 0x0c944964 },
-		{ 1, 0x1000, 0x958fedf9 },
-		{ 1, 0x20, 0x2fc650bd },
-		{ 1, 0x100, 0x3eb3a8e4 }
+		{ "cpu", 0, 0x1000, 0xc1e6ab10 },
+		{ "cpu", 0, 0x1000, 0x1a6fb2d4 },
+		{ "cpu", 0, 0x1000, 0xbcdd1beb },
+		{ "cpu", 0, 0x1000, 0x817d94e3 },
+		{ "video", 0, 0x1000, 0x0c944964 },
+		{ "video", 0, 0x1000, 0x958fedf9 },
+		{ "palette", 0, 0x20, 0x2fc650bd },
+		{ "palette", 0, 0x100, 0x3eb3a8e4 },
+		{ "sound", 0, 0x100, 0xa9cc86bf }
 	},
-	.configuration = {
-		.switches = {{ "coinage", 1, "Coinage", {"Free", "1C/1C", "1C/2C", "2C/1C"} },
-					 { "lives", 2, "Lives", {"1", "2", "3", "5"} },
-					 { "bonus", 0, "Bonus", {"10000 points", "15000 points", "20000 points", "no"} },
-					 { "difficulty", 1, "Difficulty", {"Hard", "Normal"} },
-					 { "ghostname", 1, "Ghost names", {"Alternate", "Normal"} },
-					 { "rackadvance", 1, "Rackadvance", {"On", "Off"} },
-					 { "boardtest", 1, "Board test", {"On", "Off"} },
-					 { "cabinet", 1, "Cabinet", {"Table", "Upright"} }
-		  }
-	}
+	.configuration = pacman_configuration
 }};
 
 
-static ae::RegistryHandler<aos::emulator::GameDriver> pacmansonic{ "pacmansonic", {
+static aos::RegistryHandler<aos::emulator::GameDriver> pacmanso{ "pacmanso", {
 	.name = "Pacman",
-	.version = "Sonic",
+	.version = "Pac-Man (SegaSA / Sonic)",
 	.emulator = "namco",
-	.creator = [](const aos::emulator::GameConfiguration& config, const vector<aos::emulator::RomConfiguration>& roms) { return std::make_unique<ae::namco::Pacman>(roms, config); },
+	.creator = [](const aos::emulator::GameConfiguration& config, const aos::emulator::RomsConfiguration& roms) { return std::make_unique<Pacman>(roms, config); },
 	.roms = {
-		{ 0, 0x0800, 0x76dbed21 },
-		{ 0, 0x0800, 0x965bb9b2 },
-		{ 0, 0x0800, 0x7d177853 },
-		{ 0, 0x0800, 0xd3e8914c },
-		{ 0, 0x0800, 0xa5af382c },
-		{ 0, 0x0800, 0xa948ce83 },
-		{ 0, 0x0800, 0xcd03135a },
-		{ 0, 0x0800, 0xfb397ced },
-		{ 1, 0x0800, 0x2ee076d2 },
-		{ 1, 0x0800, 0x3591b89d },
-		{ 1, 0x0800, 0x9e39323a },
-		{ 1, 0x0800, 0x1b1d9096 },
-		{ 1, 0x20, 0x2fc650bd },
-		{ 1, 0x100, 0x3eb3a8e4 }
+		{ "cpu", 0, 0x0800, 0x76dbed21 },
+		{ "cpu", 0, 0x0800, 0x965bb9b2 },
+		{ "cpu", 0, 0x0800, 0x7d177853 },
+		{ "cpu", 0, 0x0800, 0xd3e8914c },
+		{ "cpu", 0, 0x0800, 0xa5af382c },
+		{ "cpu", 0, 0x0800, 0xa948ce83 },
+		{ "cpu", 0, 0x0800, 0xcd03135a },
+		{ "cpu", 0, 0x0800, 0xfb397ced },
+		{ "video", 0, 0x0800, 0x2ee076d2 },
+		{ "video", 0, 0x0800, 0x3591b89d },
+		{ "video", 0, 0x0800, 0x9e39323a },
+		{ "video", 0, 0x0800, 0x1b1d9096 },
+		{ "palette", 0, 0x20, 0x2fc650bd },
+		{ "palette", 0, 0x100, 0x3eb3a8e4 },
+		{ "sound", 0, 0x100, 0xa9cc86bf }
 	},
-	.configuration = {
-		.switches = {{ "coinage", 1, "Coinage", {"Free", "1C/1C", "1C/2C", "2C/1C"} },
-					 { "lives", 2, "Lives", {"1", "2", "3", "5"} },
-					 { "bonus", 0, "Bonus", {"10000 points", "15000 points", "20000 points", "no"} },
-					 { "difficulty", 1, "Difficulty", {"Hard", "Normal"} },
-					 { "ghostname", 1, "Ghost names", {"Alternate", "Normal"} },
-					 { "rackadvance", 1, "Rackadvance", {"On", "Off"} },
-					 { "boardtest", 1, "Board test", {"On", "Off"} },
-					 { "cabinet", 1, "Cabinet", {"Table", "Upright"} }
-		  }
-	}
+	.configuration = pacman_configuration
 }};
 
-Ponpoko::Ponpoko(const vector<aos::emulator::RomConfiguration>& roms,
-	const aos::emulator::GameConfiguration& game) :
-	Pacman(roms, game)
-{
-	_xoffset8 = &xoffset8_ponpoko;
-	_xoffset16 = &xoffset16_ponpoko;
 
-	_port0.set(0, "_JOY1_UP", false);
-	_port0.set(1, "_JOY1_LEFT", false);
-	_port0.set(2, "_JOY1_RIGHT", false);
-	_port0.set(3, "_JOY1_DOWN", false);
-	_port0.set(4, "_JOY1_FIRE", false);
-	_port0.set(5, "_COIN", true);
-	_port0.set(6, "_COIN2", true);
-	_port0.set(7, "_COIN3", true);
-	_port0.init(game);
-
-	_port1 = 0x80;
-	_port1.set(0, "_JOY1_UP", false);
-	_port1.set(1, "_JOY1_LEFT", false);
-	_port1.set(2, "_JOY1_RIGHT", false);
-	_port1.set(3, "_JOY1_DOWN", false);
-	_port1.set(4, "_JOY1_FIRE", false);
-	_port1.set(5, "_START", false);
-	_port1.set(6, "_START2", false);
-	_port1.init(game);
-
-	_port2.set(0, "bonus");
-	_port2.set(4, "lives");
-	_port2.set(6, "cabinet");
-	_port2.init(game);
-
-	_port3.set(0, "coinage");
-	_port3.set(6, "demosound");
-	_port3.init(game);
-}
-
-aos::emulator::SystemInfo Ponpoko::getSystemInfo() const
-{
-	return aos::emulator::SystemInfo{
-		.geometry = { .width = 288, .height = 224, .rotation = geometry_t::rotation_t::NONE }
-	};
-}
-
-void Ponpoko::init(ae::display::RasterDisplay* raster)
-{
-	Pacman::init(raster);
-}
-
-static ae::RegistryHandler<aos::emulator::GameDriver> ponpoko{ "ponpoko", {
-	.name = "Ponpoko",
-	.version = "Sigma",
-	.main_version = true,
+static aos::RegistryHandler<aos::emulator::GameDriver> pacmanvg{ "pacmanvg", {
+	.name = "Pacman",
+	.version = "Pac-Man (Video Game SA)",
 	.emulator = "namco",
-	.creator = [](const aos::emulator::GameConfiguration& config, const vector<aos::emulator::RomConfiguration>& roms) { return std::make_unique<ae::namco::Ponpoko>(roms, config); },
+	.creator = [](const aos::emulator::GameConfiguration& config, const aos::emulator::RomsConfiguration& roms) { return std::make_unique<Pacman>(roms, config); },
 	.roms = {
-		{ 0, 0x1000, 0xffa3c004 },
-		{ 0, 0x1000, 0x4a496866 },
-		{ 0, 0x1000, 0x17da6ca3 },
-		{ 0, 0x1000, 0x9d39a565 },
-		{ 0, 0x1000, 0x54ca3d7d },
-		{ 0, 0x1000, 0x3055c7e0 },
-		{ 0, 0x1000, 0x3cbe47ca },
-		{ 0, 0x1000, 0x04b63fc6 },
-		{ 1, 0x1000, 0xb73e1a06 },
-		{ 1, 0x1000, 0x62069b5d },
-		{ 1, 0x20, 0x2fc650bd },
-		{ 1, 0x100, 0x3eb3a8e4 }
+		{ "cpu", 0, 0x0800, 0x76dbed21 },
+		{ "cpu", 0, 0x0800, 0x965bb9b2 },
+		{ "cpu", 0, 0x0800, 0x7d177853 },
+		{ "cpu", 0, 0x0800, 0xd3e8914c },
+		{ "cpu", 0, 0x0800, 0xa5af382c },
+		{ "cpu", 0, 0x0800, 0xa948ce83 },
+		{ "cpu", 0, 0x0800, 0x7c42d9be },
+		{ "cpu", 0, 0x0800, 0x68a7300d },
+		{ "video", 0, 0x0800, 0x2229ab07 },
+		{ "video", 0, 0x0800, 0x3591b89d },
+		{ "video", 0, 0x0800, 0x9e39323a },
+		{ "video", 0, 0x0800, 0x1b1d9096 },
+		{ "palette", 0, 0x20, 0x2fc650bd },
+		{ "palette", 0, 0x100, 0x3eb3a8e4 },
+		{ "sound", 0, 0x100, 0xa9cc86bf }
 	},
-	.configuration = {
-		.switches = {{ "coinage", 1, "Coinage", {"Free", "A 1/1 B 1/1", "A 2/1 B 2/1", "A 1/2 B 1/2", "A 3/1 B 3/1", "A 1/1 B 2/3", "A 1/1 B 4/5", "A 2/1 B 1/3",
-												 "A 1/1 B 1/5", "A 1/1 B 1/6", "A 1/1 B 1/3", "A 2/1 B 1/5", "A 2/1 B 1/6", "A 2/1 1/1", "A 3/1 1/2", "A 3/1 B 1/4"}},
-					 { "lives", 2, "Lives", {"2", "3", "4", "5"} },
-					 { "bonus", 1, "Bonus", {"no", "10000 points", "30000 points", "50000 points"} },
-					 { "cabinet", 1, "Cabinet", {"Cocktail", "Upright"} },
-					 { "demosound", 0, "Demo Sounds", { "Off", "On"} }
-		  }
-	}
-}};
+	.configuration = pacman_configuration
+} };
 
-static ae::RegistryHandler<aos::emulator::GameDriver> ponpokov{ "ponpokov", {
-	.name = "Ponpoko",
-	.version = "Venture Line",
-	.emulator = "namco",
-	.creator = [](const aos::emulator::GameConfiguration& config, const vector<aos::emulator::RomConfiguration>& roms) { return std::make_unique<ae::namco::Ponpoko>(roms, config); },
-	.roms = {
-		{ 0, 0x1000, 0x49077667 },
-		{ 0, 0x1000, 0x5101781a },
-		{ 0, 0x1000, 0xd790ed22 },
-		{ 0, 0x1000, 0x4e449069 },
-		{ 0, 0x1000, 0x54ca3d7d },
-		{ 0, 0x1000, 0x3055c7e0 },
-		{ 0, 0x1000, 0x3cbe47ca },
-		{ 0, 0x1000, 0xb39be27d },
-		{ 1, 0x1000, 0xb73e1a06 },
-		{ 1, 0x1000, 0x62069b5d },
-		{ 1, 0x20, 0x2fc650bd },
-		{ 1, 0x100, 0x3eb3a8e4 }
-	},
-	.configuration = {
-		.switches = {{ "coinage", 1, "Coinage", {"Free", "A 1/1 B 1/1", "A 2/1 B 2/1", "A 1/2 B 1/2", "A 3/1 B 3/1", "A 1/1 B 2/3", "A 1/1 B 4/5", "A 2/1 B 1/3",
-												 "A 1/1 B 1/5", "A 1/1 B 1/6", "A 1/1 B 1/3", "A 2/1 B 1/5", "A 2/1 B 1/6", "A 2/1 1/1", "A 3/1 1/2", "A 3/1 B 1/4"}},
-					 { "lives", 2, "Lives", {"2", "3", "4", "5"} },
-					 { "bonus", 1, "Bonus", {"no", "10000 points", "30000 points", "50000 points"} },
-					 { "cabinet", 1, "Cabinet", {"Cocktail", "Upright"} },
-					 { "demosound", 0, "Demo Sounds", { "Off", "On"} }
-		  }
-	}
-}};
 
-static ae::RegistryHandler<aos::emulator::GameDriver> candory{ "candory", {
-	.name = "Ponpoko",
-	.version = "Candory bootleg",
+static aos::RegistryHandler<aos::emulator::GameDriver> pacmanf{ "pacmanf", {
+	.name = "Pacman",
+	.version = "Pac-Man (Midway, speedup)",
 	.emulator = "namco",
-	.creator = [](const aos::emulator::GameConfiguration& config, const vector<aos::emulator::RomConfiguration>& roms) { return std::make_unique<ae::namco::Ponpoko>(roms, config); },
+	.creator = [](const aos::emulator::GameConfiguration& config, const aos::emulator::RomsConfiguration& roms) { return std::make_unique<Pacman>(roms, config); },
 	.roms = {
-		{ 0, 0x1000, 0xffa3c004 },
-		{ 0, 0x1000, 0x4a496866 },
-		{ 0, 0x1000, 0x17da6ca3 },
-		{ 0, 0x1000, 0x9d39a565 },
-		{ 0, 0x1000, 0x54ca3d7d },
-		{ 0, 0x1000, 0x3055c7e0 },
-		{ 0, 0x1000, 0x3cbe47ca },
-		{ 0, 0x1000, 0x04b63fc6 },
-		{ 1, 0x1000, 0x7d16bdff },
-		{ 1, 0x1000, 0xe08ac188 },
-		{ 1, 0x20, 0x2fc650bd },
-		{ 1, 0x100, 0x3eb3a8e4 }
+		{ "cpu", 0, 0x1000, 0xc1e6ab10 },
+		{ "cpu", 0, 0x1000, 0x720dc3ee },
+		{ "cpu", 0, 0x1000, 0xbcdd1beb },
+		{ "cpu", 0, 0x1000, 0x817d94e3 },
+		{ "video", 0, 0x1000, 0x0c944964 },
+		{ "video", 0, 0x1000, 0x958fedf9 },
+		{ "palette", 0, 0x20, 0x2fc650bd },
+		{ "palette", 0, 0x100, 0x3eb3a8e4 },
+		{ "sound", 0, 0x100, 0xa9cc86bf }
 	},
-	.configuration = {
-		.switches = {{ "coinage", 1, "Coinage", {"Free", "A 1/1 B 1/1", "A 2/1 B 2/1", "A 1/2 B 1/2", "A 3/1 B 3/1", "A 1/1 B 2/3", "A 1/1 B 4/5", "A 2/1 B 1/3",
-												 "A 1/1 B 1/5", "A 1/1 B 1/6", "A 1/1 B 1/3", "A 2/1 B 1/5", "A 2/1 B 1/6", "A 2/1 1/1", "A 3/1 1/2", "A 3/1 B 1/4"}},
-					 { "lives", 2, "Lives", {"2", "3", "4", "5"} },
-					 { "bonus", 1, "Bonus", {"no", "10000 points", "30000 points", "50000 points"} },
-					 { "cabinet", 1, "Cabinet", {"Cocktail", "Upright"} },
-					 { "demosound", 0, "Demo Sounds", { "Off", "On"} }
-		  }
-	}
-}};
+	.configuration = pacman_configuration
+} };
+
+
+static aos::RegistryHandler<aos::emulator::GameDriver> pacmod{ "pacmod", {
+	.name = "Pacman",
+	.version = "Pac-Man (Midway, harder)",
+	.emulator = "namco",
+	.creator = [](const aos::emulator::GameConfiguration& config, const aos::emulator::RomsConfiguration& roms) { return std::make_unique<Pacman>(roms, config); },
+	.roms = {
+		{ "cpu", 0, 0x1000, 0x3b2ec270 },
+		{ "cpu", 0, 0x1000, 0x1a6fb2d4 },
+		{ "cpu", 0, 0x1000, 0x18811780 },
+		{ "cpu", 0, 0x1000, 0x5c96a733 },
+		{ "video", 0, 0x1000, 0x299fb17a },
+		{ "video", 0, 0x1000, 0x958fedf9 },
+		{ "palette", 0, 0x20, 0x2fc650bd },
+		{ "palette", 0, 0x100, 0x3eb3a8e4 },
+		{ "sound", 0, 0x100, 0xa9cc86bf }
+	},
+	.configuration = pacman_configuration
+} };
+
+
+static aos::RegistryHandler<aos::emulator::GameDriver> pacmanjpm{ "pacmanjpm", {
+	.name = "Pacman",
+	.version = "Pac-Man (JPM bootleg)",
+	.emulator = "namco",
+	.creator = [](const aos::emulator::GameConfiguration& config, const aos::emulator::RomsConfiguration& roms) { return std::make_unique<Pacman>(roms, config); },
+	.roms = {
+		{ "cpu", 0, 0x800, 0x2c0fa0ab },
+		{ "cpu", 0, 0x800, 0xafeca2f1 },
+		{ "cpu", 0, 0x800, 0x7d177853 },
+		{ "cpu", 0, 0x800, 0xd3e8914c },
+		{ "cpu", 0, 0x800, 0x9045a44c },
+		{ "cpu", 0, 0x800, 0x93f344c5 },
+		{ "cpu", 0, 0x800, 0x258580a2 },
+		{ "cpu", 0, 0x800, 0xb4d7ee8c },
+		{ "video", 0, 0x800, 0x2066a0b7 },
+		{ "video", 0, 0x800, 0x3591b89d },
+		{ "video", 0, 0x800, 0x9e39323a },
+		{ "video", 0, 0x800, 0x1b1d9096 },
+		{ "palette", 0, 0x20, 0x2fc650bd },
+		{ "palette", 0, 0x100, 0x3eb3a8e4 },
+		{ "sound", 0, 0x100, 0xa9cc86bf }
+	},
+	.configuration = pacman_configuration
+} };
+
+
+static aos::RegistryHandler<aos::emulator::GameDriver> newpuc2{ "newpuc2", {
+	.name = "Pacman",
+	.version = "Newpuc2 (set 1)",
+	.emulator = "namco",
+	.creator = [](const aos::emulator::GameConfiguration& config, const aos::emulator::RomsConfiguration& roms) { return std::make_unique<Pacman>(roms, config); },
+	.roms = {
+		{ "cpu", 0, 0x800, 0x69496a98 },
+		{ "cpu", 0, 0x800, 0x158fc01c },
+		{ "cpu", 0, 0x800, 0x7d177853 },
+		{ "cpu", 0, 0x800, 0x70810ccf },
+		{ "cpu", 0, 0x800, 0x81719de8 },
+		{ "cpu", 0, 0x800, 0x3f250c58 },
+		{ "cpu", 0, 0x800, 0xe6675736 },
+		{ "cpu", 0, 0x800, 0x1f81e765 },
+		{ "video", 0, 0x800, 0x2066a0b7 },
+		{ "video", 0, 0x800, 0x777c70d3 },
+		{ "video", 0, 0x800, 0xca8c184c },
+		{ "video", 0, 0x800, 0x7dc75a81 },
+		{ "palette", 0, 0x20, 0x2fc650bd },
+		{ "palette", 0, 0x100, 0x3eb3a8e4 },
+		{ "sound", 0, 0x100, 0xa9cc86bf }
+	},
+	.configuration = pacman_configuration
+} };
+
+
+static aos::RegistryHandler<aos::emulator::GameDriver> newpuc2b{ "newpuc2b", {
+	.name = "Pacman",
+	.version = "Newpuc2 (set 2)",
+	.emulator = "namco",
+	.creator = [](const aos::emulator::GameConfiguration& config, const aos::emulator::RomsConfiguration& roms) { return std::make_unique<Pacman>(roms, config); },
+	.roms = {
+		{ "cpu", 0, 0x800, 0x9d027c4a },
+		{ "cpu", 0, 0x800, 0x158fc01c },
+		{ "cpu", 0, 0x800, 0x7d177853 },
+		{ "cpu", 0, 0x800, 0x70810ccf },
+		{ "cpu", 0, 0x800, 0xf5e4b2b1 },
+		{ "cpu", 0, 0x800, 0x3f250c58 },
+		{ "cpu", 0, 0x800, 0xf068e009 },
+		{ "cpu", 0, 0x800, 0x1fadcc2f },
+		{ "video", 0, 0x800, 0x2066a0b7 },
+		{ "video", 0, 0x800, 0x777c70d3 },
+		{ "video", 0, 0x800, 0xca8c184c },
+		{ "video", 0, 0x800, 0x7dc75a81 },
+		{ "palette", 0, 0x20, 0x2fc650bd },
+		{ "palette", 0, 0x100, 0x3eb3a8e4 },
+		{ "sound", 0, 0x100, 0xa9cc86bf }
+	},
+	.configuration = pacman_configuration
+} };
+
+
+static aos::RegistryHandler<aos::emulator::GameDriver> newpuckx{ "newpuckx", {
+	.name = "Pacman",
+	.version = "New Puck-X",
+	.emulator = "namco",
+	.creator = [](const aos::emulator::GameConfiguration& config, const aos::emulator::RomsConfiguration& roms) { return std::make_unique<Pacman>(roms, config); },
+	.roms = {
+		{ "cpu", 0, 0x1000, 0xa8ae23c5 },
+		{ "cpu", 0, 0x1000, 0x1a6fb2d4 },
+		{ "cpu", 0, 0x1000, 0x197443f8 },
+		{ "cpu", 0, 0x1000, 0x2e64a3ba },
+		{ "video", 0, 0x1000, 0x0c944964 },
+		{ "video", 0, 0x1000, 0x958fedf9 },
+		{ "palette", 0, 0x20, 0x2fc650bd },
+		{ "palette", 0, 0x100, 0x3eb3a8e4 },
+		{ "sound", 0, 0x100, 0xa9cc86bf }
+	},
+	.configuration = pacman_configuration
+} };
+
+
+static aos::RegistryHandler<aos::emulator::GameDriver> pacheart{ "pacheart", {
+	.name = "Pacman",
+	.version = "Pac-Man (Hearts)",
+	.emulator = "namco",
+	.creator = [](const aos::emulator::GameConfiguration& config, const aos::emulator::RomsConfiguration& roms) { return std::make_unique<Pacman>(roms, config); },
+	.roms = {
+		{ "cpu", 0, 0x800, 0xd844b679 },
+		{ "cpu", 0, 0x800, 0xb9152a38 },
+		{ "cpu", 0, 0x800, 0x7d177853 },
+		{ "cpu", 0, 0x800, 0x842d6574 },
+		{ "cpu", 0, 0x800, 0x9045a44c },
+		{ "cpu", 0, 0x800, 0x888f3c3e },
+		{ "cpu", 0, 0x800, 0xf5265c10 },
+		{ "cpu", 0, 0x800, 0x1a21a381 },
+		{ "video", 0, 0x800, 0xc62bbabf },
+		{ "video", 0, 0x800, 0x3591b89d },
+		{ "video", 0, 0x800, 0xca8c184c },
+		{ "video", 0, 0x800, 0x1b1d9096 },
+		{ "palette", 0, 0x20, 0x2fc650bd },
+		{ "palette", 0, 0x100, 0x3eb3a8e4 },
+		{ "sound", 0, 0x100, 0xa9cc86bf }
+	},
+	.configuration = pacman_configuration
+} };
+
+
+static aos::RegistryHandler<aos::emulator::GameDriver> bucaner{ "bucaner", {
+	.name = "Pacman",
+	.version = "Buccaneer (set 1)",
+	.emulator = "namco",
+	.creator = [](const aos::emulator::GameConfiguration& config, const aos::emulator::RomsConfiguration& roms) { return std::make_unique<Pacman>(roms, config); },
+	.roms = {
+		{ "cpu", 0, 0x800, 0x2c0fa0ab },
+		{ "cpu", 0, 0x800, 0xafeca2f1 },
+		{ "cpu", 0, 0x800, 0x6b53ada9 },
+		{ "cpu", 0, 0x800, 0x35f3ca84 },
+		{ "cpu", 0, 0x800, 0x9045a44c },
+		{ "cpu", 0, 0x800, 0x888f3c3e },
+		{ "cpu", 0, 0x800, 0x292de161 },
+		{ "cpu", 0, 0x800, 0x884af858 },
+		{ "video", 0, 0x800, 0x4060c077 },
+		{ "video", 0, 0x800, 0xe3861283 },
+		{ "video", 0, 0x800, 0x09f66dec },
+		{ "video", 0, 0x800, 0x653314e7 },
+		{ "palette", 0, 0x20, 0x2fc650bd },
+		{ "palette", 0, 0x100, 0x3eb3a8e4 },
+		{ "sound", 0, 0x100, 0xa9cc86bf }
+	},
+	.configuration = pacman_configuration
+} };
+
+
+static aos::RegistryHandler<aos::emulator::GameDriver> bucanera{ "bucanera", {
+	.name = "Pacman",
+	.version = "Buccaneer (set 2)",
+	.emulator = "namco",
+	.creator = [](const aos::emulator::GameConfiguration& config, const aos::emulator::RomsConfiguration& roms) { return std::make_unique<Pacman>(roms, config); },
+	.roms = {
+		{ "cpu", 0, 0x800, 0x2c0fa0ab },
+		{ "cpu", 0, 0x800, 0xafeca2f1 },
+		{ "cpu", 0, 0x800, 0x6b53ada9 },
+		{ "cpu", 0, 0x800, 0x35f3ca84 },
+		{ "cpu", 0, 0x800, 0x9045a44c },
+		{ "cpu", 0, 0x800, 0x888f3c3e },
+		{ "cpu", 0, 0x800, 0x292de161 },
+		{ "cpu", 0, 0x800, 0xe037834d },
+		{ "video", 0, 0x800, 0xf814796f },
+		{ "video", 0, 0x800, 0xe3861283 },
+		{ "video", 0, 0x800, 0x09f66dec },
+		{ "video", 0, 0x800, 0x653314e7 },
+		{ "palette", 0, 0x20, 0x2fc650bd },
+		{ "palette", 0, 0x100, 0x3eb3a8e4 },
+		{ "sound", 0, 0x100, 0xa9cc86bf }
+	},
+	.configuration = pacman_configuration
+} };
+
+
+static aos::RegistryHandler<aos::emulator::GameDriver> hangly{ "hangly", {
+	.name = "Pacman",
+	.version = "Hangly-Man (set 1)",
+	.emulator = "namco",
+	.creator = [](const aos::emulator::GameConfiguration& config, const aos::emulator::RomsConfiguration& roms) { return std::make_unique<Pacman>(roms, config); },
+	.roms = {
+		{ "cpu", 0, 0x1000, 0x5fe8610a },
+		{ "cpu", 0, 0x1000, 0x73726586 },
+		{ "cpu", 0, 0x1000, 0x4e7ef99f },
+		{ "cpu", 0, 0x1000, 0x7f4147e6 },
+		{ "video", 0, 0x1000, 0x0c944964 },
+		{ "video", 0, 0x1000, 0x958fedf9 },
+		{ "palette", 0, 0x20, 0x2fc650bd },
+		{ "palette", 0, 0x100, 0x3eb3a8e4 },
+		{ "sound", 0, 0x100, 0xa9cc86bf }
+	},
+	.configuration = pacman_configuration
+} };
+
+
+static aos::RegistryHandler<aos::emulator::GameDriver> hangly2{ "hangly2", {
+	.name = "Pacman",
+	.version = "Hangly-Man (set 2)",
+	.emulator = "namco",
+	.creator = [](const aos::emulator::GameConfiguration& config, const aos::emulator::RomsConfiguration& roms) { return std::make_unique<Pacman>(roms, config); },
+	.roms = {
+		{ "cpu", 0, 0x1000, 0x5fe8610a },
+		{ "cpu", 0, 0x800, 0x5ba228bb },
+		{ "cpu", 0, 0x800, 0xbaf5461e },
+		{ "cpu", 0, 0x1000, 0x4e7ef99f },
+		{ "cpu", 0, 0x800, 0x51305374 },
+		{ "cpu", 0, 0x800, 0x427c9d4d },
+		{ "video", 0, 0x1000, 0x299fb17a },
+		{ "video", 0, 0x1000, 0x958fedf9 },
+		{ "palette", 0, 0x20, 0x2fc650bd },
+		{ "palette", 0, 0x100, 0x3eb3a8e4 },
+		{ "sound", 0, 0x100, 0xa9cc86bf }
+	},
+	.configuration = pacman_configuration
+} };
+
+
+static aos::RegistryHandler<aos::emulator::GameDriver> hangly3{ "hangly3", {
+	.name = "Pacman",
+	.version = "Hangly-Man (set 3)",
+	.emulator = "namco",
+	.creator = [](const aos::emulator::GameConfiguration& config, const aos::emulator::RomsConfiguration& roms) { return std::make_unique<Pacman>(roms, config); },
+	.roms = {
+		{ "cpu", 0, 0x800, 0x9d027c4a },
+		{ "cpu", 0, 0x800, 0x194c7189 },
+		{ "cpu", 0, 0x800, 0x5ba228bb },
+		{ "cpu", 0, 0x800, 0xbaf5461e },
+		{ "cpu", 0, 0x800, 0x08419c4a },
+		{ "cpu", 0, 0x800, 0xab74b51f },
+		{ "cpu", 0, 0x800, 0x5039b082 },
+		{ "cpu", 0, 0x800, 0x931770d7 },
+		{ "video", 0, 0x800, 0x5f4be3cc },
+		{ "video", 0, 0x800, 0x3591b89d },
+		{ "video", 0, 0x800, 0x9e39323a },
+		{ "video", 0, 0x800, 0x1b1d9096 },
+		{ "palette", 0, 0x20, 0x2fc650bd },
+		{ "palette", 0, 0x100, 0x3eb3a8e4 },
+		{ "sound", 0, 0x100, 0xa9cc86bf }
+	},
+	.configuration = pacman_configuration
+} };
+
+
+static aos::RegistryHandler<aos::emulator::GameDriver> baracuda{ "baracuda", {
+	.name = "Pacman",
+	.version = "Barracuda",
+	.emulator = "namco",
+	.creator = [](const aos::emulator::GameConfiguration& config, const aos::emulator::RomsConfiguration& roms) { return std::make_unique<Pacman>(roms, config); },
+	.roms = {
+		{ "cpu", 0, 0x1000, 0x5fe8610a },
+		{ "cpu", 0, 0x1000, 0x61d38c6c },
+		{ "cpu", 0, 0x1000, 0x4e7ef99f },
+		{ "cpu", 0, 0x1000, 0x55e86c2b },
+		{ "video", 0, 0x800, 0x3fc4030c },
+		{ "video", 0, 0x800, 0xea7fba5e },
+		{ "video", 0, 0x800, 0xf3e9c9d5 },
+		{ "video", 0, 0x800, 0x133d720d },
+		{ "palette", 0, 0x20, 0x2fc650bd },
+		{ "palette", 0, 0x100, 0x3eb3a8e4 },
+		{ "sound", 0, 0x100, 0xa9cc86bf }
+	},
+	.configuration = pacman_configuration
+} };
+
+
+static aos::RegistryHandler<aos::emulator::GameDriver> popeyeman{ "popeyeman", {
+	.name = "Pacman",
+	.version = "Popeye-Man",
+	.emulator = "namco",
+	.creator = [](const aos::emulator::GameConfiguration& config, const aos::emulator::RomsConfiguration& roms) { return std::make_unique<Pacman>(roms, config); },
+	.roms = {
+		{ "cpu", 0, 0x800, 0x9d027c4a },
+		{ "cpu", 0, 0x800, 0x194c7189 },
+		{ "cpu", 0, 0x800, 0x5ba228bb },
+		{ "cpu", 0, 0x800, 0xbaf5461e },
+		{ "cpu", 0, 0x800, 0x08419c4a },
+		{ "cpu", 0, 0x800, 0xab74b51f },
+		{ "cpu", 0, 0x800, 0x5039b082 },
+		{ "cpu", 0, 0x800, 0x931770d7 },
+		{ "video", 0, 0x800, 0xb569c4c1 },
+		{ "video", 0, 0x800, 0x3591b89d },
+		{ "video", 0, 0x800, 0x014fb5a4 },
+		{ "video", 0, 0x800, 0x21b91c64 },
+		{ "palette", 0, 0x20, 0x2fc650bd },
+		{ "palette", 0, 0x100, 0x3eb3a8e4 },
+		{ "sound", 0, 0x100, 0xa9cc86bf }
+	},
+	.configuration = pacman_configuration
+} };
+
+
+static aos::RegistryHandler<aos::emulator::GameDriver> crockman{ "crockman", {
+	.name = "Pacman",
+	.version = "Crock-Man",
+	.emulator = "namco",
+	.creator = [](const aos::emulator::GameConfiguration& config, const aos::emulator::RomsConfiguration& roms) { return std::make_unique<Pacman>(roms, config); },
+	.roms = {
+		{ "cpu", 0, 0x800, 0x2c0fa0ab },
+		{ "cpu", 0, 0x800, 0xafeca2f1 },
+		{ "cpu", 0, 0x800, 0x7d177853 },
+		{ "cpu", 0, 0x800, 0xd3e8914c },
+		{ "cpu", 0, 0x800, 0x9045a44c },
+		{ "cpu", 0, 0x800, 0x93f344c5 },
+		{ "cpu", 0, 0x800, 0xbed4a077 },
+		{ "cpu", 0, 0x800, 0x800be41e },
+		{ "video", 0, 0x800, 0xa10218c4 },
+		{ "video", 0, 0x800, 0x3591b89d },
+		{ "video", 0, 0x800, 0x9e39323a },
+		{ "video", 0, 0x800, 0x1b1d9096 },
+		{ "palette", 0, 0x20, 0x2fc650bd },
+		{ "palette", 0, 0x100, 0x3eb3a8e4 },
+		{ "sound", 0, 0x100, 0xa9cc86bf }
+	},
+	.configuration = pacman_configuration
+} };
+
+
+static aos::RegistryHandler<aos::emulator::GameDriver> crockmanf{ "crockmanf", {
+	.name = "Pacman",
+	.version = "Crock-Man (bootleg)",
+	.emulator = "namco",
+	.creator = [](const aos::emulator::GameConfiguration& config, const aos::emulator::RomsConfiguration& roms) { return std::make_unique<Pacman>(roms, config); },
+	.roms = {
+		{ "cpu", 0, 0x800, 0x2c0fa0ab },
+		{ "cpu", 0, 0x800, 0xafeca2f1 },
+		{ "cpu", 0, 0x800, 0x7d177853 },
+		{ "cpu", 0, 0x800, 0xd3e8914c },
+		{ "cpu", 0, 0x800, 0x9045a44c },
+		{ "cpu", 0, 0x800, 0x93f344c5 },
+		{ "cpu", 0, 0x800, 0xbed4a077 },
+		{ "cpu", 0, 0x800, 0x800be41e },
+		{ "video", 0, 0x800, 0x581d0c11 },
+		{ "video", 0, 0x800, 0x3591b89d },
+		{ "video", 0, 0x800, 0x9e39323a },
+		{ "video", 0, 0x800, 0x1b1d9096 },
+		{ "palette", 0, 0x20, 0x2fc650bd },
+		{ "palette", 0, 0x100, 0x3eb3a8e4 },
+		{ "sound", 0, 0x100, 0xa9cc86bf }
+	},
+	.configuration = pacman_configuration
+} };
+
+
+static aos::RegistryHandler<aos::emulator::GameDriver> joyman{ "joyman", {
+	.name = "Pacman",
+	.version = "Joyman",
+	.emulator = "namco",
+	.creator = [](const aos::emulator::GameConfiguration& config, const aos::emulator::RomsConfiguration& roms) { return std::make_unique<Pacman>(roms, config); },
+	.roms = {
+		{ "cpu", 0, 0x800, 0xd844b679 },
+		{ "cpu", 0, 0x800, 0xab9c8f29 },
+		{ "cpu", 0, 0x800, 0x7d177853 },
+		{ "cpu", 0, 0x800, 0xb3c8d32e },
+		{ "cpu", 0, 0x800, 0x9045a44c },
+		{ "cpu", 0, 0x800, 0x888f3c3e },
+		{ "cpu", 0, 0x800, 0x00b553f8 },
+		{ "cpu", 0, 0x800, 0x5d5ce992 },
+		{ "video", 0, 0x800, 0x39b557bc },
+		{ "video", 0, 0x800, 0x33e0289e },
+		{ "video", 0, 0x800, 0x338771a6 },
+		{ "video", 0, 0x800, 0xf4f0add5 },
+		{ "palette", 0, 0x20, 0x2fc650bd },
+		{ "palette", 0, 0x100, 0x3eb3a8e4 },
+		{ "sound", 0, 0x100, 0xa9cc86bf }
+	},
+	.configuration = pacman_configuration
+} };
+
+
+static aos::RegistryHandler<aos::emulator::GameDriver> ctrpllrp{ "ctrpllrp", {
+	.name = "Pacman",
+	.version = "Caterpillar Pacman",
+	.emulator = "namco",
+	.creator = [](const aos::emulator::GameConfiguration& config, const aos::emulator::RomsConfiguration& roms) { return std::make_unique<Pacman>(roms, config); },
+	.roms = {
+		{ "cpu", 0, 0x800, 0x9d027c4a },
+		{ "cpu", 0, 0x800, 0xf39846d3 },
+		{ "cpu", 0, 0x800, 0xafa149a8 },
+		{ "cpu", 0, 0x800, 0xbaf5461e },
+		{ "cpu", 0, 0x800, 0x6bb282a1 },
+		{ "cpu", 0, 0x800, 0xfa2140f5 },
+		{ "cpu", 0, 0x800, 0x86c91e0e },
+		{ "cpu", 0, 0x800, 0x3d28134e },
+		{ "video", 0, 0x800, 0x1c4617be },
+		{ "video", 0, 0x800, 0x46f72fef },
+		{ "video", 0, 0x800, 0xba9ec199 },
+		{ "video", 0, 0x800, 0x41c09655 },
+		{ "palette", 0, 0x20, 0x2fc650bd },
+		{ "palette", 0, 0x100, 0x3eb3a8e4 },
+		{ "sound", 0, 0x100, 0xa9cc86bf }
+	},
+	.configuration = pacman_configuration
+} };
+
+
+static aos::RegistryHandler<aos::emulator::GameDriver> pacmanfm{ "pacmanfm", {
+	.name = "Pacman",
+	.version = "Pac Man (FAMARE SA)",
+	.emulator = "namco",
+	.creator = [](const aos::emulator::GameConfiguration& config, const aos::emulator::RomsConfiguration& roms) { return std::make_unique<Pacman>(roms, config); },
+	.roms = {
+		{ "cpu", 0, 0x800, 0xf36e88ab },
+		{ "cpu", 0, 0x800, 0x618bd9b3 },
+		{ "cpu", 0, 0x800, 0x7d177853 },
+		{ "cpu", 0, 0x800, 0xd3e8914c },
+		{ "cpu", 0, 0x800, 0x6bf4f625 },
+		{ "cpu", 0, 0x800, 0xa948ce83 },
+		{ "cpu", 0, 0x800, 0xb6289b26 },
+		{ "cpu", 0, 0x800, 0x17a88c13 },
+		{ "video", 0, 0x800, 0x7a7b48b3 },
+		{ "video", 0, 0x800, 0x3591b89d },
+		{ "video", 0, 0x800, 0x9e39323a },
+		{ "video", 0, 0x800, 0x1b1d9096 },
+		{ "palette", 0, 0x20, 0x2fc650bd },
+		{ "palette", 0, 0x100, 0x3eb3a8e4 },
+		{ "sound", 0, 0x100, 0xa9cc86bf }
+	},
+	.configuration = pacman_configuration
+} };
+
+
+static aos::RegistryHandler<aos::emulator::GameDriver> pacmanug{ "pacmanug", {
+	.name = "Pacman",
+	.version = "Pac Man (U.Games)",
+	.emulator = "namco",
+	.creator = [](const aos::emulator::GameConfiguration& config, const aos::emulator::RomsConfiguration& roms) { return std::make_unique<Pacman>(roms, config); },
+	.roms = {
+		{ "cpu", 0, 0x800, 0xf36e88ab },
+		{ "cpu", 0, 0x800, 0x618bd9b3 },
+		{ "cpu", 0, 0x800, 0x7d177853 },
+		{ "cpu", 0, 0x800, 0xd3e8914c },
+		{ "cpu", 0, 0x800, 0x6bf4f625 },
+		{ "cpu", 0, 0x800, 0xa948ce83 },
+		{ "cpu", 0, 0x800, 0xb6289b26 },
+		{ "cpu", 0, 0x800, 0x17a88c13 },
+		{ "video", 0, 0x800, 0xdc9f2a7b },
+		{ "video", 0, 0x800, 0x3591b89d },
+		{ "video", 0, 0x800, 0x9e39323a },
+		{ "video", 0, 0x800, 0x1b1d9096 },
+		{ "palette", 0, 0x20, 0x2fc650bd },
+		{ "palette", 0, 0x100, 0x3eb3a8e4 },
+		{ "sound", 0, 0x100, 0xa9cc86bf }
+	},
+	.configuration = pacman_configuration
+} };
+
+
+/*
+GAME(1980, pacmanpe, puckman, pacman, pacmanpe, pacman_state, empty_init, ROT90, "bootleg (Petaco SA)", "Come Come (Petaco SA bootleg of Puck Man)", MACHINE_SUPPORTS_SAVE) // might have a speed-up button, check
+GAME(1980, pacuman, puckman, pacman, pacuman, pacman_state, empty_init, ROT90, "bootleg (Recreativos Franco S.A.)", "Pacu-Man (Spanish bootleg of Puck Man)", MACHINE_SUPPORTS_SAVE) // common bootleg in Spain, code is shifted a bit compared to the Puck Man sets. Title & Manufacturer info from cabinet/PCB, not displayed ingame
+GAME(1981, piranha, puckman, piranha, mspacman, pacman_state, init_eyes, ROT90, "GL (US Billiards license)", "Piranha", MACHINE_SUPPORTS_SAVE)
+GAME(1981, piranhao, puckman, piranha, mspacman, pacman_state, init_eyes, ROT90, "GL (US Billiards license)", "Piranha (older)", MACHINE_SUPPORTS_SAVE)
+GAME(1981, mspacmab3, puckman, piranha, mspacman, pacman_state, init_eyes, ROT90, "bootleg", "Ms. Pac-Man (bootleg, set 3)", MACHINE_SUPPORTS_SAVE)
+GAME(1981, abscam, puckman, piranha, mspacman, pacman_state, init_eyes, ROT90, "GL (US Billiards license)", "Abscam", MACHINE_SUPPORTS_SAVE)
+GAME(1981, piranhah, puckman, pacman, mspacman, pacman_state, empty_init, ROT90, "hack", "Piranha (hack)", MACHINE_SUPPORTS_SAVE)
+GAME(1981, titanpac, puckman, piranha, mspacman, pacman_state, init_eyes, ROT90, "hack (NSM)", "Titan (Pac-Man hack)", MACHINE_SUPPORTS_SAVE)
+*/

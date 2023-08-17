@@ -2,7 +2,7 @@
 #include <cassert>
 
 
-using namespace ae::display;
+using namespace aos::display;
 
 RasterDisplay::RasterDisplay(const geometry_t g) :
 	_geometry{ g }

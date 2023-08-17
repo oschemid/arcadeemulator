@@ -11,6 +11,7 @@ namespace aos {
 	using std::string;
 	using std::uint8_t;
 	using std::uint16_t;
+	using std::uint32_t;
 	using std::size_t;
 
 	using fnuint8_t = std::function<uint8_t(const uint8_t)>;

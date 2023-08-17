@@ -32,7 +32,7 @@ SpaceInvaders::SpaceInvaders(const vector<aos::emulator::RomConfiguration>& roms
 	_port0 = 1;
 }
 
-void SpaceInvaders::init(ae::display::RasterDisplay* raster)
+void SpaceInvaders::init(aos::display::RasterDisplay* raster)
 {
 	Midway8080::init(raster);
 
@@ -172,17 +172,17 @@ aos::rgb_t spaceinvader_gels(const uint8_t x, const uint8_t y)
 	return { 255, 255, 255 };
 }
 
-static ae::RegistryHandler<aos::emulator::GameDriver> spaceinvaders("spaceinvaders", {
+static aos::RegistryHandler<aos::emulator::GameDriver> spaceinvaders("spaceinvaders", {
 	.name = "Space Invaders",
 	.version = "Midway",
 	.main_version = true,
 	.emulator = "midway8080",
-	.creator = [](const aos::emulator::GameConfiguration& config, const vector<aos::emulator::RomConfiguration>& roms) { return std::make_unique<aos::midway8080::SpaceInvaders>(roms, config, spaceinvader_gels); },
+	.creator = [](const aos::emulator::GameConfiguration& config, const aos::emulator::RomsConfiguration& roms) { return std::make_unique<aos::midway8080::SpaceInvaders>(roms, config, spaceinvader_gels); },
 	.roms = {
-			{ 0, 0x800, 0x734f5ad8 },
-			{ 0, 0x800, 0x6bfaca4a },
-			{ 0, 0x800, 0x0ccead96 },
-			{ 0, 0x800, 0x14e538b0 }
+			{ "cpu", 0, 0x800, 0x734f5ad8 },
+			{ "cpu", 0, 0x800, 0x6bfaca4a },
+			{ "cpu", 0, 0x800, 0x0ccead96 },
+			{ "cpu", 0, 0x800, 0x14e538b0 }
 			},
 	.configuration = {
 		.switches = {{ "coinage", 1, "Coinage", {"Free", "1C/1C", "1C/2C", "2C/1C"} },
@@ -193,16 +193,16 @@ static ae::RegistryHandler<aos::emulator::GameDriver> spaceinvaders("spaceinvade
 	}
 });
 
-static ae::RegistryHandler<aos::emulator::GameDriver> spaceinvaderstv("spaceinvaderstv", {
+static aos::RegistryHandler<aos::emulator::GameDriver> spaceinvaderstv("spaceinvaderstv", {
 	.name = "Space Invaders",
 	.version = "TV ver 2",
 	.emulator = "midway8080",
-	.creator = [](const aos::emulator::GameConfiguration& config, const vector<aos::emulator::RomConfiguration>& roms) { return std::make_unique<aos::midway8080::SpaceInvaders>(roms, config, spaceinvader_gels); },
+	.creator = [](const aos::emulator::GameConfiguration& config, const aos::emulator::RomsConfiguration& roms) { return std::make_unique<aos::midway8080::SpaceInvaders>(roms, config, spaceinvader_gels); },
 	.roms = {
-			{ 0, 0x800, 0xfef18aad },
-			{ 0, 0x800, 0x3c759a90 },
-			{ 0, 0x800, 0x0ad3657f },
-			{ 0, 0x800, 0xcd2c67f6 }
+			{ "cpu", 0, 0x800, 0xfef18aad },
+			{ "cpu", 0, 0x800, 0x3c759a90 },
+			{ "cpu", 0, 0x800, 0x0ad3657f },
+			{ "cpu", 0, 0x800, 0xcd2c67f6 }
 			},
 	.configuration = {
 		.switches = {{ "coinage", 1, "Coinage", {"Free", "1C/1C", "1C/2C", "2C/1C"} },
@@ -212,18 +212,18 @@ static ae::RegistryHandler<aos::emulator::GameDriver> spaceinvaderstv("spaceinva
 		}
 	}
 });
-static ae::RegistryHandler<aos::emulator::GameDriver> spaceinvaderssv2("spaceinvaderssv2", {
+static aos::RegistryHandler<aos::emulator::GameDriver> spaceinvaderssv2("spaceinvaderssv2", {
 	.name = "Space Invaders",
 	.version = "SV ver 2",
 	.emulator = "midway8080",
-	.creator = [](const aos::emulator::GameConfiguration& config, const vector<aos::emulator::RomConfiguration>& roms) { return std::make_unique<aos::midway8080::SpaceInvaders>(roms, config); },
+	.creator = [](const aos::emulator::GameConfiguration& config, const aos::emulator::RomsConfiguration& roms) { return std::make_unique<aos::midway8080::SpaceInvaders>(roms, config); },
 	.roms = {
-			{ 0,0x400,0xd0c32d72 },
-			{ 0,0x400,0x0e159534 },
-			{ 0,0x400,0x483e651e },
-			{ 0x1400,0x400,0x1293b826 },
-			{ 0,0x400,0xcd80b13f },
-			{ 0,0x400,0x2c68e0b4 }
+			{ "cpu", 0,0x400,0xd0c32d72 },
+			{ "cpu", 0,0x400,0x0e159534 },
+			{ "cpu", 0,0x400,0x483e651e },
+			{ "cpu", 0x1400,0x400,0x1293b826 },
+			{ "cpu", 0,0x400,0xcd80b13f },
+			{ "cpu", 0,0x400,0x2c68e0b4 }
 			},
 	.configuration = {
 		.switches = {{ "coinage", 1, "Coinage", {"Free", "1C/1C", "1C/2C", "2C/1C"} },
@@ -255,15 +255,15 @@ AlienInvaders::~AlienInvaders()
 {
 }
 
-static ae::RegistryHandler<aos::emulator::GameDriver> alieninvaders("alieninvaders", {
+static aos::RegistryHandler<aos::emulator::GameDriver> alieninvaders("alieninvaders", {
 	.name = "Alien Invaders",
 	.emulator = "midway8080",
-	.creator = [](const aos::emulator::GameConfiguration& config, const vector<aos::emulator::RomConfiguration>& roms) { return std::make_unique<aos::midway8080::AlienInvaders>(roms, config); },
+	.creator = [](const aos::emulator::GameConfiguration& config, const aos::emulator::RomsConfiguration& roms) { return std::make_unique<aos::midway8080::AlienInvaders>(roms, config); },
 	.roms = {
-			{ 0, 0x800, 0x6ad601c3 },
-	        { 0,0x800, 0xc6bb6fb3 },
-	        { 0,0x800, 0x1d2ff324 },
-	        { 0,0x800, 0x2f2e6791 }
+			{ "cpu", 0, 0x800, 0x6ad601c3 },
+	        { "cpu", 0,0x800, 0xc6bb6fb3 },
+	        { "cpu", 0,0x800, 0x1d2ff324 },
+	        { "cpu", 0,0x800, 0x2f2e6791 }
 			},
 	.configuration = {
 		.switches = {{ "penceCoinage", 1, "Pence ?", {"False", "True"} },

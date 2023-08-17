@@ -29,7 +29,7 @@ AmazingMaze::AmazingMaze(const vector<aos::emulator::RomConfiguration>& roms, co
 	_port1.init(config);
 }
 
-void AmazingMaze::init(ae::display::RasterDisplay* raster)
+void AmazingMaze::init(aos::display::RasterDisplay* raster)
 {
 	Midway8080::init(raster);
 
@@ -120,13 +120,13 @@ void AmazingMaze::updateDisplay()
 	}
 }
 
-static ae::RegistryHandler<aos::emulator::GameDriver> amazingmaze("amazingmaze", {
+static aos::RegistryHandler<aos::emulator::GameDriver> amazingmaze("amazingmaze", {
 	.name = "Amazing Maze",
 	.emulator = "midway8080",
-	.creator = [](const aos::emulator::GameConfiguration& config, const vector<aos::emulator::RomConfiguration>& rom) { return std::make_unique<aos::midway8080::AmazingMaze>(rom, config); },
+	.creator = [](const aos::emulator::GameConfiguration& config, const aos::emulator::RomsConfiguration& rom) { return std::make_unique<aos::midway8080::AmazingMaze>(rom, config); },
 	.roms = {
-			{ 0,0x800,0xf2860cff },
-			{ 0,0x800,0x65fad839 }
+			{ "cpu", 0,0x800,0xf2860cff },
+			{ "cpu", 0,0x800,0x65fad839 }
 			},
 	.configuration = {
 		.switches = {{ "coinage", 0, "Coin", {"One coin One credit", "Two coins One credit", "One coin Two credits", "Two coins Two redits"} },

@@ -13,7 +13,7 @@ Ppu::Ppu() :
 	_vram = new uint8_t[0x2000];
 }
 
-void Ppu::init(ae::display::RasterDisplay* raster)
+void Ppu::init(aos::display::RasterDisplay* raster)
 {
 	_raster = raster;
 }

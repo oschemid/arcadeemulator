@@ -33,9 +33,11 @@ namespace aos::emulator
 	};
 	struct RomConfiguration
 	{
+		string region;
 		uint16_t start;
 		aos::tools::Rom rom;
 	};
+	using RomsConfiguration = vector<RomConfiguration>;
 
 	class Emulator
 	{
@@ -45,12 +47,12 @@ namespace aos::emulator
 	public:
 		virtual ~Emulator() = default;
 		virtual SystemInfo getSystemInfo() const = 0;
-		virtual void init(ae::display::RasterDisplay*) = 0;
+		virtual void init(aos::display::RasterDisplay*) = 0;
 		virtual uint8_t tick() = 0;
 		void run();
 
 		// Debug methods
-		virtual std::map<string, ae::tilemap::Tiles> getTiles() const { return std::map<string, ae::tilemap::Tiles>(); }
+		virtual std::map<string, aos::tilemap::Tiles> getTiles() const { return std::map<string, aos::tilemap::Tiles>(); }
 		virtual std::vector<palette_t> getPalettes() const { return std::vector<palette_t>(); }
 
 	protected:
@@ -58,7 +60,7 @@ namespace aos::emulator
 		uint64_t _clockPerMs{ 0 };
 	};
 
-	using creator_fn = std::function<Emulator::Ptr(const GameConfiguration&, const vector<RomConfiguration>&)>;
+	using creator_fn = std::function<Emulator::Ptr(const GameConfiguration&, const RomsConfiguration&)>;
 
 	struct GameDriver
 	{
@@ -67,7 +69,7 @@ namespace aos::emulator
 		bool main_version{ false };
 		string emulator;
 		creator_fn creator;
-		vector<RomConfiguration> roms;
+		RomsConfiguration roms;
 		GameConfiguration configuration;
 
 		bool has_configuration() const { return configuration.switches.size() > 0; }

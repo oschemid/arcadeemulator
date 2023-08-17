@@ -33,7 +33,7 @@ namespace ae::gameboy
 		virtual ~Gameboy() = default;
 
 		aos::emulator::SystemInfo getSystemInfo() const override;
-		void init(ae::display::RasterDisplay*) override;
+		void init(aos::display::RasterDisplay*) override;
 		uint8_t tick() override;
 	};
 }

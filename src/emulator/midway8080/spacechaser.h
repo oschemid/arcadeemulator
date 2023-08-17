@@ -21,15 +21,15 @@ namespace aos::midway8080
 			};
 		}
 
-		void init(ae::display::RasterDisplay*) override;
+		void init(aos::display::RasterDisplay*) override;
 		uint8_t tick() override;
 
 	protected:
 		xprocessors::MB14241::Ptr _shifter{ nullptr };
 		std::vector<aos::emulator::RomConfiguration> _roms;
-		ae::io::Port _port0{ 0 };
-		ae::io::Port _port1{ 0 };
-		ae::io::Port _port2{ 0 };
+		aos::io::Port _port0{ 0 };
+		aos::io::Port _port1{ 0 };
+		aos::io::Port _port2{ 0 };
 		ae::controller::ArcadeController::Ptr _controller{ nullptr };
 		std::function<rgb_t(const uint8_t, const uint8_t)> _colorfn;
 

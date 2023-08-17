@@ -24,7 +24,7 @@ namespace ae {
 		uint8_t _current_palette;
 		bool _needRefresh{ false };
 
-		ImTextureID createTexture(const ae::tilemap::Tiles);
+		ImTextureID createTexture(const aos::tilemap::Tiles);
 		void refreshTextures();
 	};
 }

@@ -33,7 +33,7 @@ namespace aos::library
 
 	void Consoles::addGames()
 	{
-		for (auto& [_, driver] : ae::Registry<aos::emulator::GameDriver>::instance().get())
+		for (auto& [_, driver] : aos::Registry<aos::emulator::GameDriver>::instance().get())
 		{
 			try
 			{

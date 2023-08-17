@@ -14,7 +14,7 @@ namespace ae::gameboy
 	public:
 		Ppu();
 
-		void init(ae::display::RasterDisplay*);
+		void init(aos::display::RasterDisplay*);
 
 		uint8_t readOAM(const uint16_t) const;
 		void writeOAM(const uint16_t, const uint8_t);
@@ -114,7 +114,7 @@ namespace ae::gameboy
 
 		uint16_t _dots;
 
-		ae::display::RasterDisplay* _raster;
+		aos::display::RasterDisplay* _raster;
 		
 		uint8_t _dmatransfer;
 		uint16_t _dmaaddress;

@@ -69,12 +69,12 @@ void TileMapWidget::draw(gui::GuiManager* manager) {
     ImGui::End();
 }
 
-ImTextureID TileMapWidget::createTexture(const std::vector<ae::tilemap::Tile> tiles)
+ImTextureID TileMapWidget::createTexture(const std::vector<aos::tilemap::Tile> tiles)
 {
     const uint8_t size = tiles[0].size();
 
-    ae::tilemap::TileMap map{ textureWidth, textureWidth };
-    ae::display::RasterDisplay display{ {textureWidth, textureWidth} };
+    aos::tilemap::TileMap map{ textureWidth, textureWidth };
+    aos::display::RasterDisplay display{ {textureWidth, textureWidth} };
 
     uint16_t x = 2;
     uint16_t y = 2;

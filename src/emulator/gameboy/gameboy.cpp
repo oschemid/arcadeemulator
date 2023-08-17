@@ -8,22 +8,22 @@
 #include "registry.h"
 
 
-static ae::RegistryHandler<aos::emulator::GameDriver> tetris{ "tetris", {
+static aos::RegistryHandler<aos::emulator::GameDriver> tetris{ "tetris", {
 	.name = "Tetris",
 	.emulator = "gameboy",
 	.creator = [](const aos::emulator::GameConfiguration& config, const vector<aos::emulator::RomConfiguration>&) { return std::make_unique<ae::gameboy::Gameboy>("roms/gameboy/tetris.gb"); },
 }};
-static ae::RegistryHandler<aos::emulator::GameDriver> alleyway{ "alleyway", {
+static aos::RegistryHandler<aos::emulator::GameDriver> alleyway{ "alleyway", {
 	.name = "Alleyway",
 	.emulator = "gameboy",
 	.creator = [](const aos::emulator::GameConfiguration& config, const vector<aos::emulator::RomConfiguration>&) { return std::make_unique<ae::gameboy::Gameboy>("roms/gameboy/alleyway.gb"); },
 }};
-static ae::RegistryHandler<aos::emulator::GameDriver> bombjack{ "bombjack", {
+static aos::RegistryHandler<aos::emulator::GameDriver> bombjack{ "bombjack", {
 	.name = "Bomb Jack",
 	.emulator = "gameboy",
 	.creator = [](const aos::emulator::GameConfiguration& config, const vector<aos::emulator::RomConfiguration>&) { return std::make_unique<ae::gameboy::Gameboy>("roms/gameboy/bombjack.gb"); },
 }};
-static ae::RegistryHandler<aos::emulator::GameDriver> boxxle{ "boxxle", {
+static aos::RegistryHandler<aos::emulator::GameDriver> boxxle{ "boxxle", {
 	.name = "Boxxle",
 	.emulator = "gameboy",
 	.creator = [](const aos::emulator::GameConfiguration& config, const vector<aos::emulator::RomConfiguration>&) { return std::make_unique<ae::gameboy::Gameboy>("roms/gameboy/boxxle.gb"); },
@@ -45,7 +45,7 @@ aos::emulator::SystemInfo ae::gameboy::Gameboy::getSystemInfo() const
 	};
 }
 
-void ae::gameboy::Gameboy::init(ae::display::RasterDisplay* raster)
+void ae::gameboy::Gameboy::init(aos::display::RasterDisplay* raster)
 {
 	cpu = xprocessors::Cpu::create("lr35902");
 	_bootrom = std::make_shared<BootRom>(string("roms/gameboy/bootroms/dmg_rom.bin"));

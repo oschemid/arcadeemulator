@@ -8,7 +8,7 @@
 using aos::palette_t;
 
 
-namespace ae::tilemap
+namespace aos::tilemap
 {
 	class Tile
 	{
@@ -47,8 +47,8 @@ namespace ae::tilemap
 		{
 		}
 
-		void drawTile(display::RasterDisplay&, const Tile&, const uint16_t, const uint16_t, const palette_t, const bool, const bool);
-		void drawMaskTile(display::RasterDisplay&, const Tile&, const uint16_t, const uint16_t, const palette_t, const bool, const bool);
+		void drawTile(aos::display::RasterDisplay&, const Tile&, const uint16_t, const uint16_t, const palette_t, const bool, const bool);
+		void drawMaskTile(aos::display::RasterDisplay&, const Tile&, const uint16_t, const uint16_t, const palette_t, const bool, const bool);
 
 	protected:
 		uint16_t _width{ 0 };

@@ -3,7 +3,7 @@
 #include <map>
 
 
-namespace ae
+namespace aos
 {
 	template<class I> class Registry
 	{

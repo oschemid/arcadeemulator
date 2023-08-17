@@ -21,13 +21,13 @@ namespace aos::midway8080
 			};
 		}
 
-		void init(ae::display::RasterDisplay*) override;
+		void init(aos::display::RasterDisplay*) override;
 		uint8_t tick() override;
 
 	protected:
 		vector<aos::emulator::RomConfiguration> _roms;
-		ae::io::Port _port0{ 0 };
-		ae::io::Port _port1{ 0 };
+		aos::io::Port _port0{ 0 };
+		aos::io::Port _port1{ 0 };
 		ae::controller::ArcadeController::Ptr _controller{ nullptr };
 
 		uint8_t in(const uint8_t);

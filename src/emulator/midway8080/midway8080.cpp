@@ -21,7 +21,7 @@ namespace aos::midway8080
 			delete[] _memory;
 	}
 
-	void Midway8080::init(ae::display::RasterDisplay* raster)
+	void Midway8080::init(aos::display::RasterDisplay* raster)
 	{
 		_cpu = xprocessors::Cpu::create("i8080");
 		_raster = raster;

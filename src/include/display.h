@@ -9,7 +9,7 @@ using aos::rgb_t;
 using aos::geometry_t;
 
 
-namespace ae::display
+namespace aos::display
 {
 	class RasterDisplay
 	{

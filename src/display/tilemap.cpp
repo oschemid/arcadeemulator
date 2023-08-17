@@ -1,7 +1,7 @@
 #include "tilemap.h"
 
 
-namespace ae::tilemap
+namespace aos::tilemap
 {
 	Tiles decodeTiles(const uint16_t tile_count, const uint8_t tile_size, const uint8_t* src, const std::vector<uint16_t>& xoffset, const std::vector<uint16_t>& yoffset)
 	{
@@ -37,7 +37,7 @@ namespace ae::tilemap
 		return tiles;
 	}
 
-	void TileMap::drawTile(display::RasterDisplay& raster, const Tile& tile, const uint16_t x, const uint16_t y, const palette_t palette, const bool flipX, const bool flipY)
+	void TileMap::drawTile(aos::display::RasterDisplay& raster, const Tile& tile, const uint16_t x, const uint16_t y, const palette_t palette, const bool flipX, const bool flipY)
 	{
 		const uint8_t size = tile.size();
 		if ((x >= _width) || (y >= _height))
@@ -58,7 +58,7 @@ namespace ae::tilemap
 			}
 		}
 	}
-	void TileMap::drawMaskTile(display::RasterDisplay& raster, const Tile& tile, const uint16_t x, const uint16_t y, const palette_t palette, const bool flipX, const bool flipY)
+	void TileMap::drawMaskTile(aos::display::RasterDisplay& raster, const Tile& tile, const uint16_t x, const uint16_t y, const palette_t palette, const bool flipX, const bool flipY)
 	{
 		const uint8_t size = tile.size();
 		if ((x >= _width) || (y >= _height))

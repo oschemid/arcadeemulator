@@ -57,13 +57,13 @@ namespace ae {
 	class DisplayWidget : public gui::widgets::Widget {
 	protected:
 		string _name;
-		display::RasterDisplay* _raster{ nullptr };
+		aos::display::RasterDisplay* _raster{ nullptr };
 		ImTextureID _textureid{ nullptr };
 		ImVec2 _imagesize;
 		float _zoom;
 
 	public:
-		DisplayWidget(const string&, display::RasterDisplay*, const float);
+		DisplayWidget(const string&, aos::display::RasterDisplay*, const float);
 		void draw(gui::GuiManager*) override;
 	};
 }

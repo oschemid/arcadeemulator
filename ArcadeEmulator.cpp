@@ -49,7 +49,7 @@ int main(int argc, char** argv)
 	ae::DisplayWidget* r1 = nullptr;
 	ae::TileMapWidget r2(n2, &gui);
 
-	ae::display::RasterDisplay* raster = nullptr;
+	aos::display::RasterDisplay* raster = nullptr;
 	while (!done)
 	{
 		done = gui.processEvent();
@@ -59,7 +59,7 @@ int main(int argc, char** argv)
 				aos::library::Game* selected = gameselection.getSelected();
 				si = selected->driver().creator(selected->driver().configuration, selected->driver().roms);
 				aos::emulator::SystemInfo requirements = si->getSystemInfo();
-				raster = new ae::display::RasterDisplay(requirements.geometry);
+				raster = new aos::display::RasterDisplay(requirements.geometry);
 				raster->init();
 				r1 = new ae::DisplayWidget(n1, raster, 2.);
 				gui.addWidget("rasterdisplay", r1);

@@ -125,7 +125,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2maind.lib;%(AdditionalDependencies);vulkan-1.lib;crypt32.lib</AdditionalDependencies>
+      <AdditionalDependencies>SDL2maind.lib;%(AdditionalDependencies);vulkan-1.lib;crypt32.lib;bcrypt.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(VcpkgRoot)\installed\$(VcpkgTriplet)\debug\lib\manual-link\;%(AdditionalLibraryDirectories);$(VULKAN_SDK)/Lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -144,7 +144,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2main.lib;%(AdditionalDependencies);vulkan-1.lib;crypt32.lib</AdditionalDependencies>
+      <AdditionalDependencies>SDL2main.lib;%(AdditionalDependencies);vulkan-1.lib;crypt32.lib;bcrypt.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(VcpkgRoot)\installed\$(VcpkgTriplet)\lib\manual-link\;%(AdditionalLibraryDirectories);$(VULKAN_SDK)/Lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -164,16 +164,24 @@
     <ClCompile Include="src\emulator\gameboy\channel.cpp" />
     <ClCompile Include="src\emulator\gameboy\gameboy.cpp" />
     <ClCompile Include="src\emulator\gameboy\mbc.cpp" />
-    <ClCompile Include="src\emulator\gameboy\mmu.cpp" />
+    <ClCompile Include="src\emulator\gameboy\gameboymmu.cpp" />
     <ClCompile Include="src\emulator\gameboy\ppu\modes.cpp" />
     <ClCompile Include="src\emulator\gameboy\ppu\ppu.cpp" />
     <ClCompile Include="src\emulator\gameboy\serial.cpp" />
     <ClCompile Include="src\emulator\midway8080\amazingmaze.cpp" />
     <ClCompile Include="src\emulator\midway8080\spacechaser.cpp" />
     <ClCompile Include="src\emulator\midway8080\spaceinvaders.cpp" />
+    <ClCompile Include="src\emulator\namco\alibaba.cpp" />
+    <ClCompile Include="src\emulator\namco\gpu\pacmangpu.cpp" />
+    <ClCompile Include="src\emulator\namco\gpu\rallyxgpu.cpp" />
+    <ClCompile Include="src\emulator\namco\gpu\tilegpu.cpp" />
+    <ClCompile Include="src\emulator\namco\mmu.cpp" />
     <ClCompile Include="src\emulator\namco\namco.cpp" />
     <ClCompile Include="src\emulator\namco\pacman.cpp" />
+    <ClCompile Include="src\emulator\namco\ponpoko.cpp" />
     <ClCompile Include="src\emulator\namco\rallyx.cpp" />
+    <ClCompile Include="src\emulator\namco\woodpecker.cpp" />
+    <ClCompile Include="src\emulator\namco\wsg.cpp" />
     <ClCompile Include="src\gui\debugger.cpp" />
     <ClCompile Include="src\gui\vulkan\engine.cpp" />
     <ClCompile Include="src\gui\gui.cpp" />
@@ -222,8 +230,13 @@
     <ClInclude Include="src\emulator\midway8080\amazingmaze.h" />
     <ClInclude Include="src\emulator\midway8080\spacechaser.h" />
     <ClInclude Include="src\emulator\midway8080\spaceinvaders.h" />
-    <ClInclude Include="src\emulator\namco\pacman.h" />
+    <ClInclude Include="src\emulator\namco\gpu\pacmangpu.h" />
+    <ClInclude Include="src\emulator\namco\gpu\rallyxgpu.h" />
+    <ClInclude Include="src\emulator\namco\mmu.h" />
+    <ClInclude Include="src\emulator\namco\gpu\tilegpu.h" />
+    <ClInclude Include="src\emulator\namco\pacmansystem.h" />
     <ClInclude Include="src\emulator\namco\rallyx.h" />
+    <ClInclude Include="src\emulator\namco\wsg.h" />
     <ClInclude Include="src\gui\debugger.h" />
     <ClInclude Include="src\gui\vulkan\engine.h" />
     <ClInclude Include="src\gui\gui.h" />
@@ -237,7 +250,6 @@
     <ClInclude Include="src\include\registry.h" />
     <ClInclude Include="src\include\tilemap.h" />
     <ClInclude Include="src\sound\sound.h" />
-    <ClInclude Include="src\include\machine.h" />
     <ClInclude Include="src\include\types.h" />
   </ItemGroup>
   <ItemGroup>

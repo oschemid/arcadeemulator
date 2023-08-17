@@ -30,7 +30,7 @@ SpaceChaser::SpaceChaser(const std::vector<aos::emulator::RomConfiguration>& rom
 	_port2.init(config);
 }
 
-void SpaceChaser::init(ae::display::RasterDisplay* raster)
+void SpaceChaser::init(aos::display::RasterDisplay* raster)
 {
 	Midway8080::init(raster);
 
@@ -177,21 +177,21 @@ uint8_t SpaceChaser::in(const uint8_t port) {
 	}
 }
 
-static ae::RegistryHandler<aos::emulator::GameDriver> spacechaser("spacechaser", {
+static aos::RegistryHandler<aos::emulator::GameDriver> spacechaser("spacechaser", {
 	.name = "Space Chaser",
 	.emulator = "midway8080",
-	.creator = [](const aos::emulator::GameConfiguration& config, const vector<aos::emulator::RomConfiguration>& rom) { return std::make_unique<aos::midway8080::SpaceChaser>(rom, config); },
+	.creator = [](const aos::emulator::GameConfiguration& config, const aos::emulator::RomsConfiguration& rom) { return std::make_unique<aos::midway8080::SpaceChaser>(rom, config); },
 	.roms = {
-			{ 0, 0x400, 0xbec2b16b },
-			{ 0, 0x400, 0x9d25e608 },
-			{ 0, 0x400, 0x113d0635 },
-			{ 0, 0x400, 0xf3a43c8d },
-			{ 0, 0x400, 0x47c84f23 },
-			{ 0, 0x400, 0x02ff2199 },
-			{ 0, 0x400, 0x87d06b88 },
-			{ 0, 0x400, 0x6dfaad08 },
-			{ 0x4000, 0x400, 0x3d1a2ae3 },
-			{ 0, 0x400, 0x037edb99 }
+			{ "cpu", 0, 0x400, 0xbec2b16b },
+			{ "cpu", 0, 0x400, 0x9d25e608 },
+			{ "cpu", 0, 0x400, 0x113d0635 },
+			{ "cpu", 0, 0x400, 0xf3a43c8d },
+			{ "cpu", 0, 0x400, 0x47c84f23 },
+			{ "cpu", 0, 0x400, 0x02ff2199 },
+			{ "cpu", 0, 0x400, 0x87d06b88 },
+			{ "cpu", 0, 0x400, 0x6dfaad08 },
+			{ "cpu", 0x4000, 0x400, 0x3d1a2ae3 },
+			{ "cpu", 0, 0x400, 0x037edb99 }
 			},
 	.configuration = {
 		.switches = {{ "difficulty", 0, "Difficulty", {"Normal", "Hard"} },

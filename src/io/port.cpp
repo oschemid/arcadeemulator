@@ -1,7 +1,7 @@
 #include "io.h"
 
 
-using namespace ae::io;
+using namespace aos::io;
 
 
 Port::Port(const uint8_t v) :
