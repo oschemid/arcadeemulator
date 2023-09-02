@@ -234,7 +234,7 @@ namespace aos::namco
 		case 0x1f:
 			_voices[2].volume = value & 0x0f;
 			break;
-		defaut:
+		default:
 			break;
 		}
 	}
