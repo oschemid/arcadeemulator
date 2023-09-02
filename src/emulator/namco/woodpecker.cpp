@@ -52,7 +52,7 @@ namespace aos::namco
 	protected:
 		void mapping() override
 		{
-			_mmu.map(0, 0x3fff, "cpu").rom();
+			_mmu.map(0, 0x3fff).name("cpu").rom();
 			_mmu.map(0x4000, 0x4fff).readfn([this](const uint16_t a) { return _gpu->readVRAM(a); }).writefn([this](const uint16_t a, const uint8_t v) { _gpu->writeVRAM(a, v); });
 			_mmu.map(0x5000, 0x503f).readfn([this](const uint16_t) { return _port0.get(); });
 			_mmu.map(0x5040, 0x507f).readfn([this](const uint16_t) { return _port1.get(); });
@@ -62,7 +62,7 @@ namespace aos::namco
 			_mmu.map(0x5003, 0x5003).writefn([this](const uint16_t, const uint8_t value) { static_cast<PacmanGpu*>(&(*_gpu))->flip(((value & 1) == 1) ? true : false); });
 			_mmu.map(0x5040, 0X505f).writefn([this](const uint16_t address, const uint8_t value) { _wsg.write(address, value); });
 			_mmu.map(0x5060, 0x506f).writefn([this](const uint16_t address, const uint8_t value) { static_cast<PacmanGpu*>(&(*_gpu))->writeSpritePos(address, value); });
-			_mmu.map(0x8000, 0xbfff, "cpu2").rom();
+			_mmu.map(0x8000, 0xbfff).name("cpu2").rom();
 		}
 	};
 }

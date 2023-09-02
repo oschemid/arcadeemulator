@@ -147,19 +147,19 @@
     <ClCompile Include="src\emulator\namco\gpu\tilegpu.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\emulator\namco\ponpoko.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\emulator\namco\woodpecker.cpp">
+    <ClCompile Include="src\emulator\namco\gpu\rallyxgpu.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="src\emulator\namco\alibaba.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\emulator\namco\gpu\rallyxgpu.cpp">
+    <ClCompile Include="src\emulator\namco\ponpoko.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="src\emulator\namco\rallyx.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\emulator\namco\woodpecker.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>

@@ -5,116 +5,97 @@
 using namespace aos::namco;
 
 
-Mmu::~Mmu()
+Mmu::mapping& Mmu::mapping::rom()
 {
-	for (auto& [_, mapping] : _mapping)
-	{
-		if (mapping->mymemory)
-			delete[] mapping->mymemory;
-	}
+	_internalmemory = true;
+	_readfn = [this](const uint16_t a) { return _memory[a]; };
+	return* this;
 }
 
-void Mmu::mapping::rom()
+Mmu::mapping& Mmu::mapping::ram()
 {
-	auto map = _map;
-	map->delegated = false;
-	map->myreadfn = [map](const uint16_t a) { return map->mymemory[a]; };
-}
-
-void Mmu::mapping::ram()
-{
-	auto map = _map;
-	map->delegated = false;
-	map->myreadfn = [map](const uint16_t a) { return map->mymemory[a]; };
-	map->mywritefn = [map](const uint16_t a, const uint8_t v) { map->mymemory[a] = v; };
-}
-
-void Mmu::mapping::shared(std::function<uint8_t(const uint16_t)> readfn, std::function<void(const uint16_t, const uint8_t)> writefn)
-{
-	_map->myreadfn = readfn;
-	_map->mywritefn = writefn;
+	_internalmemory = true;
+	_readfn = [this](const uint16_t a) { return _memory[a]; };
+	_writefn = [this](const uint16_t a, const uint8_t v) { _memory[a] = v; };
+	return *this;
 }
 
 Mmu::mapping& Mmu::mapping::readfn(std::function<uint8_t(const uint16_t)> readfn)
 {
-	_map->myreadfn = readfn;
+	_internalmemory = false;
+	_readfn = readfn;
+	return *this;
+}
+
+Mmu::mapping& Mmu::mapping::decodefn(std::function<uint8_t(const uint16_t, const uint8_t)> decodefn)
+{
+	_internalmemory = true;
+	_decodingfn = decodefn;
 	return *this;
 }
 
 Mmu::mapping& Mmu::mapping::writefn(std::function<void(const uint16_t, const uint8_t)> writefn)
 {
-	_map->mywritefn = writefn;
+	_internalmemory = false;
+	_writefn = writefn;
 	return *this;
 }
 
-Mmu::mapping Mmu::map(const uint16_t start, const uint16_t end, const uint16_t mirror, const string name)
+void Mmu::mapping::init(const vector<aos::emulator::RomConfiguration>& roms)
 {
-	memorymap mapping = { start, end, mirror };
-	memory page = { true, 0, nullptr, nullptr, nullptr };
-	size_t index = _mapping.size();
-	_mapping.push_back({ mapping, std::make_shared<memory>(page) });
-	if (!name.empty())
-		_naming[name] = index;
-	return Mmu::mapping(_mapping[index].second);
+	if (_internalmemory) {
+		const uint16_t memorysize = _end - _start + 1;
+		_memory = new uint8_t[memorysize];
+
+		size_t offset = 0;
+		for(const auto& rom : roms | std::ranges::views::filter([this](const auto i) { return i.region == _name; }))
+		{
+			offset += rom.rom.read(_memory + offset);
+		}
+
+		if (_decodingfn)
+		{
+			for (size_t offset = 0; offset < memorysize; ++offset)
+			{
+				_memory[offset] = _decodingfn(_start + offset, _memory[offset]);
+			}
+		}
+	}
 }
 
-Mmu::mapping Mmu::map(const uint16_t start, const uint16_t end, const string name)
+Mmu::mapping& Mmu::map(const uint16_t start, const uint16_t end)
 {
-	return map(start, end, 0xffff, name);
-}
-Mmu::mapping Mmu::map(const uint16_t start, const uint16_t end, const uint16_t mirror)
-{
-	return map(start, end, mirror, "");
-}
-
-Mmu::mapping Mmu::map(const uint16_t start, const uint16_t end)
-{
-	return map(start, end, 0xffff, "");
+	mapping map{ start, end };
+	_mapping.push_front(map);
+	return _mapping.front();
 }
 
 void Mmu::init(const vector<aos::emulator::RomConfiguration>& roms)
 {
-	for (auto& [mapname, mapstruct] : _mapping)
-	{
-		if (mapstruct->delegated)
-			continue;
-		const uint16_t memorysize = mapname.end - mapname.start + 1;
-		mapstruct->mymemory = new uint8_t[memorysize];
-		mapstruct->size = memorysize;
-	}
-	for (auto [mapname, index] : _naming)
-	{
-		uint8_t* const memory = _mapping[index].second->mymemory;
-		size_t offset = 0;
-		for (const auto& rom : roms | std::ranges::views::filter([mapname](const auto i) { return i.region == mapname; })) {
-			offset += rom.rom.read(memory + offset);
-		}
-	}
+	for (auto& map : _mapping)
+		map.init(roms);
 }
 
 uint8_t Mmu::read(const uint16_t address)
 {
-	for (auto& [mapping, memory] : _mapping)
+	if (_beforefn)
+		_beforefn(address);
+	for (auto& map : _mapping)
 	{
-		const uint16_t address_mirror = address & mapping.mirroring;
-		if ((address_mirror >= mapping.start) && (address_mirror <= mapping.end)) {
-			if (memory->myreadfn)
-				return memory->myreadfn(address_mirror - mapping.start);
-		}
+		if (map.is_mapped(address, _bank_selected))
+			return map.read(address);
 	}
 	return 0;
 }
 
 void Mmu::write(const uint16_t address, const uint8_t value)
 {
-	for (auto& [mapping, memory] : _mapping)
+	if (_beforefn)
+		_beforefn(address);
+	for (auto& map : _mapping)
 	{
-		const uint16_t address_mirror = address & mapping.mirroring;
-		if ((address_mirror >= mapping.start) && (address_mirror <= mapping.end)) {
-			if (memory->mywritefn) {
-				memory->mywritefn(address_mirror - mapping.start, value);
-				return;
-			}
+		if (map.is_mapped(address, _bank_selected)) {
+			map.write(address, value);
 		}
 	}
 }
