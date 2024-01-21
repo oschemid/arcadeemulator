@@ -35,7 +35,7 @@ PacmanGpu::~PacmanGpu()
 }
 
 void PacmanGpu::init(aos::display::RasterDisplay* raster,
-	                 const vector<aos::emulator::RomConfiguration>& roms)
+	                 const vector<aos::mmu::RomMapping>& roms)
 {
 	TileGpu::init(raster, roms);
 
@@ -45,12 +45,12 @@ void PacmanGpu::init(aos::display::RasterDisplay* raster,
 	initTilesSprites(roms);
 }
 
-void PacmanGpu::initPalettes(const vector<aos::emulator::RomConfiguration>& roms)
+void PacmanGpu::initPalettes(const vector<aos::mmu::RomMapping>& roms)
 {
 	uint8_t* paletterom = new uint8_t[0x120];
 	size_t offset = 0;
 	for (const auto& rom : roms | std::ranges::views::filter([](const auto i) { return i.region == "palette"; })) {
-		offset += rom.rom.read(paletterom + offset);
+		offset += rom.rom.read(paletterom + offset, rom.mapping.start, rom.mapping.size);
 	}
 
 	palette_t colors;
@@ -82,7 +82,7 @@ void PacmanGpu::initPalettes(const vector<aos::emulator::RomConfiguration>& roms
 	delete[] paletterom;
 }
 
-void PacmanGpu::initTilesSprites(const vector<aos::emulator::RomConfiguration>& roms)
+void PacmanGpu::initTilesSprites(const vector<aos::mmu::RomMapping>& roms)
 {
 	const std::vector<uint16_t> xoffset8 = (_configuration.tileModel == Configuration::TileModel::PONPOKO) ? xoffset8_ponpoko : xoffset8_pacman;
 	const std::vector<uint16_t> xoffset16 = (_configuration.tileModel == Configuration::TileModel::PONPOKO) ? xoffset16_ponpoko : xoffset16_pacman;
@@ -90,24 +90,14 @@ void PacmanGpu::initTilesSprites(const vector<aos::emulator::RomConfiguration>& 
 	uint8_t* videorom = new uint8_t[0x2000];
 	size_t offset = 0;
 	for (const auto& rom : roms | std::ranges::views::filter([](const auto i) { return i.region == "video"; })) {
-		offset += rom.rom.read(videorom + offset);
+		offset += rom.rom.read(videorom + offset, rom.mapping.start, rom.mapping.size);
 	}
 	const uint16_t sprites_offset = (offset == 0x2000) ? 0x1000 : 0;
 
-	if (_configuration.romModel == Configuration::RomModel::WOODPECKER)
-	{
-		for (size_t i = 0; i < 0x2000; i += 8)
-		{
-			uint8_t tmp;
-			auto f = [](uint8_t d) { return (d & 0xaf) | ((d & 0x40) >> 2) | ((d & 0x10) << 2); };
-			videorom[i] = f(videorom[i]);
-			tmp = videorom[i + 1]; videorom[i + 1] = f(videorom[i + 4]); videorom[i + 4] = f(tmp);
-			videorom[i + 2] = f(videorom[i + 2]);
-			tmp = videorom[i + 3]; videorom[i + 3] = f(videorom[i + 6]); videorom[i + 6] = f(tmp);
-			videorom[i + 5] = f(videorom[i + 5]);
-			videorom[i + 7] = f(videorom[i + 7]);
-		}
-	}
+	if (_configuration.romDecoding)
+		_configuration.romDecoding(videorom, 0x2000);
+	if (_romDecoder)
+		_romDecoder("gfx", videorom, 0x2000);
 
 	_tiles = aos::tilemap::decodeTiles(256, 8, videorom, xoffset8, yoffset8);
 	_sprites = aos::tilemap::decodeTiles(0x40, 16, videorom + sprites_offset, xoffset16, yoffset16);

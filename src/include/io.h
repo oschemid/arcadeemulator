@@ -12,6 +12,18 @@ namespace aos::io
 	{
 	public:
 		Port(const uint8_t);
+
+		Port& set(uint8_t bit) {
+			assert(bit < 8);
+			_port.set(bit);
+			return *this;
+		}
+		Port& reset(const uint8_t bit) {
+			assert(bit < 8);
+			_port.reset(bit);
+			return *this;
+		}
+
 		void set(uint8_t, const string&, bool=false);
 		void reset();
 

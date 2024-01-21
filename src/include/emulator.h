@@ -2,6 +2,7 @@
 #include "types.h"
 #include "tools.h"
 #include "display.h"
+#include "memory.h"
 #include "tilemap.h"
 #include <vector>
 #include <map>
@@ -31,13 +32,6 @@ namespace aos::emulator
 	{
 		vector<DipSwitch> switches;
 	};
-	struct RomConfiguration
-	{
-		string region;
-		uint16_t start;
-		aos::tools::Rom rom;
-	};
-	using RomsConfiguration = vector<RomConfiguration>;
 
 	class Emulator
 	{
@@ -60,7 +54,7 @@ namespace aos::emulator
 		uint64_t _clockPerMs{ 0 };
 	};
 
-	using creator_fn = std::function<Emulator::Ptr(const GameConfiguration&, const RomsConfiguration&)>;
+	using creator_fn = std::function<Emulator::Ptr(const GameConfiguration&, const aos::mmu::RomMappings&)>;
 
 	struct GameDriver
 	{
@@ -69,10 +63,10 @@ namespace aos::emulator
 		bool main_version{ false };
 		string emulator;
 		creator_fn creator;
-		RomsConfiguration roms;
+		aos::mmu::RomMappings roms;
 		GameConfiguration configuration;
 
 		bool has_configuration() const { return configuration.switches.size() > 0; }
-		bool is_unavailable() const { return std::any_of(roms.begin(), roms.end(), [](const RomConfiguration& r) { return r.rom.filename.empty(); }); }
+		bool is_unavailable() const { return std::any_of(roms.begin(), roms.end(), [](const aos::mmu::RomMapping& r) { return r.rom.filename.empty(); }); }
 	};
 }

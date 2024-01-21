@@ -44,6 +44,7 @@ void Port::tick(const ae::controller::ArcadeController& controller)
 {
 	static std::map<string, std::function<bool(const ae::controller::ArcadeController&)>> _map =
 	{
+		{ "_CHEAT", [](const ae::controller::ArcadeController& c) { return c.cheat(); }},
 		{ "_COIN", [](const ae::controller::ArcadeController& c) { return c.coin(); }},
 		{ "_COIN2", [](const ae::controller::ArcadeController& c) { return c.coin2(); }},
 		{ "_COIN3", [](const ae::controller::ArcadeController& c) { return c.coin3(); }},

@@ -134,13 +134,15 @@ void GameSelection::drawSettings(library::Game& game) {
     if (ImGui::BeginPopupModal(("Settings " + game.name()).c_str())) {
         for (auto& setting : game.driver().configuration.switches) {
             string name = setting.description;
-            int value = setting.value;
-            string value_str;
-            int maxvalue;
-            value_str = setting.values[value];
-            maxvalue = setting.values.size()-1;
-            if (ImGui::SliderInt(name.c_str(), &value, 0, maxvalue, value_str.c_str())) {
-                setting.value = value;
+            if (!name.empty()) {
+                int value = setting.value;
+                string value_str;
+                int maxvalue;
+                value_str = setting.values[value];
+                maxvalue = setting.values.size() - 1;
+                if (ImGui::SliderInt(name.c_str(), &value, 0, maxvalue, value_str.c_str())) {
+                    setting.value = value;
+                }
             }
         }
         if (ImGui::Button("Close")) {

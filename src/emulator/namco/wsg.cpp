@@ -9,15 +9,17 @@ namespace aos::namco
 	{
 		if (_waves)
 			delete[] _waves;
+		if (device > 0)
+			SDL_CloseAudioDevice(device);
 	}
 
-	void wsg::init(const aos::emulator::RomsConfiguration& roms)
+	void wsg::init(const aos::mmu::RomMappings& roms)
 	{
 		_waves = new uint8_t[0x100];
 
-		uint16_t offset = 0;
+		size_t offset = 0;
 		for (const auto& rom : roms | std::ranges::views::filter([](const auto i) { return i.region == "sound"; })) {
-			offset += rom.rom.read(_waves + offset);
+			offset += rom.rom.read(_waves + offset, rom.mapping.start, rom.mapping.size);
 		}
 
 		want.freq = 96000;
@@ -234,7 +236,7 @@ namespace aos::namco
 		case 0x1f:
 			_voices[2].volume = value & 0x0f;
 			break;
-		defaut:
+		default:
 			break;
 		}
 	}

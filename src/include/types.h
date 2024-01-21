@@ -5,6 +5,7 @@
 #include <functional>
 #include <fstream>
 #include <vector>
+#include <map>
 
 
 namespace aos {
@@ -13,8 +14,12 @@ namespace aos {
 	using std::uint16_t;
 	using std::uint32_t;
 	using std::size_t;
+	using std::vector;
+	using std::map;
 
 	using fnuint8_t = std::function<uint8_t(const uint8_t)>;
+	using readfn_t = std::function<uint8_t(const uint16_t)>;
+	using writefn_t = std::function<void(const uint16_t, const uint8_t)>;
 
 	struct geometry_t {
 		uint16_t width;

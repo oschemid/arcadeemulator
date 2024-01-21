@@ -106,12 +106,14 @@ bool aos::File::read(const uint16_t offset, const uint16_t size, const uint8_t* 
 }
 
 
-size_t aos::tools::Rom::read(uint8_t* destination) const
+size_t aos::tools::Rom::read(uint8_t* destination, const size_t start, const size_t expected_size) const
 {
+	const uint16_t effective_size = (expected_size) ? expected_size : size - start;
 	if (archive.empty())
 	{
 		File file(filename);
-		file.read(0, static_cast<uint16_t>(size), destination);
+		file.read(0, static_cast<uint16_t>(effective_size), destination);
+		return effective_size;
 	}
 	else
 	{
@@ -125,15 +127,29 @@ size_t aos::tools::Rom::read(uint8_t* destination) const
 		if (unzOpenCurrentFile(zipfile) != UNZ_OK)
 			throw std::runtime_error("Bad archive 2");
 		unzGetCurrentFileInfo64(zipfile, &info, nullptr, 0, nullptr, 0, nullptr, 0);
+		uint8_t* buffer = destination;
+		uint16_t loaded_size = effective_size + start;
+		if (loaded_size > info.uncompressed_size)
+			loaded_size = info.uncompressed_size;
+
+		if (start > 0) {
+			buffer = new uint8_t[loaded_size];
+		}
 		int error = UNZ_OK;
 		do
 		{
-			error = unzReadCurrentFile(zipfile, destination + offset, static_cast<uint32_t>(info.uncompressed_size));
+			error = unzReadCurrentFile(zipfile, buffer + offset, static_cast<uint32_t>(loaded_size));
 			offset += error;
-		} while (error > 0);
+		} while ((error > 0) && (offset < loaded_size));
 		unzClose(zipfile);
+
+		if (start > 0) {
+			for (size_t i = 0; i < effective_size; ++i)
+				destination[i] = buffer[start + i];
+			delete[] buffer;
+		}
 	}
-	return size;
+	return effective_size;
 }
 
 void ae::filemanager::readRoms(const string&, std::vector<std::pair<uint16_t, string>>, uint8_t*)

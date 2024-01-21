@@ -5,7 +5,7 @@
 using namespace aos::namco;
 
 
-RallyX::RallyX(const vector<aos::emulator::RomConfiguration>& roms, const aos::emulator::GameConfiguration& game) :
+RallyX::RallyX(const vector<aos::emulator::RomMapping>& roms, const aos::emulator::GameConfiguration& game) :
 	PacmanSystem(roms, game,
 		RallyXGpu::create())
 {
@@ -29,8 +29,7 @@ RallyX::~RallyX()
 
 void RallyX::mapping()
 {
-	_mmu.map(0, 0x3fff, "cpu").rom();
-
+	_mmu.map(0, 0x3fff).name("cpu").rom();
 	_mmu.map(0x8000, 0x8fff).readfn([this](const uint16_t a) { return _gpu->readVRAM(a); }).writefn([this](const uint16_t a, const uint8_t v) { _gpu->writeVRAM(a, v); });
 	_mmu.map(0x9800, 0x9fff).ram();
 	_mmu.map(0xa000, 0xa000).readfn([this](const uint16_t) { return (~_port0.get()) & 0xff; });

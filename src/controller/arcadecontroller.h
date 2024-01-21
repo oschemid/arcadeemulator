@@ -19,6 +19,7 @@ namespace ae::controller
 		bool coin() const { return _coin; }
 		bool coin2() const { return _coin2; }
 		bool coin3() const { return _coin3; }
+		bool cheat() const { return _cheat; }
 
 		using Ptr = std::unique_ptr<ArcadeController>;
 
@@ -33,5 +34,6 @@ namespace ae::controller
 		bool _coin{ false };
 		bool _coin2{ false };
 		bool _coin3{ false };
+		bool _cheat{ false };
 	};
 }

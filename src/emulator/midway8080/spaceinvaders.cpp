@@ -1,18 +1,52 @@
-#include "spaceinvaders.h"
+#include "midway8080.h"
+#include "types.h"
+#include "emulator.h"
 #include "tools.h"
 #include "registry.h"
+#include "mb14241.h"
+#include "../../controller/arcadecontroller.h"
+#include "io.h"
+
 
 using namespace aos::midway8080;
 
 
-SpaceInvaders::SpaceInvaders(const vector<aos::emulator::RomConfiguration>& roms, const aos::emulator::GameConfiguration& config,
+namespace aos::midway8080
+{
+	class SpaceInvaders : public Midway8080
+	{
+	public:
+		SpaceInvaders(const vector<aos::mmu::RomMapping>&,
+			const emulator::GameConfiguration&,
+			std::function<rgb_t(const uint8_t, const uint8_t)> = nullptr);
+		virtual ~SpaceInvaders();
+
+		void init(aos::display::RasterDisplay*) override;
+
+	protected:
+		xprocessors::MB14241::Ptr _shifter{ nullptr };
+		std::function<aos::rgb_t(const uint8_t, const uint8_t)> _colorfn;
+
+		uint8_t in(const uint8_t);
+		void out(const uint8_t, const uint8_t);
+		void updateDisplay();
+	};
+
+	class AlienInvaders : public SpaceInvaders
+	{
+	public:
+		AlienInvaders(const vector<aos::mmu::RomMapping>&, const aos::emulator::GameConfiguration&);
+		virtual ~AlienInvaders( );
+	};
+}
+
+
+SpaceInvaders::SpaceInvaders(const vector<aos::mmu::RomMapping>& roms, const aos::emulator::GameConfiguration& config,
 	std::function<aos::rgb_t(const uint8_t, const uint8_t)> colorfn) :
-	aos::midway8080::Midway8080{ },
-	_port1{ 0b10001000 },
-	_port2{ 0 },
-	_roms{ roms },
+	aos::midway8080::Midway8080{ roms },
 	_colorfn{ colorfn }
 {
+	_port1 = 0b10001000;
 	_port1.set(0, "_COIN");
 	_port1.set(1, "_START2");
 	_port1.set(2, "_START1");
@@ -39,17 +73,15 @@ void SpaceInvaders::init(aos::display::RasterDisplay* raster)
 	_shifter = xprocessors::MB14241::create();
 	_controller = ae::controller::ArcadeController::create();
 
-	_memory = new uint8_t[0x4000]{ 0 };
+	_mmu.bank("cpu", 0x2000).rom(); // 8k ROM
+	_mmu.bank("ram", 0x400).ram(); // 1k RAM
+	_mmu.bank("vram", 0x1c00).ram(); // 7k Video RAM
 
-	size_t offset = 0;
-	for (const auto& rom : _roms) {
-		if (rom.start>0)
-			offset = rom.start;
-		offset += rom.rom.read(_memory + offset);
-	}
+	_mmu.map(0x0000, 0x1fff, "cpu").mirror(0x3fff);
+	_mmu.map(0x2000, 0x23ff, "ram").mirror(0x3fff);
+	_mmu.map(0x2400, 0x3fff, "vram").mirror(0x3fff);
 
-	_cpu->read([this](const uint16_t p) { return _memory[p & 0x3fff]; });
-	_cpu->write([this](const uint16_t p, const uint8_t v) { if ((p & 0x3fff) > 0x1fff) _memory[p & 0x3fff] = v; });
+	_mmu.init(_roms);
 }
 
 uint8_t SpaceInvaders::in(const uint8_t port) {
@@ -73,30 +105,6 @@ SpaceInvaders::~SpaceInvaders()
 {
 }
 
-//void SpaceInvaders::init(ae::display::RasterDisplay* raster)
-//{
-//	_shifter = xprocessors::MB14241::create();
-//	_controller = ae::controller::ArcadeController::create();
-//
-//	//_version = settings.version();
-//	_port0 = 0;
-//	//_port0 = (_version == "sitv") ? 1 : 0;
-//	_port1.init(settings);
-//
-//	//if (_version == "sitv")
-//	//	_port2.set(2, "_TILT");
-//	_port2.init(settings);
-//}
-
-//std::vector<std::pair<uint16_t, std::string>> SpaceInvaders::romFiles() const
-//{
-//	if (_version == "sisv2")
-//		return { {0,"sv01.36"}, {0,"sv02.35"}, {0,"sv10.34"}, {0x1400,"sv04.31"}, {0,"sv09.42"}, {0,"sv06.41"} };
-//	if (_version == "sisv3")
-//		return { {0,"sv0h.36"}, {0,"sv02.35"}, {0,"sv10.34"}, {0x1400,"sv04.31"}, {0,"sv09.42"}, {0,"sv06.41"} };
-//	return std::vector<std::pair<uint16_t, std::string>>();
-//}
-
 void SpaceInvaders::out(const uint8_t port, const uint8_t value) {
 	switch (port)
 	{
@@ -109,41 +117,12 @@ void SpaceInvaders::out(const uint8_t port, const uint8_t value) {
 	}
 }
 
-uint8_t SpaceInvaders::tick()
-{
-	static uint64_t deltaDisplay{ 0 };
-	static uint64_t deltaController{ 0 };
-	static uint8_t draw{ 0 };
-	uint64_t previous = _cpu->elapsed_cycles();
-	_cpu->executeOne();
-	uint64_t deltaClock = _cpu->elapsed_cycles() - previous;
-
-	if (deltaDisplay > 16641) { // 120 Hz
-		if (draw) {
-			updateDisplay();
-			_raster->refresh();
-			_cpu->interrupt(2);
-		}
-		else
-			_cpu->interrupt(1);
-		draw = 1 - draw;
-		deltaDisplay -= 16641;
-	}
-	deltaDisplay += deltaClock;
-
-	if (deltaController > 66566) { // 30 Hz
-		_controller->tick(); _port0.tick(*_controller); _port1.tick(*_controller); _port2.tick(*_controller);
-		deltaController -= 66566;
-	}
-	deltaController += deltaClock;
-	return static_cast<uint8_t>(deltaClock);
-}
-
 void SpaceInvaders::updateDisplay()
 {
+	uint8_t* _memory = _mmu.getvram();
 	for (int x = 0; x < 224; x++) {
 		for (int y = 0; y < 256; y += 8) {
-			uint8_t VRAMByte = _memory[0x2400 + (x << 5) + (y >> 3)];
+			uint8_t VRAMByte = _memory[(x << 5) + (y >> 3)];
 
 			for (int bit = 0; bit < 8; bit++) {
 				uint8_t CoordX;
@@ -161,8 +140,10 @@ void SpaceInvaders::updateDisplay()
 	}
 }
 
-aos::rgb_t spaceinvader_gels(const uint8_t x, const uint8_t y)
+aos::rgb_t spaceinvader_gels(const uint8_t x, const uint8_t y, const bool b)
 {
+	if (!b)
+		return { 0,0,0 };
 	if ((y >= 32) && (y < 62))
 		return { 255, 32,32 };
 	if ((y >= 184) && (y < 240))
@@ -177,12 +158,16 @@ static aos::RegistryHandler<aos::emulator::GameDriver> spaceinvaders("spaceinvad
 	.version = "Midway",
 	.main_version = true,
 	.emulator = "midway8080",
-	.creator = [](const aos::emulator::GameConfiguration& config, const aos::emulator::RomsConfiguration& roms) { return std::make_unique<aos::midway8080::SpaceInvaders>(roms, config, spaceinvader_gels); },
+	.creator = [](const aos::emulator::GameConfiguration& config, const aos::mmu::RomMappings& roms) {
+		auto emul = std::make_unique<aos::midway8080::SpaceInvaders>(roms, config);
+		emul->colorfn(spaceinvader_gels);
+		return emul;
+	},
 	.roms = {
-			{ "cpu", 0, 0x800, 0x734f5ad8 },
-			{ "cpu", 0, 0x800, 0x6bfaca4a },
-			{ "cpu", 0, 0x800, 0x0ccead96 },
-			{ "cpu", 0, 0x800, 0x14e538b0 }
+			{ "cpu", 0x800, 0x734f5ad8 },
+			{ "cpu", 0x800, 0x6bfaca4a },
+			{ "cpu", 0x800, 0x0ccead96 },
+			{ "cpu", 0x800, 0x14e538b0 }
 			},
 	.configuration = {
 		.switches = {{ "coinage", 1, "Coinage", {"Free", "1C/1C", "1C/2C", "2C/1C"} },
@@ -197,12 +182,12 @@ static aos::RegistryHandler<aos::emulator::GameDriver> spaceinvaderstv("spaceinv
 	.name = "Space Invaders",
 	.version = "TV ver 2",
 	.emulator = "midway8080",
-	.creator = [](const aos::emulator::GameConfiguration& config, const aos::emulator::RomsConfiguration& roms) { return std::make_unique<aos::midway8080::SpaceInvaders>(roms, config, spaceinvader_gels); },
+	.creator = [](const aos::emulator::GameConfiguration& config, const aos::mmu::RomMappings& roms) { return std::make_unique<aos::midway8080::SpaceInvaders>(roms, config /*, spaceinvader_gels*/); },
 	.roms = {
-			{ "cpu", 0, 0x800, 0xfef18aad },
-			{ "cpu", 0, 0x800, 0x3c759a90 },
-			{ "cpu", 0, 0x800, 0x0ad3657f },
-			{ "cpu", 0, 0x800, 0xcd2c67f6 }
+			{ "cpu", 0x800, 0xfef18aad },
+			{ "cpu", 0x800, 0x3c759a90 },
+			{ "cpu", 0x800, 0x0ad3657f },
+			{ "cpu", 0x800, 0xcd2c67f6 }
 			},
 	.configuration = {
 		.switches = {{ "coinage", 1, "Coinage", {"Free", "1C/1C", "1C/2C", "2C/1C"} },
@@ -216,14 +201,14 @@ static aos::RegistryHandler<aos::emulator::GameDriver> spaceinvaderssv2("spacein
 	.name = "Space Invaders",
 	.version = "SV ver 2",
 	.emulator = "midway8080",
-	.creator = [](const aos::emulator::GameConfiguration& config, const aos::emulator::RomsConfiguration& roms) { return std::make_unique<aos::midway8080::SpaceInvaders>(roms, config); },
+	.creator = [](const aos::emulator::GameConfiguration& config, const aos::mmu::RomMappings& roms) { return std::make_unique<aos::midway8080::SpaceInvaders>(roms, config); },
 	.roms = {
-			{ "cpu", 0,0x400,0xd0c32d72 },
-			{ "cpu", 0,0x400,0x0e159534 },
-			{ "cpu", 0,0x400,0x483e651e },
-			{ "cpu", 0x1400,0x400,0x1293b826 },
-			{ "cpu", 0,0x400,0xcd80b13f },
-			{ "cpu", 0,0x400,0x2c68e0b4 }
+			{ "cpu", 0x400,0xd0c32d72 },
+			{ "cpu", 0x400,0x0e159534 },
+			{ "cpu", 0x400,0x483e651e },
+			{ "cpu", /*0x1400,*/0x400,0x1293b826 },
+			{ "cpu", 0x400,0xcd80b13f },
+			{ "cpu", 0x400,0x2c68e0b4 }
 			},
 	.configuration = {
 		.switches = {{ "coinage", 1, "Coinage", {"Free", "1C/1C", "1C/2C", "2C/1C"} },
@@ -235,7 +220,7 @@ static aos::RegistryHandler<aos::emulator::GameDriver> spaceinvaderssv2("spacein
 });
 
 
-AlienInvaders::AlienInvaders(const vector<aos::emulator::RomConfiguration>& roms, const aos::emulator::GameConfiguration& config) :
+AlienInvaders::AlienInvaders(const vector<aos::mmu::RomMapping>& roms, const aos::emulator::GameConfiguration& config) :
 	SpaceInvaders{ roms, config }
 {
 	_port0 = 1;
@@ -258,12 +243,12 @@ AlienInvaders::~AlienInvaders()
 static aos::RegistryHandler<aos::emulator::GameDriver> alieninvaders("alieninvaders", {
 	.name = "Alien Invaders",
 	.emulator = "midway8080",
-	.creator = [](const aos::emulator::GameConfiguration& config, const aos::emulator::RomsConfiguration& roms) { return std::make_unique<aos::midway8080::AlienInvaders>(roms, config); },
+	.creator = [](const aos::emulator::GameConfiguration& config, const aos::mmu::RomMappings& roms) { return std::make_unique<aos::midway8080::AlienInvaders>(roms, config); },
 	.roms = {
-			{ "cpu", 0, 0x800, 0x6ad601c3 },
-	        { "cpu", 0,0x800, 0xc6bb6fb3 },
-	        { "cpu", 0,0x800, 0x1d2ff324 },
-	        { "cpu", 0,0x800, 0x2f2e6791 }
+			{ "cpu", 0x800, 0x6ad601c3 },
+	        { "cpu", 0x800, 0xc6bb6fb3 },
+	        { "cpu", 0x800, 0x1d2ff324 },
+	        { "cpu", 0x800, 0x2f2e6791 }
 			},
 	.configuration = {
 		.switches = {{ "penceCoinage", 1, "Pence ?", {"False", "True"} },

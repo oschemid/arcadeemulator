@@ -23,7 +23,7 @@ RallyXGpu::~RallyXGpu()
 }
 
 
-void RallyXGpu::init(aos::display::RasterDisplay* raster, const vector<aos::emulator::RomConfiguration>& roms)
+void RallyXGpu::init(aos::display::RasterDisplay* raster, const vector<aos::mmu::RomMapping>& roms)
 {
 	TileGpu::init(raster, roms);
 
@@ -32,7 +32,7 @@ void RallyXGpu::init(aos::display::RasterDisplay* raster, const vector<aos::emul
 }
 
 
-void RallyXGpu::initPalettes(const vector<aos::emulator::RomConfiguration>& roms)
+void RallyXGpu::initPalettes(const vector<aos::mmu::RomMapping>& roms)
 {
 	uint8_t* paletterom = new uint8_t[0x120];
 	size_t offset = 0;
@@ -69,7 +69,7 @@ void RallyXGpu::initPalettes(const vector<aos::emulator::RomConfiguration>& roms
 	delete[] paletterom;
 }
 
-void RallyXGpu::initTilesSprites(const vector<aos::emulator::RomConfiguration>& roms)
+void RallyXGpu::initTilesSprites(const vector<aos::mmu::RomMapping>& roms)
 {
 
 	uint8_t* videorom = new uint8_t[0x2000];

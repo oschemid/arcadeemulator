@@ -20,7 +20,7 @@ TileGpu::~TileGpu()
 
 
 void TileGpu::init(aos::display::RasterDisplay* raster,
-	               const vector<aos::emulator::RomConfiguration>& roms)
+	               const vector<aos::mmu::RomMapping>& roms)
 {
 	_display = raster;
 	_tilemap = new aos::tilemap::TileMap(288, 224);

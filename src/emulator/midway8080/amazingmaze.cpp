@@ -1,14 +1,35 @@
-#include "amazingmaze.h"
 #include "registry.h"
 #include "tools.h"
+#include "types.h"
+#include "midway8080.h"
+#include "emulator.h"
+#include "../../controller/arcadecontroller.h"
+#include "io.h"
+
+
+namespace aos::midway8080
+{
+	class AmazingMaze : public Midway8080
+	{
+	public:
+		AmazingMaze(const vector<aos::mmu::RomMapping>&,
+			const emulator::GameConfiguration&);
+		virtual ~AmazingMaze();
+
+		void init(aos::display::RasterDisplay*) override;
+
+	protected:
+		uint8_t in(const uint8_t);
+		void out(const uint8_t, const uint8_t);
+	};
+}
 
 
 using namespace aos::midway8080;
 
 
-AmazingMaze::AmazingMaze(const vector<aos::emulator::RomConfiguration>& roms, const aos::emulator::GameConfiguration& config) :
-	aos::midway8080::Midway8080{ },
-	_roms{ roms }
+AmazingMaze::AmazingMaze(const vector<aos::mmu::RomMapping>& roms, const aos::emulator::GameConfiguration& config) :
+	aos::midway8080::Midway8080{ roms }
 {
 	_port0.set(0, "_JOY1_LEFT");
 	_port0.set(1, "_JOY1_RIGHT");
@@ -35,17 +56,14 @@ void AmazingMaze::init(aos::display::RasterDisplay* raster)
 
 	_controller = ae::controller::ArcadeController::create();
 
-	_memory = new uint8_t[0x4000]{ 0 };
+	_mmu.bank("cpu", 0x2000).rom(); // 8k ROM
+	_mmu.bank("ram", 0x400).ram(); // 1k RAM
+	_mmu.bank("vram", 0x1c00).ram(); // 7k Video RAM
 
-	size_t offset = 0;
-	for (const auto& rom : _roms) {
-		if (rom.start > 0)
-			offset = rom.start;
-		offset += rom.rom.read(_memory + offset);
-	}
-
-	_cpu->read([this](const uint16_t p) { return _memory[p & 0x3fff]; });
-	_cpu->write([this](const uint16_t p, const uint8_t v) { if ((p & 0x3fff) > 0x1fff) _memory[p & 0x3fff] = v; });
+	_mmu.map(0x0000, 0x1fff, "cpu").mirror(0x3fff);
+	_mmu.map(0x2000, 0x23ff, "ram").mirror(0x3fff);
+	_mmu.map(0x2400, 0x3fff, "vram").mirror(0x3fff);
+	_mmu.init(_roms);
 }
 
 AmazingMaze::~AmazingMaze()
@@ -68,65 +86,18 @@ uint8_t AmazingMaze::in(const uint8_t port) {
 	}
 }
 
-uint8_t AmazingMaze::tick()
-{
-	static uint64_t deltaDisplay{ 0 };
-	static uint64_t deltaController{ 0 };
-	static uint8_t draw{ 0 };
-	uint64_t previous = _cpu->elapsed_cycles();
-	_cpu->executeOne();
-	uint64_t deltaClock = _cpu->elapsed_cycles() - previous;
-
-	if (deltaDisplay > 16641) { // 120 Hz
-		if (draw) {
-			updateDisplay();
-			_raster->refresh();
-			_cpu->interrupt(2);
-		}
-		else
-			_cpu->interrupt(1);
-		draw = 1 - draw;
-		deltaDisplay -= 16641;
-	}
-	deltaDisplay += deltaClock;
-
-	if (deltaController > 66566) { // 30 Hz
-		_controller->tick(); _port0.tick(*_controller); _port1.tick(*_controller);
-		deltaController -= 66566;
-	}
-	deltaController += deltaClock;
-	return static_cast<uint8_t>(deltaClock);
-}
-
-void AmazingMaze::updateDisplay()
-{
-	for (int y = 0; y < 224; y++) {
-		for (int x = 0; x < 256; x += 8) {
-			uint8_t VRAMByte = _memory[0x2400 + (y << 5) + (x >> 3)];
-
-			for (int bit = 0; bit < 8; bit++) {
-				uint8_t CoordX;
-				uint8_t CoordY;
-				CoordX = x + bit;
-				CoordY = y;
-
-				aos::rgb_t color = { 0,0,0 };
-				if ((VRAMByte >> bit) & 1) {
-					color = aos::rgb_t{ 51, 255, 127 };
-				}
-				_raster->set(CoordX, CoordY, color);
-			}
-		}
-	}
-}
-
 static aos::RegistryHandler<aos::emulator::GameDriver> amazingmaze("amazingmaze", {
 	.name = "Amazing Maze",
 	.emulator = "midway8080",
-	.creator = [](const aos::emulator::GameConfiguration& config, const aos::emulator::RomsConfiguration& rom) { return std::make_unique<aos::midway8080::AmazingMaze>(rom, config); },
+	.creator = [](const aos::emulator::GameConfiguration& config, const aos::mmu::RomMappings& rom) { 
+		auto emul = std::make_unique<aos::midway8080::AmazingMaze>(rom, config);
+		emul->rotateDisplay();
+		emul->colorfn([](const uint8_t, const uint8_t, const bool b) { return (b) ? aos::rgb_t{ 51, 255, 127 } : aos::rgb_t{ 0,0,0 }; });
+		return emul;
+	},
 	.roms = {
-			{ "cpu", 0,0x800,0xf2860cff },
-			{ "cpu", 0,0x800,0x65fad839 }
+			{ "cpu", 0x800,0xf2860cff },
+			{ "cpu", 0x800,0x65fad839 }
 			},
 	.configuration = {
 		.switches = {{ "coinage", 0, "Coin", {"One coin One credit", "Two coins One credit", "One coin Two credits", "Two coins Two redits"} },

@@ -73,4 +73,9 @@ void ArcadeController::tick()
 		_coin3 = true;
 	else
 		_coin3 = false;
+	if (Keyboard[SDL_SCANCODE_F1])
+		_cheat = true;
+	else
+		_cheat = false;
+
 }

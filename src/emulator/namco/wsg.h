@@ -23,7 +23,7 @@ namespace aos::namco
 	public:
 		wsg() :_voices{ {},{},{} } {}
 		~wsg();
-		void init(const emulator::RomsConfiguration&);
+		void init(const mmu::RomMappings&);
 		uint8_t read(const uint8_t) const;
 		void write(const uint8_t, const uint8_t);
 

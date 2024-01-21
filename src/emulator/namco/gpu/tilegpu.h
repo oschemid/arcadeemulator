@@ -11,7 +11,7 @@ namespace aos::namco
 	public:
 		virtual ~TileGpu();
 		virtual void init(aos::display::RasterDisplay*,
-			              const std::vector<aos::emulator::RomConfiguration>&);
+			              const std::vector<aos::mmu::RomMapping>&);
 		virtual void draw();
 
 		uint8_t readVRAM(const uint16_t p) { return _vram[p]; }
