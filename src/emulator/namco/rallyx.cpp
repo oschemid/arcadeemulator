@@ -5,7 +5,7 @@
 using namespace aos::namco;
 
 
-RallyX::RallyX(const vector<aos::emulator::RomConfiguration>& roms, const aos::emulator::GameConfiguration& game) :
+RallyX::RallyX(const vector<aos::emulator::RomMapping>& roms, const aos::emulator::GameConfiguration& game) :
 	PacmanSystem(roms, game,
 		RallyXGpu::create())
 {

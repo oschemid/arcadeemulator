@@ -7,6 +7,7 @@
 
 namespace aos::namco
 {
+	using decodingfn = std::function<void(const string, uint8_t*, const size_t)>;
 
 	class PacmanGpu : public TileGpu
 	{
@@ -15,14 +16,19 @@ namespace aos::namco
 			geometry_t::rotation_t orientation;
 			enum class RasterModel { PACMAN, RALLYX } rasterModel;
 			enum class TileModel { PACMAN, PONPOKO } tileModel;
-			enum class RomModel { PACMAN, WOODPECKER } romModel;
+			std::function<void(uint8_t*, const size_t)> romDecoding;
 			uint16_t spriteAddress;
 		};
 
 		~PacmanGpu();
 
+		PacmanGpu& romDecodingFn(decodingfn decoder) {
+			_romDecoder = decoder;
+			return *this;
+		}
+
 		void init(aos::display::RasterDisplay*,
-			      const vector<aos::emulator::RomConfiguration>&);
+			      const vector<aos::mmu::RomMapping>&);
 
 		using Ptr = std::unique_ptr<PacmanGpu>;
 
@@ -39,17 +45,19 @@ namespace aos::namco
 		void writeSpritePos(const uint16_t p, const uint8_t v) { _spritesxy[p] = v; }
 		void flip(const bool flip) { _flip = flip; }
 
+		void rotate() { _configuration.orientation = aos::geometry_t::rotation_t::NONE; }
 	protected:
 		PacmanGpu(const PacmanGpu::Configuration&);
 
 		Configuration _configuration;
+		decodingfn _romDecoder;
 
 		bool _flip{ false };
 
 		uint8_t* _spritesxy{ nullptr };
 
-		void initPalettes(const vector<aos::emulator::RomConfiguration>&);
-		void initTilesSprites(const vector<aos::emulator::RomConfiguration>&);
+		void initPalettes(const vector<aos::mmu::RomMapping>&);
+		void initTilesSprites(const vector<aos::mmu::RomMapping>&);
 
 		void drawBackground();
 		void drawSprites();

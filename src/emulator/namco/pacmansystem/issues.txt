@@ -1,0 +1,6 @@
+dsw : new implementation needed
+port3 = public temporary
+rotate : find best solution
+
+shotbull : doesn't work
+8way - 4way : not implemented

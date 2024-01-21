@@ -16,7 +16,7 @@ namespace aos::tools
 		string filename;
 		string archive;
 
-		size_t read(uint8_t*) const;
+		size_t read(uint8_t*, const size_t = 0, const size_t = 0) const;
 	};
 
 	class RomManager

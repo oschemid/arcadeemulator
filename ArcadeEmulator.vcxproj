@@ -159,28 +159,21 @@
     <ClCompile Include="libraries\xos-processors\src\cpu\z80family\z80opcodes_ed.cpp" />
     <ClCompile Include="src\controller\arcadecontroller.cpp" />
     <ClCompile Include="src\display\display.cpp" />
+    <ClCompile Include="src\emulator\amstrad\cpccpp.cpp" />
     <ClCompile Include="src\emulator\emulator.cpp" />
-    <ClCompile Include="src\emulator\gameboy\apu.cpp" />
-    <ClCompile Include="src\emulator\gameboy\channel.cpp" />
-    <ClCompile Include="src\emulator\gameboy\gameboy.cpp" />
-    <ClCompile Include="src\emulator\gameboy\mbc.cpp" />
-    <ClCompile Include="src\emulator\gameboy\gameboymmu.cpp" />
-    <ClCompile Include="src\emulator\gameboy\ppu\modes.cpp" />
-    <ClCompile Include="src\emulator\gameboy\ppu\ppu.cpp" />
-    <ClCompile Include="src\emulator\gameboy\serial.cpp" />
     <ClCompile Include="src\emulator\midway8080\amazingmaze.cpp" />
+    <ClCompile Include="src\emulator\midway8080\midway8080.cpp" />
     <ClCompile Include="src\emulator\midway8080\spacechaser.cpp" />
     <ClCompile Include="src\emulator\midway8080\spaceinvaders.cpp" />
-    <ClCompile Include="src\emulator\namco\alibaba.cpp" />
     <ClCompile Include="src\emulator\namco\gpu\pacmangpu.cpp" />
-    <ClCompile Include="src\emulator\namco\gpu\rallyxgpu.cpp" />
     <ClCompile Include="src\emulator\namco\gpu\tilegpu.cpp" />
-    <ClCompile Include="src\emulator\namco\mmu.cpp" />
+    <ClCompile Include="src\emulator\namco\pacmanmmu.cpp" />
     <ClCompile Include="src\emulator\namco\namco.cpp" />
-    <ClCompile Include="src\emulator\namco\pacman.cpp" />
-    <ClCompile Include="src\emulator\namco\ponpoko.cpp" />
-    <ClCompile Include="src\emulator\namco\rallyx.cpp" />
-    <ClCompile Include="src\emulator\namco\woodpecker.cpp" />
+    <ClCompile Include="src\emulator\namco\pacmansystem\alibaba.cpp" />
+    <ClCompile Include="src\emulator\namco\pacmansystem\mspacman.cpp" />
+    <ClCompile Include="src\emulator\namco\pacmansystem\pacman.cpp" />
+    <ClCompile Include="src\emulator\namco\pacmansystem\rom_decoding.cpp" />
+    <ClCompile Include="src\emulator\namco\pacmansystem\woodpecker.cpp" />
     <ClCompile Include="src\emulator\namco\wsg.cpp" />
     <ClCompile Include="src\gui\debugger.cpp" />
     <ClCompile Include="src\gui\vulkan\engine.cpp" />
@@ -190,14 +183,16 @@
     <ClCompile Include="src\gui\vulkan\vma.cpp" />
     <ClCompile Include="src\gui\widgets.cpp" />
     <ClCompile Include="src\gui\window.cpp" />
-    <ClCompile Include="src\emulator\midway8080\midway8080.cpp" />
     <ClCompile Include="src\io\port.cpp" />
     <ClCompile Include="src\library\console.cpp" />
     <ClCompile Include="src\library\game.cpp" />
+    <ClCompile Include="src\memory\memorybank.cpp" />
+    <ClCompile Include="src\memory\mmu.cpp" />
     <ClCompile Include="src\sound\sound.cpp" />
     <ClCompile Include="src\tools\file.cpp" />
     <ClCompile Include="src\display\tilemap.cpp" />
     <ClCompile Include="src\tools\hash.cpp" />
+    <ClCompile Include="src\tools\rom.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="libraries\xos-processors\include\mb14241.h" />
@@ -219,31 +214,23 @@
     <ClInclude Include="libraries\xos-processors\src\z80family\states.h" />
     <ClInclude Include="libraries\xos-processors\src\z80family\z80.h" />
     <ClInclude Include="src\controller\arcadecontroller.h" />
-    <ClInclude Include="src\emulator\gameboy\apu.h" />
-    <ClInclude Include="src\emulator\gameboy\channel.h" />
-    <ClInclude Include="src\emulator\gameboy\gameboy.h" />
-    <ClInclude Include="src\emulator\gameboy\mbc.h" />
-    <ClInclude Include="src\emulator\gameboy\memorymap.h" />
-    <ClInclude Include="src\emulator\gameboy\mmu.h" />
-    <ClInclude Include="src\emulator\gameboy\ppu\ppu.h" />
-    <ClInclude Include="src\emulator\gameboy\serial.h" />
-    <ClInclude Include="src\emulator\midway8080\amazingmaze.h" />
-    <ClInclude Include="src\emulator\midway8080\spacechaser.h" />
-    <ClInclude Include="src\emulator\midway8080\spaceinvaders.h" />
+    <ClInclude Include="src\emulator\midway8080\midway8080.h" />
     <ClInclude Include="src\emulator\namco\gpu\pacmangpu.h" />
-    <ClInclude Include="src\emulator\namco\gpu\rallyxgpu.h" />
     <ClInclude Include="src\emulator\namco\mmu.h" />
     <ClInclude Include="src\emulator\namco\gpu\tilegpu.h" />
     <ClInclude Include="src\emulator\namco\pacmansystem.h" />
-    <ClInclude Include="src\emulator\namco\rallyx.h" />
+    <ClInclude Include="src\emulator\namco\pacmansystem\configuration.h" />
+    <ClInclude Include="src\emulator\namco\pacmansystem\rom_cpu.h" />
+    <ClInclude Include="src\emulator\namco\pacmansystem\rom_library.h" />
+    <ClInclude Include="src\emulator\namco\pacmansystem\rom_video.h" />
     <ClInclude Include="src\emulator\namco\wsg.h" />
     <ClInclude Include="src\gui\debugger.h" />
     <ClInclude Include="src\gui\vulkan\engine.h" />
     <ClInclude Include="src\gui\gui.h" />
     <ClInclude Include="src\gui\widgets.h" />
-    <ClInclude Include="src\emulator\midway8080\midway8080.h" />
     <ClInclude Include="src\include\display.h" />
     <ClInclude Include="src\include\emulator.h" />
+    <ClInclude Include="src\include\memory.h" />
     <ClInclude Include="src\include\tools.h" />
     <ClInclude Include="src\include\library.h" />
     <ClInclude Include="src\include\io.h" />
@@ -254,6 +241,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
+    <None Include=".gitmodules" />
     <None Include="data\gameboy.json" />
     <None Include="docs\cpu\8080-Programmers-Manual.pdf" />
     <None Include="docs\cpu\z80-documented.pdf" />
@@ -269,6 +257,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </Xsd>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="src\emulator\namco\pacmansystem\issues.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

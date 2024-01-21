@@ -36,9 +36,6 @@
     <ClCompile Include="src\gui\widgets.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\emulator\midway8080\midway8080.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
     <ClCompile Include="src\emulator\emulator.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
@@ -49,9 +46,6 @@
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="src\gui\vulkan\stbi.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\emulator\midway8080\spaceinvaders.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="libraries\xos-processors\src\cpu\z80family\i8080.cpp">
@@ -78,30 +72,6 @@
     <ClCompile Include="src\controller\arcadecontroller.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\emulator\gameboy\apu.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\emulator\gameboy\channel.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\emulator\gameboy\gameboy.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\emulator\gameboy\mbc.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\emulator\gameboy\gameboymmu.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\emulator\gameboy\serial.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\emulator\gameboy\ppu\modes.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\emulator\gameboy\ppu\ppu.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
     <ClCompile Include="src\display\display.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
@@ -114,19 +84,13 @@
     <ClCompile Include="src\gui\debugger.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\emulator\namco\pacman.cpp">
+    <ClCompile Include="src\emulator\namco\pacmansystem\pacman.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="src\library\console.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="src\emulator\namco\namco.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\emulator\midway8080\amazingmaze.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\emulator\midway8080\spacechaser.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="src\library\game.cpp">
@@ -138,7 +102,7 @@
     <ClCompile Include="src\emulator\namco\wsg.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\emulator\namco\mmu.cpp">
+    <ClCompile Include="src\emulator\namco\pacmanmmu.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="src\emulator\namco\gpu\pacmangpu.cpp">
@@ -147,19 +111,40 @@
     <ClCompile Include="src\emulator\namco\gpu\tilegpu.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\emulator\namco\gpu\rallyxgpu.cpp">
+    <ClCompile Include="src\emulator\namco\pacmansystem\alibaba.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\emulator\namco\alibaba.cpp">
+    <ClCompile Include="src\tools\rom.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\emulator\namco\ponpoko.cpp">
+    <ClCompile Include="src\emulator\namco\pacmansystem\mspacman.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\emulator\namco\rallyx.cpp">
+    <ClCompile Include="src\emulator\namco\pacmansystem\woodpecker.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\emulator\namco\woodpecker.cpp">
+    <ClCompile Include="src\emulator\namco\pacmansystem\rom_decoding.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\memory\memorybank.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\emulator\midway8080\midway8080.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\memory\mmu.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\emulator\midway8080\spaceinvaders.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\emulator\midway8080\spacechaser.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\emulator\midway8080\amazingmaze.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\emulator\amstrad\cpccpp.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>
@@ -206,13 +191,7 @@
     <ClInclude Include="src\gui\widgets.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="src\emulator\midway8080\midway8080.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
     <ClInclude Include="src\include\emulator.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="src\emulator\midway8080\spaceinvaders.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="src\include\registry.h">
@@ -251,34 +230,7 @@
     <ClInclude Include="src\include\tools.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="src\emulator\gameboy\apu.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="src\emulator\gameboy\channel.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="src\emulator\gameboy\gameboy.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="src\emulator\gameboy\mbc.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="src\emulator\gameboy\memorymap.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="src\emulator\gameboy\mmu.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="src\emulator\gameboy\serial.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="src\emulator\gameboy\ppu\ppu.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
     <ClInclude Include="src\include\display.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="src\emulator\namco\rallyx.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="src\include\tilemap.h">
@@ -293,12 +245,6 @@
     <ClInclude Include="src\include\library.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="src\emulator\midway8080\amazingmaze.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="src\emulator\midway8080\spacechaser.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
     <ClInclude Include="src\emulator\namco\wsg.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
@@ -311,10 +257,25 @@
     <ClInclude Include="src\emulator\namco\gpu\pacmangpu.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="src\emulator\namco\gpu\rallyxgpu.h">
+    <ClInclude Include="src\emulator\namco\gpu\tilegpu.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="src\emulator\namco\gpu\tilegpu.h">
+    <ClInclude Include="src\emulator\namco\pacmansystem\rom_library.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\emulator\namco\pacmansystem\rom_video.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\emulator\namco\pacmansystem\rom_cpu.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\emulator\namco\pacmansystem\configuration.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\include\memory.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\emulator\midway8080\midway8080.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
   </ItemGroup>
@@ -327,10 +288,14 @@
     <None Include="docs\cpu\z80-documented.pdf" />
     <None Include="docs\machine\Pacman.pdf" />
     <None Include="data\gameboy.json" />
+    <None Include=".gitmodules" />
   </ItemGroup>
   <ItemGroup>
     <Xsd Include="docs\machine\spaceinvaders.md">
       <Filter>Fichiers d%27en-tête</Filter>
     </Xsd>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="src\emulator\namco\pacmansystem\issues.txt" />
   </ItemGroup>
 </Project>
