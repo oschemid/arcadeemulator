@@ -4,6 +4,7 @@
 #include "../controller/arcadecontroller.h"
 #include <vector>
 #include <bitset>
+#include <cassert>
 
 
 namespace aos::io

@@ -21,7 +21,7 @@ namespace aos::midway8080
 			std::function<rgb_t(const uint8_t, const uint8_t)> = nullptr);
 		virtual ~SpaceInvaders();
 
-		void init(aos::display::RasterDisplay*) override;
+		void init(aos::display::RasterDisplay*, aos::controller::Controller*) override;
 
 	protected:
 		xprocessors::MB14241::Ptr _shifter{ nullptr };
@@ -66,9 +66,9 @@ SpaceInvaders::SpaceInvaders(const vector<aos::mmu::RomMapping>& roms, const aos
 	_port0 = 1;
 }
 
-void SpaceInvaders::init(aos::display::RasterDisplay* raster)
+void SpaceInvaders::init(aos::display::RasterDisplay* raster, aos::controller::Controller*)
 {
-	Midway8080::init(raster);
+	Midway8080::init(raster, nullptr);
 
 	_shifter = xprocessors::MB14241::create();
 	_controller = ae::controller::ArcadeController::create();

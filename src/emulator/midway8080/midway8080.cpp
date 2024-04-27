@@ -18,7 +18,8 @@ namespace aos::midway8080
 	{
 	}
 
-	void Midway8080::init(aos::display::RasterDisplay* raster)
+	void Midway8080::init(aos::display::RasterDisplay* raster,
+		                  aos::controller::Controller*)
 	{
 		_cpu = xprocessors::Cpu::create("i8080");
 		_raster = raster;

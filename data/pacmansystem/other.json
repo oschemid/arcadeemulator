@@ -1,0 +1,719 @@
+{
+  "api": "arcados.driver/v1",
+  "metadata": {
+    "description": "Namco Pacman System games"
+  },
+  "piranha": {
+    "name": "Piranha",
+    "year": 1981,
+    "overview": "Piranha was produced by GL in 1981. It was also published by U.S. Billiards. You control a red piranha with your 4-way joystick, eating all the dots on the screen while avoiding four squids that are after you. The four corners each have an energizer pellet that, once eaten, allows you to attack and eat the squid who were chasing you. Clearing all edible objects from the screen advances you to the next screen.",
+    "platform": "namcopacman",
+    "version": "piranha",
+    "default": {
+      "core": "pacman",
+      "settings": {
+        "fixed": {
+          "value": 129,
+          "parameter": "dsw1"
+        },
+        "lives": {
+          "value": 8,
+          "name": "Lives",
+          "parameter": "dsw1",
+          "input": {
+            "1": 0,
+            "2": 4,
+            "3": 8,
+            "5": 12
+          }
+        },
+        "bonus": {
+          "value": 0,
+          "name": "Bonus",
+          "parameter": "dsw1",
+          "input": {
+            "10000 points": 0,
+            "15000 points": 16,
+            "20000 points": 32,
+            "no": 48
+          }
+        },
+        "difficulty": {
+          "value": 64,
+          "name": "Difficulty",
+          "parameter": "dsw1",
+          "input": {
+            "Hard": 0,
+            "Normal": 64
+          }
+        }
+      }
+    },
+    "drivers": {
+      "piranhah": {
+        "name": "Piranha (hack)",
+        "roms": {
+          "cpu": [
+            { "file": [ "0x1000", "0xbc5ad024" ] },
+            { "file": [ "0x1000", "0x1a6fb2d4" ] },
+            { "file": [ "0x1000", "0x473c379d" ] },
+            { "file": [ "0x1000", "0x63fbf895" ] }
+          ],
+          "video": [
+            { "file": [ "0x800", "0x3fc4030c" ] },
+            { "file": [ "0x800", "0x30b9a010" ] },
+            { "file": [ "0x800", "0xf3e9c9d5" ] },
+            { "file": [ "0x800", "0x133d720d" ] }
+          ],
+          "palette": [
+            { "file": [ "0x20", "0x2fc650bd" ] },
+            { "file": [ "0x100", "0x3eb3a8e4" ] }
+          ],
+          "sound": [
+            { "file": [ "0x100", "0xa9cc86bf" ] }
+          ]
+        }
+      },
+      "piranha": {
+        "name": "Piranha",
+        "settings": {
+          "decoders": {
+            "cpu": "eyes",
+            "video": "woodpecker",
+            "interrupt": "piranha"
+          }
+        },
+        "roms": {
+          "cpu": [
+            { "file": [ "0x800", "0x69a3e6ea" ] },
+            { "file": [ "0x800", "0x245e753f" ] },
+            { "file": [ "0x800", "0x62cb6954" ] },
+            { "file": [ "0x800", "0xcb0700bc" ] },
+            { "file": [ "0x800", "0x843fbfe5" ] },
+            { "file": [ "0x800", "0x73084d5e" ] },
+            { "file": [ "0x800", "0x4cdf6704" ] },
+            { "file": [ "0x800", "0xb86fedb3" ] }
+          ],
+          "video": [
+            { "file": [ "0x800", "0x0f19eb28" ] },
+            { "file": [ "0x800", "0x5f8bdabe" ] },
+            { "file": [ "0x800", "0xd19399fb" ] },
+            { "file": [ "0x800", "0xcfb4403d" ] }
+          ],
+          "palette": [
+            { "file": [ "0x20", "0x2fc650bd" ] },
+            { "file": [ "0x100", "0x08c9447b" ] }
+          ],
+          "sound": [
+            { "file": [ "0x100", "0xa9cc86bf" ] }
+          ]
+        }
+      },
+      "piranhao": {
+        "name": "Piranha (older)",
+        "settings": {
+          "decoders": {
+            "cpu": "eyes",
+            "video": "woodpecker",
+            "interrupt": "piranha"
+          }
+        },
+        "roms": {
+          "cpu": [
+            { "file": [ "0x800", "0xc6ce1bfc" ] },
+            { "file": [ "0x800", "0xa2655a33" ] },
+            { "file": [ "0x800", "0x62cb6954" ] },
+            { "file": [ "0x800", "0xcb0700bc" ] },
+            { "file": [ "0x800", "0x843fbfe5" ] },
+            { "file": [ "0x800", "0x73084d5e" ] },
+            { "file": [ "0x800", "0x9363a4d1" ] },
+            { "file": [ "0x800", "0x2769979c" ] }
+          ],
+          "video": [
+            { "file": [ "0x800", "0x94eb7563" ] },
+            { "file": [ "0x800", "0xa3606973" ] },
+            { "file": [ "0x800", "0x84165a2c" ] },
+            { "file": [ "0x800", "0x2699ba9e" ] }
+          ],
+          "palette": [
+            { "file": [ "0x20", "0x2fc650bd" ] },
+            { "file": [ "0x100", "0x08c9447b" ] }
+          ],
+          "sound": [
+            { "file": [ "0x100", "0xa9cc86bf" ] }
+          ]
+        }
+      }
+    }
+  },
+  "abscam": {
+    "name": "Abscam",
+    "year": 1982,
+    "overview": "Abscam is an action game, developed by GPL and published by US Billiards, which was released in 1982. You control a member of the United States Congress during operation Abscam while avoiding FBI cars and collecting as much money as you can. The gameplay is identical to Pac-Man, just with new graphics and sound changes.",
+    "platform": "namcopacman",
+    "default": {
+      "core": "pacman",
+      "settings": {
+        "decoders": {
+          "cpu": "eyes",
+          "video": "woodpecker",
+          "interrupt": "piranha"
+        },
+        "fixed": {
+          "value": 129,
+          "parameter": "dsw1"
+        },
+        "lives": {
+          "value": 8,
+          "name": "Lives",
+          "parameter": "dsw1",
+          "input": {
+            "1": 0,
+            "2": 4,
+            "3": 8,
+            "5": 12
+          }
+        },
+        "bonus": {
+          "value": 0,
+          "name": "Bonus",
+          "parameter": "dsw1",
+          "input": {
+            "10000 points": 0,
+            "15000 points": 16,
+            "20000 points": 32,
+            "no": 48
+          }
+        },
+        "difficulty": {
+          "value": 64,
+          "name": "Difficulty",
+          "parameter": "dsw1",
+          "input": {
+            "Hard": 0,
+            "Normal": 64
+          }
+        }
+      },
+      "roms": {
+        "cpu": [
+          { "file": [ "0x800", "0x0b102302" ] },
+          { "file": [ "0x800", "0x3116a8ec" ] },
+          { "file": [ "0x800", "0xbc0281e0" ] },
+          { "file": [ "0x800", "0x428ee2e8" ] },
+          { "file": [ "0x800", "0xe05d46ad" ] },
+          { "file": [ "0x800", "0x3ae9a8cb" ] },
+          { "file": [ "0x800", "0xb39eb940" ] },
+          { "file": [ "0x800", "0x16cf1c67" ] }
+        ],
+        "video": [
+          { "file": [ "0x800", "0x61daabe5" ] },
+          { "file": [ "0x800", "0x81d50c98" ] },
+          { "file": [ "0x800", "0xa3bd1613" ] },
+          { "file": [ "0x800", "0x9d802b68" ] }
+        ],
+        "palette": [
+          { "file": [ "0x20", "0x2fc650bd" ] },
+          { "file": [ "0x100", "0x1605b324" ] }
+        ],
+        "sound": [
+          { "file": [ "0x100", "0xa9cc86bf" ] }
+        ]
+      }
+    }
+  },
+  "titanpac": {
+    "name": "Titan",
+    "year": 1981,
+    "platform": "namcopacman",
+    "default": {
+      "core": "pacman",
+      "settings": {
+        "decoders": {
+          "cpu": "eyes",
+          "video": "woodpecker",
+          "interrupt": "piranha"
+        },
+        "fixed": {
+          "value": 129,
+          "parameter": "dsw1"
+        },
+        "lives": {
+          "value": 8,
+          "name": "Lives",
+          "parameter": "dsw1",
+          "input": {
+            "1": 0,
+            "2": 4,
+            "3": 8,
+            "5": 12
+          }
+        },
+        "bonus": {
+          "value": 0,
+          "name": "Bonus",
+          "parameter": "dsw1",
+          "input": {
+            "10000 points": 0,
+            "15000 points": 16,
+            "20000 points": 32,
+            "no": 48
+          }
+        },
+        "difficulty": {
+          "value": 64,
+          "name": "Difficulty",
+          "parameter": "dsw1",
+          "input": {
+            "Hard": 0,
+            "Normal": 64
+          }
+        }
+      },
+      "roms": {
+        "cpu": [
+          { "file": [ "0x800", "0x5538c288" ] },
+          { "file": [ "0x800", "0x095f5a5f" ] },
+          { "file": [ "0x800", "0x8117a6a2" ] },
+          { "file": [ "0x800", "0xcb0700bc" ] },
+          { "file": [ "0x800", "0x060e514e" ] },
+          { "file": [ "0x800", "0x9209882a" ] },
+          { "file": [ "0x800", "0x2c8c7299" ] },
+          { "file": [ "0x800", "0xff943d70" ] }
+        ],
+        "video": [
+          { "file": [ "0x800", "0x412e723e" ] },
+          { "file": [ "0x800", "0x87d28931" ] },
+          { "file": [ "0x800", "0x3be1601b" ] },
+          { "file": [ "0x800", "0xf773cb8b" ] }
+        ],
+        "palette": [
+          { "file": [ "0x20", "0x2fc650bd" ] },
+          { "file": [ "0x100", "0xb67a0c10" ] }
+        ],
+        "sound": [
+          { "file": [ "0x100", "0xa9cc86bf" ] }
+        ]
+      }
+    }
+  },
+  "mrtnt": {
+    "name": "Mr TNT",
+    "year": 1983,
+    "overview": "Mr. TNT is an arcade game by Techstar in 1983. Mr. TNT is an arcade game where the player controls the titular blobby character. The game is played on a grid and the player's objective is to collect sixteen stockpiles of dynamite. Lit fuses are also moving across the grid and the player has to avoid touching these or he will explode. The grid is removed as the player or the fuses move across it which means the player can't turn around and move in the opposite direction. It also means that he has to plan his movements to avoid reaching a dead end. The same is true for the fuses who will burn out when reaching a dead end. A level is cleared when the player has collected all the dynamite or when all fuses have been burned out. The player then moves on to another level with a different grid layout. Points are earned by picking up dynamite and for crossing grid junctions.",
+    "platform": "namcopacman",
+    "default": {
+      "core": "pacman",
+      "settings": {
+        "decoders": {
+          "cpu": "eyes",
+          "video": "woodpecker"
+        },
+        "controller": {
+          "fire": true
+        },
+        "fixed": {
+          "value": 195,
+          "parameter": "dsw1"
+        },
+        "lives": {
+          "value": 8,
+          "parameter": "dsw1",
+          "name": "Lives",
+          "input": {
+            "5": 0,
+            "4": 4,
+            "3": 8,
+            "2": 12
+          }
+        },
+        "bonus": {
+          "value": 0,
+          "name": "Bonus",
+          "parameter": "dsw1",
+          "input": {
+            "150000 points": 0,
+            "125000 points": 16,
+            "100000 points": 32,
+            "75000 points": 48
+          }
+        }
+      },
+      "roms": {
+        "cpu": [
+          { "file": [ "0x1000", "0x0e836586" ] },
+          { "file": [ "0x1000", "0x779c4c5b" ] },
+          { "file": [ "0x1000", "0xad6fc688" ] },
+          { "file": [ "0x1000", "0xd77557b3" ] }
+        ],
+        "video": [
+          { "file": [ "0x1000", "0x3038cc0e" ] },
+          { "file": [ "0x1000", "0x97634d8b" ] }
+        ],
+        "palette": [
+          { "file": [ "0x20", "0x2fc650bd" ] },
+          { "file": [ "0x100", "0x3eb3a8e4" ] }
+        ],
+        "sound": [
+          { "file": [ "0x100", "0xa9cc86bf" ] }
+        ]
+      }
+    }
+  },
+  "gorkans": {
+    "name": "Gorkans",
+    "year": 1983,
+    "overview": "Move along lines, erasing them as you go, to collect flashing or spinning items. If you collide with one of the yellow dots that are moving around erasing lines or if you end up at a dead end with nowhere to go, you lose a life. You cannot go back, only forward.",
+    "platform": "namcopacman",
+    "default": {
+      "core": "pacman",
+      "settings": {
+        "controller": {
+          "fire": true
+        },
+        "fixed": {
+          "value": 195,
+          "parameter": "dsw1"
+        },
+        "lives": {
+          "value": 8,
+          "parameter": "dsw1",
+          "name": "Lives",
+          "input": {
+            "5": 0,
+            "4": 4,
+            "3": 8,
+            "2": 12
+          }
+        },
+        "bonus": {
+          "value": 0,
+          "name": "Bonus",
+          "parameter": "dsw1",
+          "input": {
+            "150000 points": 0,
+            "125000 points": 16,
+            "100000 points": 32,
+            "75000 points": 48
+          }
+        }
+      },
+      "roms": {
+        "cpu": [
+          { "file": [ "0x800", "0x55100b18" ] },
+          { "file": [ "0x800", "0xb5c604bf" ] },
+          { "file": [ "0x800", "0xb8c6def4" ] },
+          { "file": [ "0x800", "0x4602c840" ] },
+          { "file": [ "0x800", "0x21412a62" ] },
+          { "file": [ "0x800", "0xa013310b" ] },
+          { "file": [ "0x800", "0x122969b2" ] },
+          { "file": [ "0x800", "0xf2524b11" ] }
+        ],
+        "video": [
+          { "file": [ "0x800", "0x39cd0dbc" ] },
+          { "file": [ "0x800", "0x33d52535" ] },
+          { "file": [ "0x800", "0x4b6b7970" ] },
+          { "file": [ "0x800", "0xed70bb3c" ] }
+        ],
+        "palette": [
+          { "file": [ "0x20", "0x2fc650bd" ] },
+          { "file": [ "0x100", "0x3eb3a8e4" ] }
+        ],
+        "sound": [
+          { "file": [ "0x100", "0xa9cc86bf" ] }
+        ]
+      }
+    }
+  },
+  "eggor": {
+    "name": "Eggor",
+    "platform": "namcopacman",
+    "year": 1983,
+    "overview": "Eggor is a multi-directional shooter arcade game, released by Telko in 1983. It runs on Namco's Pac-Man hardware (a Zilog Z80, running at 3.072 MHz, with a Namco WSG running at 96 KHz for sound), and appears to be based on Digitrex Techstar's Eyes (which was released in that previous year). The player must use a 4-way joystick to take up control of a baby vulture (who is the eponymous Eggor) through eight different mazes and use a singular button to shoot all the eggs while getting pursued by five adult vultures - and if Eggor shoots one of them, he'll disappear (for the rest of the current round). But if one of the adult vultures shoots Eggor he will lose a life; shooting an egg is worth 500 points on the first round and increases by 250 for every subsequent round, while shooting an adult vulture (and killing him) is worth 100 points upon the first round and increases by 100 for every subsequent round.",
+    "default": {
+      "core": "pacman",
+      "settings": {
+        "decoders": {
+          "cpu": "eyes",
+          "video": "woodpecker"
+        },
+        "controller": {
+          "fire": true
+        },
+        "fixed": {
+          "value": 195,
+          "parameter": "dsw1"
+        },
+        "lives": {
+          "value": 8,
+          "parameter": "dsw1",
+          "name": "Lives",
+          "input": {
+            "5": 0,
+            "4": 4,
+            "3": 8,
+            "2": 12
+          }
+        },
+        "bonus": {
+          "value": 0,
+          "name": "Bonus",
+          "parameter": "dsw1",
+          "input": {
+            "150000 points": 0,
+            "125000 points": 16,
+            "100000 points": 32,
+            "75000 points": 48
+          }
+        }
+      },
+      "roms": {
+        "cpu": [
+          { "file": [ "0x800", "0x818ed154" ] },
+          { "file": [ "0x800", "0xa4b21d93" ] },
+          { "file": [ "0x800", "0x5d7a23ed" ] },
+          { "file": [ "0x800", "0xe9dbca8d" ] },
+          { "file": [ "0x800", "0x4318ab85" ] },
+          { "file": [ "0x800", "0x03214d7f" ] },
+          { "file": [ "0x800", "0xdc805be4" ] },
+          { "file": [ "0x800", "0xf9ae204b" ] }
+        ],
+        "video": [
+          { "file": [ "0x800", "0x96ad8626" ] },
+          { "file": [ "0x800", "0xcc324017" ] },
+          { "file": [ "0x800", "0x7c97f513" ] },
+          { "file": [ "0x800", "0x2e930602" ] }
+        ],
+        "palette": [
+          { "file": [ "0x20", "0x2fc650bd" ] },
+          { "file": [ "0x100", "0x3eb3a8e4" ] }
+        ],
+        "sound": [
+          { "file": [ "0x100", "0xa9cc86bf" ] }
+        ]
+      }
+    }
+  },
+  "alibaba": {
+    "name": "Alibaba & 40 Thieves",
+    "platform": "namcopacman",
+    "version": "alibaba",
+    "drivers": {
+      "alibaba": {
+        "core": "pacman",
+        "name": "(Sega)",
+        "roms": {
+          "cpu": [
+            { "file": [ "0x1000", "0x38d701aa" ] },
+            { "file": [ "0x1000", "0x3d0e35f3" ] },
+            { "file": [ "0x1000", "0x823bee89" ] },
+            { "file": [ "0x1000", "0x474d032f" ] }
+          ],
+          "cpu2": [
+            { "file": [ "0x1000", "0x5ab315c1" ] }
+          ],
+          "cpu3": [
+            { "file": [ "0x800", "0x438d0357" ] }
+          ],
+          "video": [
+            { "file": [ "0x800", "0x85bcb8f8" ] },
+            { "file": [ "0x800", "0x38e50862" ] },
+            { "file": [ "0x800", "0xb5715c86" ] },
+            { "file": [ "0x800", "0x713086b3" ] }
+          ],
+          "palette": [
+            { "file": [ "0x20", "0x2fc650bd" ] },
+            { "file": [ "0x100", "0x3eb3a8e4" ] }
+          ],
+          "sound": [
+            { "file": [ "0x100", "0xa9cc86bf" ] }
+          ]
+        },
+        "settings": {
+          "alibaba": true,
+          "fixed": {
+            "value": 1,
+            "parameter": "dsw1"
+          },
+          "lives": {
+            "value": 8,
+            "parameter": "dsw1",
+            "name": "Lives",
+            "input": {
+              "1": 0,
+              "2": 4,
+              "3": 8,
+              "5": 12
+            }
+          },
+          "bonus": {
+            "value": 16,
+            "parameter": "dsw1",
+            "name": "Bonus",
+            "input": {
+              "10000": 0,
+              "15000": 16,
+              "20000": 32,
+              "None": 48
+            }
+          },
+          "difficulty": {
+            "value": 0,
+            "parameter": "dsw1",
+            "name": "Difficulty",
+            "input": {
+              "Normal": 0,
+              "Hard": 64
+            }
+          }
+        }
+      },
+      "alibabab": {
+        "core": "pacman",
+        "name": "Mustafa & 40 Thieves",
+        "roms": {
+          "cpu": [
+            { "file": [ "0x1000", "0x38d701aa" ] },
+            { "file": [ "0x1000", "0x3d0e35f3" ] },
+            { "file": [ "0x1000", "0x823bee89" ] },
+            { "file": [ "0x1000", "0x474d032f" ] }
+          ],
+          "cpu2": [
+            { "file": [ "0x1000", "0xae2f4aac" ] }
+          ],
+          "cpu3": [
+            { "file": [ "0x800", "0x438d0357" ] }
+          ],
+          "video": [
+            { "file": [ "0x800", "0x85bcb8f8" ] },
+            { "file": [ "0x800", "0x38e50862" ] },
+            { "file": [ "0x800", "0xb5715c86" ] },
+            { "file": [ "0x800", "0x713086b3" ] }
+          ],
+          "palette": [
+            { "file": [ "0x20", "0x2fc650bd" ] },
+            { "file": [ "0x100", "0x3eb3a8e4" ] }
+          ],
+          "sound": [
+            { "file": [ "0x100", "0xa9cc86bf" ] }
+          ]
+        }
+      }
+    }
+  },
+  "jumpshot": {
+    "name": "Jumpshot",
+    "platform": "namcopacman",
+    "version": "jumpshot",
+    "default": {
+      "core": "pacman",
+      "settings": {
+        "controller": {
+          "fire": true
+        },
+        "fixed": {
+          "value": 208,
+          "parameter": "dsw1"
+        },
+        "time": {
+          "value": 3,
+          "parameter": "dsw1",
+          "name": "Time",
+          "input": {
+            "N/A": 0,
+            "4 mins": 1,
+            "2 mins": 2,
+            "3 mins": 3
+          }
+        },
+        "skins": {
+          "value": 0,
+          "name": "Skins",
+          "parameter": "dsw1",
+          "input": {
+            "Darker/Darker": 0,
+            "Lighter/Darker": 4,
+            "Darker/Lighter": 8,
+            "Lighter/Lighter": 12
+          }
+        }
+      }
+    },
+    "drivers": {
+      "jumpshot": {
+        "name": "Bally Midway",
+        "settings": {
+          "decoders": {
+            "cpu": "jumpshot"
+          }
+        },
+        "roms": {
+          "cpu": [
+            { "file": [ "0x1000", "0xf00def9a" ] },
+            { "file": [ "0x1000", "0xf70deae2" ] },
+            { "file": [ "0x1000", "0x894d6f68" ] },
+            { "file": [ "0x1000", "0xf15a108a" ] }
+          ],
+          "video": [
+            { "file": [ "0x1000", "0xd9fa90f5" ] },
+            { "file": [ "0x1000", "0x2ec711c1" ] }
+          ],
+          "palette": [
+            { "file": [ "0x20", "0x872b42f3" ] },
+            { "file": [ "0x100", "0x0399f39f" ] }
+          ],
+          "sound": [
+            { "file": [ "0x100", "0xa9cc86bf" ] }
+          ]
+        }
+      },
+      "jumpshotp": {
+        "name": "Engineering sample",
+        "settings": {
+          "decoders": {
+            "cpu": "jumpshot"
+          },
+          "time": {
+            "value": 3,
+            "parameter": "dsw1",
+            "name": "Time",
+            "input": {
+              "N/A": 0,
+              "Short": 1,
+              "Average": 2,
+              "Above average": 3
+            }
+          },
+          "skins": {
+            "value": 0,
+            "name": "Skins",
+            "parameter": "dsw1",
+            "input": {
+              "Darker": 0,
+              "Lighter": 8
+            }
+          }
+        },
+        "roms": {
+          "cpu": [
+            { "file": [ "0x1000", "0xacc5e15e" ] },
+            { "file": [ "0x1000", "0x62b48ba4" ] },
+            { "file": [ "0x1000", "0x7c9b5e30" ] },
+            { "file": [ "0x1000", "0x9f0c39f6" ] }
+          ],
+          "video": [
+            { "file": [ "0x1000", "0xd9fa90f5" ] },
+            { "file": [ "0x1000", "0x2ec711c1" ] }
+          ],
+          "palette": [
+            { "file": [ "0x20", "0x872b42f3" ] },
+            { "file": [ "0x100", "0x0399f39f" ] }
+          ],
+          "sound": [
+            { "file": [ "0x100", "0xa9cc86bf" ] }
+          ]
+        }
+      }
+    }
+  }
+}

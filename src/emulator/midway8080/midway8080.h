@@ -24,7 +24,7 @@ namespace aos::midway8080
 		void rotateDisplay() { _rotating = true; }
 		void colorfn(std::function<rgb_t(const uint8_t, const uint8_t, const bool)> fn) { _colorfn = fn; }
 
-		void init(aos::display::RasterDisplay*) override;
+		void init(aos::display::RasterDisplay*, aos::controller::Controller*) override;
 		uint8_t tick() override;
 
 	protected:

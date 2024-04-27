@@ -1,7 +1,9 @@
 #pragma once
-#include "emulator.h"
+//#include "emulator.h"
 
 #include <forward_list>
+#include "types.h"
+#include "memory.h"
 
 
 namespace aos::namco
@@ -29,7 +31,7 @@ namespace aos::namco
 			mapping& writefn(std::function<void(const uint16_t, const uint8_t)>);
 			mapping& decodefn(std::function<void(uint8_t*, const size_t)>);
 
-			void init(const vector<aos::mmu::RomMapping>&);
+			void init(const std::vector<aos::mmu::RomMapping>&);
 			bool is_mapped(const uint16_t address, const uint8_t bank=0) const
 			{
 				if ((_bank > 0) && (bank != _bank))
@@ -41,7 +43,7 @@ namespace aos::namco
 			bool is_writable() const { return _writefn != nullptr; }
 
 			uint8_t read(const uint16_t address) { if (_readfn) { const uint16_t address_mirror = address & _mirroring; return _readfn(address_mirror - _start); } }
-			void write(const uint16_t address, const uint8_t value) { if (_writefn) { const uint16_t address_mirror = address & _mirroring; _writefn(address_mirror - _start, value); } }
+			void write(const uint16_t address, const uint8_t value) { if (_writefn)	{ const uint16_t address_mirror = address & _mirroring; _writefn(address_mirror - _start, value); }	}
 
 			void patch(const uint16_t address, const uint8_t value) { if (_memory) _memory[address-_start] = value; }
 		protected:

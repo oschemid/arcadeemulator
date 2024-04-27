@@ -3,81 +3,89 @@
 
 #include <iostream>
 
-#include "library.h"
+#include "database.h"
+#include <thread>
 
 #include "emulator.h"
+#include "core.h"
 #include "registry.h"
-#include "display.h"
-#include "src/gui/vulkan/engine.h"
-#include "src/gui/gui.h"
-#include "src/gui/widgets.h"
+#include "ui.h"
+
+#include "src/ui/widgets.h"
 #include <fstream>
 #include "imgui_impl_sdl2.h"
 
-#include "src/gui/debugger.h"
+//#include "src/ui/debugger.h"
 #include "tools.h"
+#include "ui/rasterdisplaywidget.h"
+#include "ui/amstradkeyboardwidget.h"
+#include "ui/arcadecontrollerwidget.h"
 
 
 int main(int argc, char** argv)
 {
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
-		std::cout << "SDL could not be initialized: " << SDL_GetError();
-		return false;
-	}
+	aos::ui::init();
+	aos::database::init();
 
-	ae::gui::Window window("Arcade Emulation", 1280, 800);
-	ae::gui::Engine engine(&window);
-	ae::gui::GuiManager gui(&engine);
-
-	aos::library::getConsoles().init();
-	
-	aos::ConsolesSidebar sidebar(aos::library::getConsoles());
-	aos::GameSelection gameselection;
-	gui.addWidget("sidebar", &sidebar);
-	gui.addWidget("gameselection", &gameselection);
-
-	window.init();
-	engine.init();
+	aos::ui::Manager gui({ "Arcad-OS", 0, 0 });
 	gui.init();
-	std::string n1 = "TEST";
-	std::string n2 = "TILES";
+
+	aos::database::load("./data");
+
+	aos::database::getConsoles().init();
+	
+	aos::database::Driver* selected = nullptr;
+	gui.addWidget("menu", std::make_unique<aos::MenuWidget>(&selected));
 
 	std::thread* t = nullptr;
-	std::thread* t2 = nullptr;
-	bool done = false;
-	aos::emulator::Emulator::Ptr si = nullptr;
-	ae::DisplayWidget* r1 = nullptr;
-	ae::TileMapWidget r2(n2, &gui);
+//	aos::gui::DebuggingWidget* r2 = nullptr;
 
-	aos::display::RasterDisplay* raster = nullptr;
+	aos::Core::Ptr machine = nullptr;
+
+	bool done = false;
 	while (!done)
 	{
 		done = gui.processEvent();
-		gameselection.filterConsole(sidebar.getSelected());
-		if (gameselection.getSelected()) {
-			if (!si) {
-				aos::library::Game* selected = gameselection.getSelected();
-				si = selected->driver().creator(selected->driver().configuration, selected->driver().roms);
-				aos::emulator::SystemInfo requirements = si->getSystemInfo();
-				raster = new aos::display::RasterDisplay(requirements.geometry);
-				raster->init();
-				r1 = new ae::DisplayWidget(n1, raster, 2.);
-				gui.addWidget("rasterdisplay", r1);
-				si->init(raster);
-				t = new std::thread([&si, &t]() { si->run(); t->detach(); });
+		if (selected)
+		{
+			if (!machine)
+			{
+				gui.hideWidget("menu");
+				machine = aos::CoreFactory::create(selected->emulator().core, selected->emulator().settings);
 
-				//r2.reset(si.get());
-				//gui.addWidget("tilemap", &r2);
-				//debugger = new ae::gameboy::debug::Debugger(static_cast<ae::gameboy::Gameboy*>(&(*si)), raster2);
-				//t2 = new std::thread([&debugger, &t2]() { debugger->run(); t2->detach(); });
+				auto requirements = machine->getRequirements();
+				std::map<string, aos::Device::SharedPtr> devices;
+
+				auto raster = std::make_shared<aos::ui::RasterDisplayWidget>(requirements.geometry);
+				raster->init();
+				gui.addWidget("display", raster);
+				devices.insert({ "display", raster });
+
+				auto keyboard = std::make_shared<aos::ui::AmstradKeyboardWidget>();
+				keyboard->init();
+				gui.addWidget("keyboard", keyboard);
+				devices.insert({ "keyboard", keyboard });
+
+				auto controller = std::make_shared<aos::ui::ArcadeControllerWidget>();
+				controller->init();
+				gui.addWidget("controller", controller);
+				devices.insert({ "controller", controller });
+
+				machine->init(devices);
+
+				t = new std::thread([&machine, &t]() { machine->run(); t->detach(); });
+#ifdef _DEBUG
+				//auto debugger = si->getDebugger();
+
+				//if (debugger) {
+				//	r2 = new aos::gui::DebuggingWidget("Z80 debugger", debugger);
+				//	gui.addWidget("debugger", r2);
+				//}
+#endif
 			}
 			else {
 				if ((t)&&(!(t->joinable()))) {
-					si = nullptr;
 					delete t;
-					gameselection.resetSelected();
-					delete raster;
-					gui.removeWidget("rasterdisplay");
 				}
 			}
 		}
@@ -85,4 +93,3 @@ int main(int argc, char** argv)
 	}
 	return 0;
 }
-

@@ -1,0 +1,28 @@
+{
+  "api": "arcados.driver/v1",
+  "metadata": {
+    "description": "Amstrad CPC"
+  },
+  "amstradcpc": {
+    "name": "Amstrad CPC",
+    "platform": "amstradcpc",
+    "version": "464",
+    "drivers": {
+      "464": {
+        "core": "amstrad",
+        "name": "CPC 464",
+        "roms": {
+          "os": [
+            { "file": [ "0x4000", "0x874fd0c1" ] }
+          ],
+          "basic": [
+            { "file": [ "0x4000", "0x6f8d661e" ] }
+          ],
+          "amsdos": [
+            { "file": [ "0x4000", "0x1fe22ecd" ] }
+          ]
+        }
+      }
+    }
+  }
+}

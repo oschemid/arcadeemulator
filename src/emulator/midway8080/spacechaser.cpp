@@ -25,7 +25,7 @@ namespace aos::midway8080
 			};
 		}
 
-		void init(aos::display::RasterDisplay*) override;
+		void init(aos::display::RasterDisplay*, aos::controller::Controller*) override;
 
 	protected:
 		xprocessors::MB14241::Ptr _shifter{ nullptr };
@@ -65,9 +65,9 @@ SpaceChaser::SpaceChaser(const std::vector<aos::mmu::RomMapping>& roms, const ao
 	_port2.init(config);
 }
 
-void SpaceChaser::init(aos::display::RasterDisplay* raster)
+void SpaceChaser::init(aos::display::RasterDisplay* raster, aos::controller::Controller*)
 {
-	Midway8080::init(raster);
+	Midway8080::init(raster, nullptr);
 
 
 	_shifter = xprocessors::MB14241::create();

@@ -16,7 +16,7 @@ namespace aos::midway8080
 			const emulator::GameConfiguration&);
 		virtual ~AmazingMaze();
 
-		void init(aos::display::RasterDisplay*) override;
+		void init(aos::display::RasterDisplay*, aos::controller::Controller*) override;
 
 	protected:
 		uint8_t in(const uint8_t);
@@ -50,9 +50,9 @@ AmazingMaze::AmazingMaze(const vector<aos::mmu::RomMapping>& roms, const aos::em
 	_port1.init(config);
 }
 
-void AmazingMaze::init(aos::display::RasterDisplay* raster)
+void AmazingMaze::init(aos::display::RasterDisplay* raster, aos::controller::Controller*)
 {
-	Midway8080::init(raster);
+	Midway8080::init(raster, nullptr);
 
 	_controller = ae::controller::ArcadeController::create();
 

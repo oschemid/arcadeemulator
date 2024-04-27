@@ -4,12 +4,6 @@
 #include "rom_cpu.h"
 
 
-void pacplus_decodeRom(const string, uint8_t*, const size_t);
-void jumpshot_decodeRom(const string, uint8_t*, const size_t);
-void woodpecker_decodeRom(const string, uint8_t*, const size_t);
-void eyes_decodeRom(const string, uint8_t*, const size_t);
-void ponpoko_decodeRom(const string, uint8_t*, const size_t);
-
 // Palette Roms
 const aos::tools::Rom rom_palette_100_0399f39f = { 0x0100, 0x0399f39f }; // prom.4a
 const aos::tools::Rom rom_palette_100_08c9447b = { 0x0100, 0x08c9447b }; // piranha.4a

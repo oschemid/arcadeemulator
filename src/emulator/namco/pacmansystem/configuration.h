@@ -4,13 +4,6 @@
 using aos::emulator::GameConfiguration;
 
 
-static GameConfiguration alibaba_configuration = {
-	.switches = {{ "dsw1-0", 1 },
-				 { "dsw1-2", 2, "Lives", {"1", "2", "3", "5"} },
-				 { "dsw1-4", 1, "Bonus", {"10000", "15000", "20000", "None"} },
-				 { "dsw1-6", 0, "Difficulty", { "Normal", "Hard"} },
-	}
-};
 static aos::emulator::GameConfiguration jumpshot_configuration = {
 		.switches = {{ "dsw1-0", 3, "Time", {"N/A", "4mins", "2mins", "3mins"}},
 					 { "dsw1-2", 0, "Player 1 Skin", {"Darker", "Lighter"} },
@@ -26,38 +19,6 @@ static aos::emulator::GameConfiguration jumpshotp_configuration = {
 					 { "dsw1-4", 1 },
 					 { "dsw1-5", 0 },
 					 { "dsw1-6", 3 },
-		  }
-};
-static GameConfiguration pacman_configuration = {
-		.switches = {{ "dsw1-0", 1 },
-					 { "dsw1-2", 2, "Lives", {"1", "2", "3", "5"} },
-					 { "dsw1-4", 0, "Bonus", {"10000 points", "15000 points", "20000 points", "no"} },
-					 { "dsw1-6", 1, "Difficulty", {"Hard", "Normal"} },
-					 { "dsw1-7", 1, "Ghost names", {"Alternate", "Normal"} },
-		  }
-};
-static aos::emulator::GameConfiguration pacmanpe_configuration = {
-		.switches = {{ "dsw1-0", 0 },
-					 { "dsw1-2", 1, "Lives", {"2", "3"} },
-					 { "dsw1-4", 0, "Bonus", {"10000 points", "15000 points", "20000 points", "no"} },
-					 { "dsw1-6", 1, "Difficulty", {"Hard", "Normal"} },
-					 { "dsw1-7", 1, "Ghost names", {"Alternate", "Normal"} },
-		  }
-};
-static aos::emulator::GameConfiguration pacuman_configuration = {
-		.switches = {{ "dsw1-0", 0 },
-					 { "dsw1-2", 2, "Lives", {"1", "2", "3", "5"} },
-					 { "dsw1-4", 0, "Bonus", {"10000 points", "15000 points", "20000 points", "no"} },
-					 { "dsw1-6", 1, "Difficulty", {"Hard", "Normal"} },
-					 { "dsw1-7", 1, "Ghost names", {"Alternate", "Normal"} },
-		  }
-};
-static aos::emulator::GameConfiguration pacmansp_configuration = {
-		.switches = {{ "dsw1-0", 1 },
-					 { "dsw1-2", 2, "Lives", {"1", "2", "3", "5"} },
-					 { "dsw1-4", 0, "Bonus", {"10000 points", "15000 points", "20000 points", "no"} },
-					 { "dsw1-6", 1, "Difficulty", {"Hard (Invalid)", "Normal"} },
-					 { "dsw1-7", 1, "Ghost names", {"Alternate", "Normal"} },
 		  }
 };
 static aos::emulator::GameConfiguration mrtnt_configuration = {
@@ -78,14 +39,6 @@ static aos::emulator::GameConfiguration mspacman_configuration = {
 		  }
 };
 
-static aos::emulator::GameConfiguration eyes_configuration = {
-		.switches = {{ "dsw1-0", 3 },
-					 { "dsw1-2", 2, "Lives", {"5", "4", "3", "2"} },
-					 { "dsw1-4", 3, "Bonus", {"125000 points", "100000 points", "75000 points", "50000 points"} },
-					 { "dsw1-6", 1 },
-					 { "dsw1-7", 1 },
-		  }
-};
 static aos::emulator::GameConfiguration woodpecker_configuration = {
 	.switches = {{ "dsw1-0", 1},
 				 { "dsw1-2", 2, "Lives", {"1", "2", "3", "5"} },

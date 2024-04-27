@@ -65,7 +65,7 @@ Mmu::mapping& Mmu::map(const uint16_t start, const uint16_t end)
 	return _mapping.front();
 }
 
-void Mmu::init(const vector<aos::mmu::RomMapping>& roms)
+void Mmu::init(const std::vector<aos::mmu::RomMapping>& roms)
 {
 	for (auto& map : _mapping)
 		map.init(roms);

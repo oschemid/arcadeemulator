@@ -37,7 +37,7 @@ namespace aos::tilemap
 		return tiles;
 	}
 
-	void TileMap::drawTile(aos::display::RasterDisplay& raster, const Tile& tile, const uint16_t x, const uint16_t y, const palette_t palette, const bool flipX, const bool flipY)
+	void TileMap::drawTile(aos::device::RasterDisplay& raster, const Tile& tile, const uint16_t x, const uint16_t y, const palette_t palette, const bool flipX, const bool flipY)
 	{
 		const uint8_t size = tile.size();
 		if ((x >= _width) || (y >= _height))
@@ -58,7 +58,7 @@ namespace aos::tilemap
 			}
 		}
 	}
-	void TileMap::drawMaskTile(aos::display::RasterDisplay& raster, const Tile& tile, const uint16_t x, const uint16_t y, const palette_t palette, const bool flipX, const bool flipY)
+	void TileMap::drawMaskTile(aos::device::RasterDisplay& raster, const Tile& tile, const uint16_t x, const uint16_t y, const palette_t palette, const bool flipX, const bool flipY)
 	{
 		const uint8_t size = tile.size();
 		if ((x >= _width) || (y >= _height))
