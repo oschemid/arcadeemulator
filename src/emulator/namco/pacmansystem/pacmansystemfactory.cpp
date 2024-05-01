@@ -17,15 +17,15 @@ namespace aos::namco
 			cache_loaded = true;
 		}
 
-		PacmanSystem2::Configuration configuration;
+		PacmanSystem::Configuration configuration;
 
 		mmu::RomMappings mappings;
 		if (settings["roms"].contains("cpu2b"))
-			configuration.roms.extendedMemoryType = PacmanSystem2::Configuration::Roms::MemoryType::BANK2;
+			configuration.roms.extendedMemoryType = PacmanSystem::Configuration::Roms::MemoryType::BANK2;
 		else if (settings["roms"].contains("cpu3"))
-			configuration.roms.extendedMemoryType = PacmanSystem2::Configuration::Roms::MemoryType::RAMROM;
+			configuration.roms.extendedMemoryType = PacmanSystem::Configuration::Roms::MemoryType::RAMROM;
 		else if (settings["roms"].contains("cpu2"))
-			configuration.roms.extendedMemoryType = PacmanSystem2::Configuration::Roms::MemoryType::ROM;
+			configuration.roms.extendedMemoryType = PacmanSystem::Configuration::Roms::MemoryType::ROM;
 
 		for (auto& [zone, roms] : settings["roms"].items())
 		{
@@ -58,6 +58,10 @@ namespace aos::namco
 				{
 					configuration.hardware.alibaba = setting.template get<bool>();
 				}
+				if (parameter == "mspacmanport")
+				{
+					configuration.hardware.mspacmanport = setting.template get<bool>();
+				}
 				if (setting.contains("parameter"))
 				{
 					if (setting["parameter"] == "dsw1")
@@ -65,15 +69,39 @@ namespace aos::namco
 						dsw1 += setting["value"].template get<uint8_t>();
 					}
 				}
-				if (parameter == "controller")
+				if (parameter == "controllers")
 				{
+					if (setting.contains("inverted"))
+					{
+						configuration.controllers.inverted = setting["inverted"];
+					}
 					if (setting.contains("coin"))
 					{
 						configuration.invertedcoin = true;
 					}
-					if (setting.contains("fire"))
+					if (setting.contains("joystick1"))
 					{
-						configuration.controller.fire = true;
+						if (setting["joystick1"] == "4WAY")
+							configuration.controllers.joystick1.joystick = configuration.controllers.joystick1.JOYSTICK4WAY;
+						else if (setting["joystick1"] == "8WAY")
+							configuration.controllers.joystick1.joystick = configuration.controllers.joystick1.JOYSTICK8WAY;
+						else if (setting["joystick1"] == "4WAY_FIRE")
+						{
+							configuration.controllers.joystick1.joystick = configuration.controllers.joystick1.JOYSTICK4WAY;
+							configuration.controllers.joystick1.fire = true;
+						}
+					}
+					if (setting.contains("joystick2"))
+					{
+						if (setting["joystick2"] == "4WAY")
+							configuration.controllers.joystick2.joystick = configuration.controllers.joystick1.JOYSTICK4WAY;
+						else if (setting["joystick2"] == "8WAY")
+							configuration.controllers.joystick2.joystick = configuration.controllers.joystick1.JOYSTICK8WAY;
+						else if (setting["joystick2"] == "4WAY_FIRE")
+						{
+							configuration.controllers.joystick2.joystick = configuration.controllers.joystick1.JOYSTICK4WAY;
+							configuration.controllers.joystick2.fire = true;
+						}
 					}
 				}
 				if (parameter == "decoders")
@@ -85,9 +113,13 @@ namespace aos::namco
 					if (setting.contains("interrupt"))
 						configuration.interruptdecoder = setting["interrupt"].template get<string>();
 				}
+				if (parameter == "display")
+				{
+					configuration.rotateddisplay = true;
+				}
 			}
 		}
-		auto emul = std::make_unique<aos::namco::PacmanSystem2>(configuration);
+		auto emul = std::make_unique<aos::namco::PacmanSystem>(configuration);
 		emul->settings("dsw1", dsw1);
 		return emul;
 	}

@@ -35,7 +35,7 @@ namespace aos::amstrad
 		AmstradCPC(const aos::mmu::RomMappings&);
 		virtual ~AmstradCPC() {}
 
-		DisplayDevice::DisplayRequirements getRequirements() const override;
+		json getRequirements() const override;
 		void init(map<string, Device::SharedPtr>) override;
 		void run() override;
 
@@ -72,10 +72,18 @@ namespace aos::amstrad
 		_cpu = new xprocessors::cpu::Z80();
 	}
 
-	DisplayDevice::DisplayRequirements AmstradCPC::getRequirements() const
+	json AmstradCPC::getRequirements() const
 	{
-		return {
-			.geometry = {.width = 384, .height = 272 }
+		return json{
+			{"display", {
+				{"type", "display"},
+				{"width", 384},
+				{"height", 272},
+				{"rotation", "NONE"} }
+			},
+			{"keyboard", {
+				{"type", "amstradkbd"} }
+			}
 		};
 	}
 

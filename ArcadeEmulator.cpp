@@ -56,20 +56,32 @@ int main(int argc, char** argv)
 				auto requirements = machine->getRequirements();
 				std::map<string, aos::Device::SharedPtr> devices;
 
-				auto raster = std::make_shared<aos::ui::RasterDisplayWidget>(requirements.geometry);
-				raster->init();
-				gui.addWidget("display", raster);
-				devices.insert({ "display", raster });
-
-				auto keyboard = std::make_shared<aos::ui::AmstradKeyboardWidget>();
-				keyboard->init();
-				gui.addWidget("keyboard", keyboard);
-				devices.insert({ "keyboard", keyboard });
-
-				auto controller = std::make_shared<aos::ui::ArcadeControllerWidget>();
-				controller->init();
-				gui.addWidget("controller", controller);
-				devices.insert({ "controller", controller });
+				for (auto& [name, config] : requirements.items())
+				{
+					if (config["type"] == "display")
+					{
+						auto raster = std::make_shared<aos::ui::RasterDisplayWidget>(geometry_t{.width=config["width"],
+							.height=config["height"],
+							.rotation=(config["rotation"]=="ROT90")? geometry_t::rotation_t::ROT90 : geometry_t::rotation_t::NONE});
+						raster->init();
+						gui.addWidget(name, raster);
+						devices.insert({ name, raster });
+					}
+					if (config["type"] == "joystick")
+					{
+						auto controller = std::make_shared<aos::ui::ArcadeControllerWidget>(config["fire"], config["secundary"]);
+						controller->init();
+						gui.addWidget(name, controller);
+						devices.insert({ name, controller });
+					}
+					if (config["type"] == "amstradkbd")
+					{
+						auto keyboard = std::make_shared<aos::ui::AmstradKeyboardWidget>();
+						keyboard->init();
+						gui.addWidget(name, keyboard);
+						devices.insert({ name, keyboard });
+					}
+				}
 
 				machine->init(devices);
 

@@ -18,13 +18,9 @@ namespace aos::device
 
 		virtual void init() override {}
 
-		virtual bool joystick1(const joystick_control) const { return false; }
+		virtual bool joystick(const joystick_control) const { return false; }
 		virtual bool button(const button_control) const { return false; }
 		virtual bool coin(const coin_control) const { return false; }
-		//bool coin() const { return _coin; }
-		//bool coin2() const { return _coin2; }
-		//bool coin3() const { return _coin3; }
-		//bool cheat() const { return _cheat; }
 
 	protected:
 		ArcadeController() = default;

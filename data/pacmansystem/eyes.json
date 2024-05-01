@@ -9,8 +9,8 @@
     "default": {
       "core": "pacman",
       "settings": {
-        "controller": {
-          "fire": true
+        "controllers": {
+          "joystick1": "4WAY_FIRE"
         },
         "fixed": {
           "value": 195,

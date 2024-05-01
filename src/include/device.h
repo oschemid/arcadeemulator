@@ -14,13 +14,15 @@ namespace aos
 		virtual void init() = 0;
 	};
 
-	class DisplayDevice : public Device
+	class ControllerDevice
 	{
 	public:
-		using SharedPtr = std::shared_ptr<DisplayDevice>;
+		using SharedPtr = std::shared_ptr<Device>;
 
-		struct DisplayRequirements {
-			geometry_t geometry;
+		struct Configuration
+		{
+			string type;
+			string option;
 		};
 	};
 }

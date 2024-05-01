@@ -20,7 +20,7 @@ namespace aos
 
 	public:
 		virtual ~Core() = default;
-		virtual DisplayDevice::DisplayRequirements getRequirements() const = 0;
+		virtual json getRequirements() const = 0;
 		virtual void init(map<string, Device::SharedPtr>) = 0;
 		virtual void run() = 0;
 
@@ -36,18 +36,4 @@ namespace aos
 		static Core::Ptr create(const string&, const json&);
 		static bool registerCore(const string&, creator_fn);
 	};
-	//struct Driver
-	//{
-	//	using creator_fn = std::function<Machine::Ptr(const aos::mmu::RomMappings&)>;
-
-	//	string name;
-	//	string version;
-	//	bool main_version{ false };
-	//	string core;
-	//	creator_fn creator;
-	//	aos::mmu::RomMappings roms;
-
-	//	bool is_unavailable() const { return std::any_of(roms.begin(), roms.end(), [](const aos::mmu::RomMapping& r) { return r.rom.filename.empty(); }); }
-	//	Machine::Ptr create() { return creator(roms); }
-	//};
 }

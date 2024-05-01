@@ -3,9 +3,3 @@ Missing CHEAT mode
 joystick2 (for jumpshot)
 fire/start (for jumpshot)
 BIG ISSUE - Input s'ajoutent...
-
-dsw : new implementation needed
-port3 = public temporary
-rotate : find best solution
-
-shotbull : doesn't work

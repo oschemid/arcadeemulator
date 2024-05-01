@@ -212,6 +212,46 @@ namespace aos::namco
 			}
 		}
 	}
+	void novatronic_decoder(uint8_t* memory, const size_t size)
+	{
+		uint8_t* dump = new uint8_t[size];
+		for (size_t i = 0; i < size; dump[i] = memory[i], ++i);
+		for (size_t i = 0; i < size; memory[i] = dump[i ^ 0xff], ++i);
+		delete[] dump;
+	}
+	void mspackpls_decoder(uint8_t* memory, const size_t size)
+	{
+		auto lambda = [](const uint16_t address, const uint8_t value) { return  (value & 0xe7) | ((value & 0x08) << 1) | ((value & 0x10) >> 1); };
+		for (size_t offset = 0; offset < size; ++offset)
+		{
+			memory[offset] = lambda(offset, memory[offset]);
+		}
+	}
+	void ponpoko_decoder(uint8_t* memory, const size_t size)
+	{
+		uint8_t temp;
+		size_t offset = 0;
+		for (; offset < size / 2; offset += 0x10)
+		{
+			for (size_t offset2 = 0; offset2 < 8; ++offset2)
+			{
+				temp = memory[offset + offset2 + 0x08];
+				memory[offset + offset2 + 0x08] = memory[offset + offset2];
+				memory[offset + offset2] = temp;
+			}
+		}
+		for (; offset < size; offset += 0x20)
+		{
+			for (size_t offset2 = 0; offset2 < 8; ++offset2)
+			{
+				temp = memory[offset + offset2 + 0x18];
+				memory[offset + offset2 + 0x18] = memory[offset + offset2 + 0x10];
+				memory[offset + offset2 + 0x10] = memory[offset + offset2 + 0x08];
+				memory[offset + offset2 + 0x08] = memory[offset + offset2];
+				memory[offset + offset2] = temp;
+			}
+		}
+	}
 	std::function<void(uint8_t*, const size_t)> getDecoder(const string& name)
 	{
 		static std::map<string, std::function<void(uint8_t*, const size_t)>> mappings = {
@@ -222,7 +262,10 @@ namespace aos::namco
 			{ "mspacmanU7", mspacman_decoderU7 },
 			{ "mspacmanU56", mspacman_decoderU56 },
 			{ "impeuropex_patch", impeuropex_patch},
-			{ "mspacman", mspacman_decoder }
+			{ "mspacman", mspacman_decoder },
+			{ "novatronic", novatronic_decoder },
+			{ "mspackpls", mspackpls_decoder },
+			{ "ponpoko", ponpoko_decoder }
 		};
 		auto it = mappings.find(name);
 		if (it != mappings.end())
@@ -230,23 +273,29 @@ namespace aos::namco
 		return nullptr;
 	}
 
-	uint8_t piranha_decoder(const uint8_t value)
+	uint8_t piranha_int_decoder(const uint8_t value)
 	{
 		return (value == 0xfa) ? 0x78 : value;
 	}
-	uint8_t nmouse_decoder(const uint8_t value)
+	uint8_t nmouse_int_decoder(const uint8_t value)
 	{
 		if (value==0xbf) return 0x3c;
 		if (value==0xc6) return 0x40;
 		return value;
 	}
+	uint8_t mspacman_int_decoder(const uint8_t value)
+	{
+		return (value == 0xfb) ? 0xfe : value;
+	}
 
 	std::function<uint8_t(const uint8_t)> getInterruptDecoder(const string& name)
 	{
 		if (name == "piranha")
-			return piranha_decoder;
+			return piranha_int_decoder;
 		if (name == "nmouse")
-			return nmouse_decoder;
+			return nmouse_int_decoder;
+		if (name == "mspacman")
+			return mspacman_int_decoder;
 		return nullptr;
 	}
 }

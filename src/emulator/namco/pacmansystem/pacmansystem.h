@@ -17,12 +17,14 @@
 //   - Eyes
 //   * Gorkans
 //   - Jumpshot
+//   - Lizard Wizard
 //   * Mr TNT
 //   - Ms Pac Man
 //   - Naughty Mouse
 //   * Pac Man (Puck Man)
 //   - Pac Man Plus
 //   - Piranha
+//   - Ponpoko
 //   * Titan
 //   - Woodpecker
 //********************************************************************************
@@ -45,22 +47,30 @@
 //********************************************************************************
 namespace aos::namco
 {
-	class PacmanSystem2 : public Core
+	class PacmanSystem : public Core
 	{
 	public:
 		struct Configuration
 		{
-			struct
+			struct Controllers
 			{
-				bool fire{ false };
-			} controller;
+				bool inverted{ false };
+				struct ControllerType
+				{
+					enum JoystickType { NO, JOYSTICK4WAY, JOYSTICK8WAY } joystick;
+					bool fire;
+				} joystick1 { ControllerType::JoystickType::JOYSTICK4WAY, false };
+				struct ControllerType joystick2 { ControllerType::JoystickType::NO, false };
+			} controllers;
 			bool invertedcoin{ false };
+			bool rotateddisplay{ false };
 
 			string interruptdecoder{ "" };
 
 			struct Hardware
 			{
 				bool alibaba{ false };
+				bool mspacmanport{ false };
 			} hardware;
 
 			struct Roms
@@ -71,10 +81,10 @@ namespace aos::namco
 				aos::mmu::RomMappings files;
 			} roms;
 		};
-		PacmanSystem2(const Configuration);
-		virtual ~PacmanSystem2() {}
+		PacmanSystem(const Configuration);
+		virtual ~PacmanSystem() {}
 
-		virtual DisplayDevice::DisplayRequirements getRequirements() const override;
+		virtual json getRequirements() const override;
 		virtual void init(map<string, Device::SharedPtr>) override;
 		virtual void run() override;
 
@@ -86,7 +96,8 @@ namespace aos::namco
 		xprocessors::cpu::Z80 _cpu;
 		namco::PacmanGpu::Ptr _gpu{ nullptr };
 		namco::wsg _wsg;
-		device::ArcadeController* _controller{ nullptr };
+		device::ArcadeController* _controller1{ nullptr };
+		device::ArcadeController* _controller2{ nullptr };
 		Mmu _mmu;
 
 		uint8_t _port0{ 0xff };
@@ -103,5 +114,6 @@ namespace aos::namco
 		void patchBank2();
 		void beforeRW(const uint16_t);
 		void updatePorts();
+		uint8_t portcoding(const uint8_t, const uint8_t);
 	};
 }

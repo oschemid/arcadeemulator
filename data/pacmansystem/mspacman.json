@@ -1017,6 +1017,383 @@
             { "file": [ "0x100", "0xa9cc86bf" ] }
           ]
         }
+      },
+      "mspacii": {
+        "name": "Ms. Pac-man II (set 1)",
+        "settings": {
+          "decoders": {
+            "interrupt": "mspacman"
+          },
+          "mspacmanport": true,
+          "fixed": {
+            "value": 129,
+            "parameter": "dsw1"
+          },
+          "difficulty": {
+            "value": 64,
+            "parameter": "dsw1",
+            "name": "Difficulty",
+            "input": {
+              "Hard": 0,
+              "Normal": 64
+            }
+          }
+        },
+        "roms": {
+          "cpu": [
+            { "file": [ "0x1000", "0xdf673b57" ] },
+            { "file": [ "0x1000", "0x7591f606" ] },
+            { "file": [ "0x1000", "0xc8ef1a7f" ] },
+            { "file": [ "0x1000", "0xd498f435" ] }
+          ],
+          "cpu2": [
+            { "file": [ "0x1000", "0xfbbc3d2e" ] },
+            { "file": [ "0x1000", "0xaba3096d" ] }
+          ],
+          "video": [
+            { "file": [ "0x1000", "0x04333722" ] },
+            { "file": [ "0x1000", "0x615af909" ] }
+          ],
+          "palette": [
+            { "file": [ "0x20", "0x2fc650bd" ] },
+            { "file": [ "0x100", "0x3eb3a8e4" ] }
+          ],
+          "sound": [
+            { "file": [ "0x100", "0xa9cc86bf" ] }
+          ]
+        }
+      },
+      "mspacii2": {
+        "name": "Ms. Pac-man II (set 2)",
+        "settings": {
+          "decoders": {
+            "interrupt": "mspacman"
+          },
+          "mspacmanport": true,
+          "fixed": {
+            "value": 129,
+            "parameter": "dsw1"
+          },
+          "difficulty": {
+            "value": 64,
+            "parameter": "dsw1",
+            "name": "Difficulty",
+            "input": {
+              "Hard": 0,
+              "Normal": 64
+            }
+          }
+        },
+        "roms": {
+          "cpu": [
+            { "file": [ "0x1000", "0xdf673b57" ] },
+            { "file": [ "0x1000", "0x7591f606" ] },
+            { "file": [ "0x1000", "0xc8ef1a7f" ] },
+            { "file": [ "0x1000", "0xd498f435" ] }
+          ],
+          "cpu2": [
+            { "file": [ "0x1000", "0xfbbc3d2e" ] },
+            { "file": [ "0x1000", "0xaa3887c5" ] }
+          ],
+          "video": [
+            { "file": [ "0x1000", "0x04333722" ] },
+            { "file": [ "0x1000", "0x615af909" ] }
+          ],
+          "palette": [
+            { "file": [ "0x20", "0x2fc650bd" ] },
+            { "file": [ "0x100", "0x3eb3a8e4" ] }
+          ],
+          "sound": [
+            { "file": [ "0x100", "0xa9cc86bf" ] }
+          ]
+        }
+      },
+      "mspacmbn": {
+        "name": "Ms. Pac-man (Novatronic)",
+        "settings": {
+          "decoders": {
+            "cpu": "novatronic"
+          },
+          "fixed": {
+            "value": 129,
+            "parameter": "dsw1"
+          },
+          "difficulty": {
+            "value": 64,
+            "parameter": "dsw1",
+            "name": "Difficulty",
+            "input": {
+              "Hard": 0,
+              "Normal": 64
+            }
+          }
+        },
+        "roms": {
+          "cpu": [
+            {
+              "file": [ "0x1000", "0x40257a62" ],
+              "size": "0x200"
+            },
+            {
+              "file": [ "0x1000", "0x0839a86e" ],
+              "size": "0x200",
+              "start": "0x200"
+            },
+            {
+              "file": [ "0x1000", "0x40257a62" ],
+              "size": "0x200",
+              "start": "0x400"
+            },
+            {
+              "file": [ "0x1000", "0x0839a86e" ],
+              "size": "0xa00",
+              "start": "0x600"
+            },
+            {
+              "file": [ "0x1000", "0x269e0bdb" ],
+              "size": "0x200"
+            },
+            {
+              "file": [ "0x1000", "0xf40b1ce9" ],
+              "size": "0x200",
+              "start": "0x200"
+            },
+            {
+              "file": [ "0x1000", "0x269e0bdb" ],
+              "size": "0x200",
+              "start": "0x400"
+            },
+            {
+              "file": [ "0x1000", "0xf40b1ce9" ],
+              "size": "0xa00",
+              "start": "0x600"
+            },
+            {
+              "file": [ "0x1000", "0x0839a86e" ],
+              "size": "0x200"
+            },
+            {
+              "file": [ "0x1000", "0x40257a62" ],
+              "size": "0x200",
+              "start": "0x200"
+            },
+            {
+              "file": [ "0x1000", "0x0839a86e" ],
+              "size": "0x200",
+              "start": "0x400"
+            },
+            {
+              "file": [ "0x1000", "0x40257a62" ],
+              "size": "0xa00",
+              "start": "0x600"
+            },
+            {
+              "file": [ "0x1000", "0xf40b1ce9" ],
+              "size": "0x200"
+            },
+            {
+              "file": [ "0x1000", "0x269e0bdb" ],
+              "size": "0x200",
+              "start": "0x200"
+            },
+            {
+              "file": [ "0x1000", "0xf40b1ce9" ],
+              "size": "0x200",
+              "start": "0x400"
+            },
+            {
+              "file": [ "0x1000", "0x269e0bdb" ],
+              "size": "0xa00",
+              "start": "0x600"
+            }
+
+          ],
+          "cpu2": [
+            {
+              "file": [ "0x1000", "0xd0c0f66b" ],
+              "size": "0x200"
+            },
+            {
+              "file": [ "0x1000", "0x370b55a4" ],
+              "size": "0x200",
+              "start": "0x200"
+            },
+            {
+              "file": [ "0x1000", "0xd0c0f66b" ],
+              "size": "0x200",
+              "start": "0x400"
+            },
+            {
+              "file": [ "0x1000", "0x370b55a4" ],
+              "size": "0xa00",
+              "start": "0x600"
+            },
+            {
+              "file": [ "0x1000", "0x370b55a4" ],
+              "size": "0x200"
+            },
+            {
+              "file": [ "0x1000", "0xd0c0f66b" ],
+              "size": "0x200",
+              "start": "0x200"
+            },
+            {
+              "file": [ "0x1000", "0x370b55a4" ],
+              "size": "0x200",
+              "start": "0x400"
+            },
+            {
+              "file": [ "0x1000", "0xd0c0f66b" ],
+              "size": "0xa00",
+              "start": "0x600"
+            },
+            {
+              "file": [ "0x1000", "0x0839a86e" ],
+              "size": "0x200"
+            },
+            {
+              "file": [ "0x1000", "0x40257a62" ],
+              "size": "0x200",
+              "start": "0x200"
+            },
+            {
+              "file": [ "0x1000", "0x0839a86e" ],
+              "size": "0x200",
+              "start": "0x400"
+            },
+            {
+              "file": [ "0x1000", "0x40257a62" ],
+              "size": "0xa00",
+              "start": "0x600"
+            },
+            {
+              "file": [ "0x1000", "0xf40b1ce9" ],
+              "size": "0x200"
+            },
+            {
+              "file": [ "0x1000", "0x269e0bdb" ],
+              "size": "0x200",
+              "start": "0x200"
+            },
+            {
+              "file": [ "0x1000", "0xf40b1ce9" ],
+              "size": "0x200",
+              "start": "0x400"
+            },
+            {
+              "file": [ "0x1000", "0x269e0bdb" ],
+              "size": "0xa00",
+              "start": "0x600"
+            }
+          ],
+          "video": [
+            { "file": [ "0x800", "0x93933d1d" ] },
+            { "file": [ "0x800", "0x7409fbec" ] },
+            { "file": [ "0x800", "0x22b0188a" ] },
+            { "file": [ "0x800", "0x50c7477d" ] }
+          ],
+          "palette": [
+            { "file": [ "0x20", "0x2fc650bd" ] },
+            { "file": [ "0x100", "0x3eb3a8e4" ] }
+          ],
+          "sound": [
+            { "file": [ "0x100", "0xa9cc86bf" ] }
+          ]
+        }
+      },
+      "mspackpls": {
+        "name": "Miss Packman Plus",
+        "settings": {
+          "decoders": {
+            "cpu": "mspackpls"
+          },
+          "fixed": {
+            "value": 129,
+            "parameter": "dsw1"
+          },
+          "difficulty": {
+            "value": 64,
+            "parameter": "dsw1",
+            "name": "Difficulty",
+            "input": {
+              "Hard": 0,
+              "Normal": 64
+            }
+          }
+        },
+        "roms": {
+          "cpu": [
+            {
+              "file": [ "0x2000", "0x88c89824" ],
+              "size": "0x800"
+            },
+            {
+              "file": [ "0x2000", "0x19620d5d" ],
+              "size": "0x800",
+              "start": "0x800"
+            },
+            {
+              "file": [ "0x2000", "0x59cb7ea0" ],
+              "size": "0x800",
+              "start": "0x1000"
+            },
+            {
+              "file": [ "0x2000", "0x19620d5d" ],
+              "size": "0x800",
+              "start": "0x1800"
+            },
+            {
+              "file": [ "0x2000", "0x19620d5d" ],
+              "size": "0x800"
+            },
+            {
+              "file": [ "0x2000", "0x59cb7ea0" ],
+              "size": "0x800",
+              "start": "0x800"
+            },
+            {
+              "file": [ "0x2000", "0x88c89824" ],
+              "size": "0x800",
+              "start": "0x1000"
+            },
+            {
+              "file": [ "0x2000", "0x59cb7ea0" ],
+              "size": "0x800",
+              "start": "0x1800"
+            }
+          ],
+          "cpu2": [
+            {
+              "file": [ "0x2000", "0x59cb7ea0" ],
+              "size": "0x800"
+            },
+            {
+              "file": [ "0x2000", "0x88c89824" ],
+              "size": "0x800", "start": "0x1000"
+            },
+            {
+              "file": [ "0x2000", "0x19620d5d" ],
+              "size": "0x800",
+              "start": "0x1000"
+            },
+            {
+              "file": [ "0x2000", "0x88c89824" ],
+              "size": "0x800",
+              "start": "0x1800"
+            }
+          ],
+          "video": [
+            { "file": [ "0x1000", "0x5c281d01" ] },
+            { "file": [ "0x1000", "0x615af909" ] }
+          ],
+          "palette": [
+            { "file": [ "0x20", "0x2fc650bd" ] },
+            { "file": [ "0x100", "0x3eb3a8e4" ] }
+          ],
+          "sound": [
+            { "file": [ "0x100", "0xa9cc86bf" ] }
+          ]
+        }
       }
     }
   }

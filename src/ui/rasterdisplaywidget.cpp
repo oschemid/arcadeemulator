@@ -31,7 +31,7 @@ namespace aos::ui
 		}
 		ImGui::Begin("#display", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoResize);
 		auto initialCursorPos = ImGui::GetCursorPos();
-		auto centralizedCursorpos = ImVec2((displaysize.x - _imagesize.x) * 0.5f, (displaysize.y - _imagesize.y) * 0.5f);
+		auto centralizedCursorpos = ImVec2(int((displaysize.x - _imagesize.x) * 0.5f), int((displaysize.y - _imagesize.y) * 0.5f));
 		ImGui::SetCursorPos(centralizedCursorpos);
 		ImGui::Image(_textureid, _imagesize);
 		ImGui::End();

@@ -6,7 +6,7 @@
 
 namespace aos::device
 {
-	class RasterDisplay : public DisplayDevice
+	class RasterDisplay : public Device
 	{
 	public:
 		using Ptr = std::shared_ptr<RasterDisplay>;
@@ -21,9 +21,6 @@ namespace aos::device
 		void set(const uint16_t, const uint16_t, const rgb_t);
 		void set(const uint16_t, const uint16_t, const uint32_t);
 		void refresh() { _current = 1 - _current; _refresh = true; }
-		//bool needRefresh() const { return _refresh; }
-		//geometry_t getGeometry() const { return (_geometry.rotation == geometry_t::rotation_t::NONE) ? _geometry : geometry_t{ .width = _geometry.height, .height = _geometry.width }; }
-		//uint32_t* getBuffer() { _refresh = false; return _buffers[1 - _current]; }
 
 	protected:
 		RasterDisplay(const geometry_t);

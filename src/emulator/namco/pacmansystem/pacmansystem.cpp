@@ -4,29 +4,38 @@
 
 namespace aos::namco
 {
-	PacmanSystem2::PacmanSystem2(const Configuration configuration) :
+	PacmanSystem::PacmanSystem(const Configuration configuration) :
 		_configuration{ configuration }
 	{
 		_gpu = namco::PacmanGpu::create({
-				.orientation = geometry_t::rotation_t::ROT90,
-				.tileModel = PacmanGpu::Configuration::TileModel::PACMAN,
 				.spriteAddress = static_cast<uint16_t>((configuration.hardware.alibaba) ? 0xef0 : 0xff0) });
 	}
 
-	void PacmanSystem2::settings(const string& parameter, const uint8_t value)
+	void PacmanSystem::settings(const string& parameter, const uint8_t value)
 	{
 		if (parameter == "dsw1")
 			_dsw1 = value;
 	}
 
-	DisplayDevice::DisplayRequirements PacmanSystem2::getRequirements() const
+	json PacmanSystem::getRequirements() const
 	{
-		return {
-			.geometry = {.width = 288, .height = 224, .rotation = geometry_t::rotation_t::ROT90 }
+		json requirements{
+			{"display", {
+				{"type", "display"},
+				{"width", 288},
+				{"height", 224},
+				{"rotation", (_configuration.rotateddisplay)? "NONE": "ROT90"} }
+			}
 		};
+		requirements["controller1"] = { {"type", "joystick"}, {"fire", _configuration.controllers.joystick1.fire}, {"secundary", false} };
+		if (_configuration.controllers.joystick2.joystick != Configuration::Controllers::ControllerType::NO)
+		{
+			requirements["controller2"] = { {"type","joystick"}, {"fire", _configuration.controllers.joystick2.fire}, {"secundary", true} };
+		}
+		return requirements;
 	}
 
-	void PacmanSystem2::createRoms()
+	void PacmanSystem::createRoms()
 	{
 		using MemoryType = Configuration::Roms::MemoryType;
 		switch (_configuration.roms.extendedMemoryType)
@@ -66,7 +75,7 @@ namespace aos::namco
 			break;
 		}
 	}
-	void PacmanSystem2::patchBank2()
+	void PacmanSystem::patchBank2()
 	{
 		_mmu.selectBank(2);
 
@@ -93,7 +102,7 @@ namespace aos::namco
 		}
 		_mmu.before_fn([this](const uint16_t address) { beforeRW(address); });
 	}
-	void PacmanSystem2::beforeRW(const uint16_t address)
+	void PacmanSystem::beforeRW(const uint16_t address)
 	{
 		if ((address >= 0x0038 && address <= 0x003f) ||
 			(address >= 0x03b0 && address <= 0x03b7) ||
@@ -111,7 +120,7 @@ namespace aos::namco
 		}
 	}
 
-	void PacmanSystem2::init(map<string, Device::SharedPtr> devices)
+	void PacmanSystem::init(map<string, Device::SharedPtr> devices)
 	{
 		if (_configuration.interruptdecoder != "")
 		{
@@ -122,8 +131,12 @@ namespace aos::namco
 
 		_mmu.map(0x4000, 0x4fff).mirror(0x5fff).readfn([this](const uint16_t a) { return _gpu->readVRAM(a); }).writefn([this](const uint16_t a, const uint8_t v) { _gpu->writeVRAM(a, v); });
 		_mmu.map(0x5000, 0x503f).mirror(0x7fff).readfn([this](const uint16_t) { return _port0; });
-		_mmu.map(0x5040, 0x507f).mirror(0x7fff).readfn([this](const uint16_t) { return _port1; });
+		if (_configuration.hardware.mspacmanport)
+			_mmu.map(0x5040, 0x507f).mirror(0x7fff).readfn([this](const uint16_t a) { return portcoding(a&0xff,_port1); });
+		else
+			_mmu.map(0x5040, 0x507f).mirror(0x7fff).readfn([this](const uint16_t) { return _port1; });
 		_mmu.map(0x5080, 0x50bf).mirror(0x7fff).readfn([this](const uint16_t) { return _dsw1; });
+		_mmu.map(0x50c0, 0x50ff).mirror(0x7fff).readfn([this](const uint16_t) { return 0xff; });
 
 		if (_configuration.hardware.alibaba)
 		{
@@ -151,33 +164,61 @@ namespace aos::namco
 		_mmu.init(_configuration.roms.files);
 		_wsg.init(_configuration.roms.files);
 
-		_controller = static_cast<aos::device::ArcadeController*>(devices["controller"].get());
+		_controller1 = static_cast<aos::device::ArcadeController*>(devices["controller1"].get());
+		if (devices.contains("controller2"))
+		{
+			_controller2 = static_cast<aos::device::ArcadeController*>(devices["controller2"].get());
+		}
 
-		if (_configuration.roms.extendedMemoryType = Configuration::Roms::BANK2)
+		if (_configuration.roms.extendedMemoryType == Configuration::Roms::BANK2)
 			patchBank2();
 	}
 
-	void PacmanSystem2::updatePorts()
+	void PacmanSystem::updatePorts()
 	{
 		_port0 = 0xff;
-		if (_controller->joystick1(device::ArcadeController::up))
-			_port0 &= ~1;
-		if (_controller->joystick1(device::ArcadeController::left))
-			_port0 &= ~2;
-		if (_controller->joystick1(device::ArcadeController::right))
-			_port0 &= ~4;
-		if (_controller->joystick1(device::ArcadeController::down))
-			_port0 &= ~8;
-		if (_controller->coin(device::ArcadeController::coin1))
-			_port0 &= (_configuration.invertedcoin)? ~0x40 : ~0x20;
-
 		_port1 = 0xff;
-		if (_controller->button(device::ArcadeController::start1))
+
+		if (_controller1->joystick(device::ArcadeController::up))
+			_port0 &= ~1;
+		if (_controller1->joystick(device::ArcadeController::left))
+			_port0 &= ~2;
+		if (_controller1->joystick(device::ArcadeController::right))
+			_port0 &= ~4;
+		if (_controller1->joystick(device::ArcadeController::down))
+			_port0 &= ~8;
+		if (_controller1->coin(device::ArcadeController::coin1))
+			_port0 &= (_configuration.invertedcoin)? ~0x40 : ~0x20;
+		if (_controller1->joystick(device::ArcadeController::fire))
+		{
+			if (_controller2)
+				_port0 &= ~0x10;
+			else
+				_port1 &= ~0x10;
+		}
+		if (_controller2)
+		{
+			if (_controller2->joystick(device::ArcadeController::up))
+				_port1 &= ~1;
+			if (_controller2->joystick(device::ArcadeController::left))
+				_port1 &= ~2;
+			if (_controller2->joystick(device::ArcadeController::right))
+				_port1 &= ~4;
+			if (_controller2->joystick(device::ArcadeController::down))
+				_port1 &= ~8;
+			if (_controller2->joystick(device::ArcadeController::fire))
+				_port1 &= ~0x10;
+		}
+		if (_controller1->button(device::ArcadeController::start1))
 			_port1 &= ~0x20;
-		if ((_configuration.controller.fire) && (_controller->joystick1(device::ArcadeController::fire)))
-			_port1 &= ~0x10;
+
+		if (_configuration.controllers.inverted)
+		{
+			_port0 = ~_port0;
+			_port1 = ~_port1;
+		}
 	}
-	void PacmanSystem2::run()
+	void PacmanSystem::run()
 	{
 		_clock.reset();
 		int tick = 0;
@@ -234,5 +275,9 @@ namespace aos::namco
 				}
 			}
 		}
+	}
+	uint8_t PacmanSystem::portcoding(const uint8_t a, const uint8_t v)
+	{
+		return ((a >= 0x0d) && (a <= 0x2f)) ? (uint8_t)((v & 0xef) - ((a - 0x0d) << 4 & 0x10)) : v;
 	}
 }

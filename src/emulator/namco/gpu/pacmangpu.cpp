@@ -16,10 +16,8 @@ using namespace aos::namco;
 
 static std::vector<uint16_t> yoffset8 = { 0,1,2,3,4,5,6,7 };
 static std::vector<uint16_t> yoffset16 = { 0,1,2,3,4,5,6,7,32,33,34,35,36,37,38,39 };
-static std::vector<uint16_t> xoffset8_pacman = { 8,8,8,8,0,0,0,0 };
-static std::vector<uint16_t> xoffset8_ponpoko = { 0,0,0,0,8,8,8,8 };
-static std::vector<uint16_t> xoffset16_pacman = { 8,8,8,8,16,16,16,16,24,24,24,24,0,0,0,0 };
-static std::vector<uint16_t> xoffset16_ponpoko = { 0,0,0,0,8,8,8,8,16,16,16,16,24,24,24,24 };
+static std::vector<uint16_t> xoffset8 = { 8,8,8,8,0,0,0,0 };
+static std::vector<uint16_t> xoffset16 = { 8,8,8,8,16,16,16,16,24,24,24,24,0,0,0,0 };
 
 
 PacmanGpu::PacmanGpu(const PacmanGpu::Configuration& configuration) :
@@ -98,9 +96,6 @@ void PacmanGpu::initPalettes(const vector<aos::mmu::RomMapping>& roms)
 
 void PacmanGpu::initTilesSprites(const vector<aos::mmu::RomMapping>& roms)
 {
-	const std::vector<uint16_t> xoffset8 = (_configuration.tileModel == Configuration::TileModel::PONPOKO) ? xoffset8_ponpoko : xoffset8_pacman;
-	const std::vector<uint16_t> xoffset16 = (_configuration.tileModel == Configuration::TileModel::PONPOKO) ? xoffset16_ponpoko : xoffset16_pacman;
-
 	uint8_t* videorom = new uint8_t[0x2000];
 	size_t offset = 0;
 	for (const auto& rom : roms | std::ranges::views::filter([](const auto i) { return i.region == "video"; })) {

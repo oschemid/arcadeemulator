@@ -642,7 +642,7 @@
 					]
 				},
 				"settings": {
-					"controller": {
+					"controllers": {
 						"coin": false
 					},
 					"fixed": {
