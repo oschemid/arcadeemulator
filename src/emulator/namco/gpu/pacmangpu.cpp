@@ -1,13 +1,6 @@
 #include "pacmangpu.h"
 
-//#include "tilegpu.h"
-//#include "display.h"
-#include "tools.h"
-
-#include <new>
-#include <vector>
 #include <cstdint>
-#include <string>
 #include <ranges>
 
 

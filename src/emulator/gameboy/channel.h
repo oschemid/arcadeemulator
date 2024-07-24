@@ -2,7 +2,7 @@
 #include "types.h"
 
 
-namespace ae::gameboy {
+namespace aos::gameboy {
 	class Channel {
 	protected:
 		bool _enabled;

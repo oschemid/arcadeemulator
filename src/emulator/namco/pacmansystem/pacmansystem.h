@@ -1,7 +1,7 @@
 #pragma once
 #include "core.h"
 
-#include "../../../libraries/xos-processors/src/experimental/z80.h"
+#include "z80.h"
 #include "../gpu/pacmangpu.h"
 #include "../mmu.h"
 #include "../wsg.h"

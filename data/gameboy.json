@@ -1,10 +1,24 @@
-[
-  {
-    "game": "Tetris",
-    "cover": "./roms/gameboy/tetris.jpg"
+{
+  "api": "arcados.driver/v1",
+  "metadata": {
+    "description": "Gameboy"
   },
-  {
-    "game": "Alleyway",
-    "cover": "./roms/gameboy/alleyway.jpg"
+  "tetris": {
+    "name": "Tetris",
+    "platform": "gameboy",
+    "version": "tetris",
+    "default": {
+      "core": "gameboy",
+      "rom": "roms/gameboy/tetris.gb"
+    }
+  },
+  "alleyway": {
+    "name": "Alleyway",
+    "platform": "gameboy",
+    "version": "alleyway",
+    "default": {
+      "core": "gameboy",
+      "rom": "roms/gameboy/alleyway.gb"
+    }
   }
-]
+}

@@ -39,12 +39,6 @@
     <ClCompile Include="src\ui\engine\stbi.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="libraries\xos-processors\src\cpu\z80family\i8080.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="libraries\xos-processors\src\cpu\z80family\lr35902.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
     <ClCompile Include="libraries\xos-processors\src\cpu\cpu.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
@@ -63,40 +57,10 @@
     <ClCompile Include="libraries\xos-processors\src\chips\am40010.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="libraries\xos-processors\src\cpu\z80family\z80oldsolution.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="libraries\xos-processors\src\cpu\z80family\z80opcodes_cboldsolution.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="libraries\xos-processors\src\cpu\z80family\z80opcodes_edoldsolution.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="libraries\xos-processors\src\cpu\z80family\z80opcodes_oldsolution.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="libraries\xos-processors\src\experimental\z80.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="libraries\xos-processors\src\experimental\z80opcodes.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="libraries\xos-processors\src\experimental\z80opcodes_dd.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="libraries\xos-processors\src\experimental\z80opcodes_ed.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
     <ClCompile Include="libraries\xos-processors\src\chips\mc6845.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="libraries\xos-processors\src\chips\i8255.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="libraries\xos-processors\src\experimental\z80debugging.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="libraries\xos-processors\src\experimental\z80debuggingopcodes.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="src\emulator\amstrad\amstradmmu.cpp">
@@ -198,6 +162,81 @@
     <ClCompile Include="src\emulator\namco\pacmansystem\pacmansystemdecoder.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
+    <ClCompile Include="libraries\xos-processors\src\cpu\z80\z80.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="libraries\xos-processors\src\cpu\z80\z80opcodes.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="libraries\xos-processors\src\cpu\z80\z80opcodes_dd.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="libraries\xos-processors\src\cpu\z80\z80opcodes_ed.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\emulator\midway8080\midway8080factory.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\emulator\midway8080\midway8080.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="libraries\xos-processors\src\cpu\i8080\i8080.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="libraries\xos-processors\src\cpu\i8080\i8080opcodes.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="libraries\xos-processors\src\cpu\sm83\sm83.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="libraries\xos-processors\src\cpu\sm83\sm83alu.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="libraries\xos-processors\src\cpu\sm83\sm83opcodes.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="libraries\xos-processors\src\cpu\z80\z80opcodes_cb.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="libraries\xos-processors\src\cpu\i8080\i8080debugging.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="libraries\xos-processors\src\cpu\i8080\i8080debuggingopcodes.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\emulator\gameboy\channel.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\emulator\gameboy\apu.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\emulator\gameboy\gameboymmu.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\emulator\gameboy\mbc.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\emulator\gameboy\serial.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\emulator\gameboy\gameboy.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\emulator\gameboy\ppu\ppu.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\emulator\gameboy\ppu\modes.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\emulator\gameboy\gameboyfactory.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="libraries\xos-processors\src\cpu\sm83\sm83debugging.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="libraries\xos-processors\src\cpu\sm83\sm83debuggingopcodes.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\include\types.h">
@@ -206,28 +245,7 @@
     <ClInclude Include="src\sound\sound.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="libraries\xos-processors\src\z80family\cpus.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="libraries\xos-processors\src\z80family\i8080.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="libraries\xos-processors\src\z80family\states.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="libraries\xos-processors\src\z80family\z80.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
     <ClInclude Include="libraries\xos-processors\src\registry.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="libraries\xos-processors\src\z80family\lr35902.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="libraries\xos-processors\src\z80family\opcodes.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="libraries\xos-processors\src\z80family\opcodes_cb.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="libraries\xos-processors\include\xprocessors.h">
@@ -246,24 +264,6 @@
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="libraries\xos-processors\include\mb14241.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="libraries\xos-processors\src\cpu\z80family\cpus.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="libraries\xos-processors\src\cpu\z80family\i8080.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="libraries\xos-processors\src\cpu\z80family\lr35902.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="libraries\xos-processors\src\cpu\z80family\opcodes.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="libraries\xos-processors\src\cpu\z80family\opcodes_cb.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="libraries\xos-processors\src\cpu\z80family\states.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="libraries\xos-processors\src\cpu\cpu.h">
@@ -293,19 +293,10 @@
     <ClInclude Include="libraries\xos-processors\src\chips\am40010.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="libraries\xos-processors\src\cpu\z80family\z80oldsolution.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="libraries\xos-processors\src\experimental\z80.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
     <ClInclude Include="libraries\xos-processors\src\chips\mc6845.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="libraries\xos-processors\src\chips\i8255.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="libraries\xos-processors\src\experimental\z80debugging.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="src\emulator\amstrad\amstradmmu.h">
@@ -395,6 +386,39 @@
     <ClInclude Include="src\emulator\namco\pacmansystem\pacmansystemdecoder.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
+    <ClInclude Include="src\emulator\midway8080\midway8080.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\emulator\gameboy\gameboy.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="libraries\xos-processors\include\i8080.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="libraries\xos-processors\include\z80.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\emulator\gameboy\channel.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\emulator\gameboy\apu.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\emulator\gameboy\mbc.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\emulator\gameboy\mmu.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\emulator\gameboy\memorymap.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\emulator\gameboy\serial.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\emulator\gameboy\ppu\ppu.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="LICENSE" />
@@ -413,6 +437,7 @@
     <None Include="data\pacmansystem\other.json" />
     <None Include="data\pacmansystem\eyes.json" />
     <None Include="data\pacmansystem\woodpecker.json" />
+    <None Include="data\midway8080\all.json" />
   </ItemGroup>
   <ItemGroup>
     <Xsd Include="docs\machine\spaceinvaders.md">

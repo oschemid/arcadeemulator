@@ -25,8 +25,8 @@ namespace aos::ui
 
 		if (_secundary)
 		{
-			setJoystick(joystick_control::left, ImGui::IsKeyDown(ImGuiKey_D));
-			setJoystick(joystick_control::right, ImGui::IsKeyDown(ImGuiKey_Q));
+			setJoystick(joystick_control::left, ImGui::IsKeyDown(ImGuiKey_Q));
+			setJoystick(joystick_control::right, ImGui::IsKeyDown(ImGuiKey_D));
 			setJoystick(joystick_control::up, ImGui::IsKeyDown(ImGuiKey_Z));
 			setJoystick(joystick_control::down, ImGui::IsKeyDown(ImGuiKey_S));
 			if (_has_fire)

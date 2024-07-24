@@ -1,6 +1,6 @@
 #include "ppu.h"
 
-using namespace ae::gameboy;
+using namespace aos::gameboy;
 
 
 void Ppu::startModeOamSearch()

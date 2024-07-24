@@ -1,7 +1,7 @@
 #include "ppu.h"
 
 
-using namespace ae::gameboy;
+using namespace aos::gameboy;
 
 Ppu::Ppu() :
 	Cpu{Cpu::MEM_AVAILABLE},
@@ -13,7 +13,7 @@ Ppu::Ppu() :
 	_vram = new uint8_t[0x2000];
 }
 
-void Ppu::init(aos::display::RasterDisplay* raster)
+void Ppu::init(aos::device::RasterDisplay* raster)
 {
 	_raster = raster;
 }

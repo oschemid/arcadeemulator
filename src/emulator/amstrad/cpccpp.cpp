@@ -3,8 +3,7 @@
 #include "xprocessors.h"
 #include "registry.h"
 #include "tools.h"
-#include "../../libraries/xos-processors/src/experimental/z80.h"
-#include "../../libraries/xos-processors/src/experimental/z80debugging.h"
+#include "z80.h"
 #include "../../libraries/xos-processors/src/chips/am40010.h"
 #include "../../libraries/xos-processors/src/chips/mc6845.h"
 #include "../../libraries/xos-processors/src/chips/i8255.h"
@@ -55,7 +54,7 @@ namespace aos::amstrad
 		aos::device::AmstradKeyboard* _keyboard;
 		aos::device::RasterDisplay* _raster;
 
-		xprocessors::cpu::Z80debugging _debug;
+//		xprocessors::cpu::Z80debugging _debug;
 		uint64_t  _tick{ 0 };
 
 		uint16_t x = 0;
@@ -99,7 +98,7 @@ namespace aos::amstrad
 		_ppi.portc_handlers(nullptr, [this](const uint8_t d) { _scanline = d & 0x0f; _psg.setControl(d >> 6); });
 		_psg.handler([this]() { return _keyboard->getLine(_scanline); });
 
-		_debug.activateDisassembly();
+//		_debug.activateDisassembly();
 		//_disk = disk::LoaderDsk().load("roms\\amstrad\\XMas-Snow_Fun__(Amstrad_Computer_User)__ENGLISH.dsk");
 		_disk = disk::LoaderDsk().load("roms\\amstrad\\Arkanoid (UK) (1987) [Original].dsk");
 		//		_disk = disk::LoaderDsk().load("roms\\amstrad\\Miami Vice (UK) (1986) [Original].dsk");
@@ -171,8 +170,8 @@ namespace aos::amstrad
 		{
 			//			if (_cpu->pc == 0xc93d)
 			//				debugging = true;
-			if (debugging)
-				_debug.debug(_cpu, [this](const uint16_t a) { return _memory.read(a); });
+	//		if (debugging)
+	//			_debug.debug(_cpu, [this](const uint16_t a) { return _memory.read(a); });
 			_cpu->tick();
 			auto pins = _cpu->getControlPins();
 			if (pins & (xprocessors::cpu::Z80::PIN_MREQ))

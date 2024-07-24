@@ -1,7 +1,7 @@
 #include "channel.h"
 
 
-using namespace ae::gameboy;
+using namespace aos::gameboy;
 
 
 Channel::Channel(const uint16_t lengthMax) :

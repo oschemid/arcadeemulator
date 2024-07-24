@@ -1,7 +1,7 @@
 #pragma once
 #include "device/rasterdisplay.h"
 #include "tilemap.h"
-
+#include "memory.h"
 #include <vector>
 
 namespace aos::namco

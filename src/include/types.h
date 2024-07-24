@@ -26,7 +26,8 @@ namespace aos {
 		uint16_t height;
 		enum class rotation_t {
 			NONE, 
-			ROT90
+			ROT90,
+			ROT270
 		} rotation;
 	};
 	struct rgb_t {

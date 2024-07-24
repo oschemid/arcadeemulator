@@ -60,9 +60,18 @@ int main(int argc, char** argv)
 				{
 					if (config["type"] == "display")
 					{
-						auto raster = std::make_shared<aos::ui::RasterDisplayWidget>(geometry_t{.width=config["width"],
-							.height=config["height"],
-							.rotation=(config["rotation"]=="ROT90")? geometry_t::rotation_t::ROT90 : geometry_t::rotation_t::NONE});
+						geometry_t::rotation_t rotation{ geometry_t::rotation_t::NONE };
+						if (config["rotation"] == "ROT90")
+						{
+							rotation = geometry_t::rotation_t::ROT90;
+						}
+						else if (config["rotation"] == "ROT270")
+						{
+							rotation = geometry_t::rotation_t::ROT270;
+						}
+						auto raster = std::make_shared<aos::ui::RasterDisplayWidget>(geometry_t{ .width = config["width"],
+							.height = config["height"],
+							.rotation = rotation });
 						raster->init();
 						gui.addWidget(name, raster);
 						devices.insert({ name, raster });

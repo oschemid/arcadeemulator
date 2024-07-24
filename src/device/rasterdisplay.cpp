@@ -32,26 +32,26 @@ namespace aos::device
 
 	void RasterDisplay::set(const uint16_t x, const uint16_t y, const rgb_t color)
 	{
-		assert(x < _geometry.width);
-		assert(y < _geometry.height);
-		uint32_t offset;
-		if (_geometry.rotation == geometry_t::rotation_t::NONE)
-			offset = y * _geometry.width + x;
-		else
-			offset = x * _geometry.height + (_geometry.height - y - 1);
-
-		_buffers[_current][offset] = 0xff000000 | (color.blue << 16) | (color.green << 8) | color.red;
+		set(x, y, 0xff000000 | (color.blue << 16) | (color.green << 8) | color.red);
 	}
 
 	void RasterDisplay::set(const uint16_t x, const uint16_t y, const uint32_t color)
 	{
 		assert(x < _geometry.width);
 		assert(y < _geometry.height);
-		uint32_t offset;
-		if (_geometry.rotation == geometry_t::rotation_t::NONE)
+		uint32_t offset{ 0 };
+		switch (_geometry.rotation)
+		{
+		case geometry_t::rotation_t::NONE:
 			offset = y * _geometry.width + x;
-		else
-			offset = x * _geometry.height + (_geometry.height - y - 1);
+			break;
+		case geometry_t::rotation_t::ROT90:
+			offset = x * _geometry.height + _geometry.height + y + 1;
+			break;
+		case geometry_t::rotation_t::ROT270:
+			offset = _geometry.height * (_geometry.width - 1 - x) + y;
+			break;
+		}
 		_buffers[_current][offset] = color;
 	}
 }

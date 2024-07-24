@@ -2,7 +2,7 @@
 #include "SDL2/SDL.h"
 
 
-using namespace ae::gameboy;
+using namespace aos::gameboy;
 
 
 Mmu::Mmu(std::shared_ptr<BootRom>& bootrom,

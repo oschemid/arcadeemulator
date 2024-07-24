@@ -1,7 +1,7 @@
 #include "Mbc.h"
 
 
-using namespace ae::gameboy;
+using namespace aos::gameboy;
 using aos::string;
 using aos::File;
 
