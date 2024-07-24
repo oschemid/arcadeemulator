@@ -1,0 +1,22 @@
+{
+  "api": "arcados.platform/v1",
+  "metadata": {
+    "description": "Definition of platforms managed by Arcad-OS"
+  },
+  "namcopacman": {
+    "name": "Pacman System",
+    "category": "Arcade"
+  },
+  "midway8080": {
+    "name": "Midway 8080",
+    "category": "Arcade"
+  },
+  "amstradcpc": {
+    "name": "Amstrad CPC",
+    "category": "Computer"
+  },
+  "gameboy": {
+    "name": "Gameboy",
+    "category": "Console"
+  }
+}

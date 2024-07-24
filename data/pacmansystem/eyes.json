@@ -1,0 +1,192 @@
+{
+  "api": "arcados.driver/v1",
+  "metadata": {
+    "description": "Namco Pacman System games"
+  },
+  "eyes": {
+    "name": "Eyes",
+    "platform": "namcopacman",
+    "default": {
+      "core": "pacman",
+      "settings": {
+        "controllers": {
+          "joystick1": "4WAY_FIRE"
+        },
+        "fixed": {
+          "value": 195,
+          "parameter": "dsw1"
+        },
+        "lives": {
+          "value": 8,
+          "name": "Lives",
+          "parameter": "dsw1",
+          "input": {
+            "5": 0,
+            "4": 4,
+            "3": 8,
+            "2": 12
+          }
+        },
+        "bonus": {
+          "value": 48,
+          "name": "Bonus",
+          "parameter": "dsw1",
+          "input": {
+            "125000 points": 0,
+            "100000 points": 16,
+            "75000 points": 32,
+            "50000 points": 48
+          }
+        }
+      }
+    },
+    "drivers": {
+      "eyes": {
+        "name": "US set 1",
+        "settings": {
+          "decoders": {
+            "cpu": "eyes",
+            "video": "woodpecker"
+          }
+        },
+        "roms": {
+          "cpu": [
+            { "file": [ "0x1000", "0x3b09ac89" ] },
+            { "file": [ "0x1000", "0x97096855" ] },
+            { "file": [ "0x1000", "0x731e294e" ] },
+            { "file": [ "0x1000", "0x22f7a719" ] }
+          ],
+          "video": [
+            { "file": [ "0x1000", "0xd6af0030" ] },
+            { "file": [ "0x1000", "0xa42b5201" ] }
+          ],
+          "palette": [
+            { "file": [ "0x20", "0x2fc650bd" ] },
+            { "file": [ "0x100", "0xd8d78829" ] }
+          ],
+          "sound": [
+            { "file": [ "0x100", "0xa9cc86bf" ] }
+          ]
+        }
+      },
+      "eyeszacb": {
+        "name": "bootleg set 2",
+        "roms": {
+          "cpu": [
+            { "file": [ "0x800", "0xa4a9d7a0" ] },
+            { "file": [ "0x800", "0xc32b3f73" ] },
+            { "file": [ "0x800", "0x195b9473" ] },
+            { "file": [ "0x800", "0x292886cb" ] },
+            { "file": [ "0x800", "0xff94b015" ] },
+            { "file": [ "0x800", "0x9271c58c" ] },
+            { "file": [ "0x800", "0x965cf32b" ] },
+            { "file": [ "0x800", "0xc254e92e" ] }
+          ],
+          "video": [
+            { "file": [ "0x800", "0x59dce22e" ] },
+            { "file": [ "0x800", "0xaaa7a537" ] },
+            { "file": [ "0x800", "0x1969792b" ] },
+            { "file": [ "0x800", "0x99af4b30" ] }
+          ],
+          "palette": [
+            { "file": [ "0x20", "0x2fc650bd" ] },
+            { "file": [ "0x100", "0xd8d78829" ] }
+          ],
+          "sound": [
+            { "file": [ "0x100", "0xa9cc86bf" ] }
+          ]
+        }
+      },
+      "eyes2": {
+        "name": "US set 2",
+        "settings": {
+          "decoders": {
+            "cpu": "eyes",
+            "video": "woodpecker"
+          }
+        },
+        "roms": {
+          "cpu": [
+            { "file": [ "0x1000", "0x2cda7185" ] },
+            { "file": [ "0x1000", "0xb9fe4f59" ] },
+            { "file": [ "0x1000", "0xd618ba66" ] },
+            { "file": [ "0x1000", "0xcf038276" ] }
+          ],
+          "video": [
+            { "file": [ "0x1000", "0x03b1b4c7" ] },
+            { "file": [ "0x1000", "0xa42b5201" ] }
+          ],
+          "palette": [
+            { "file": [ "0x20", "0x2fc650bd" ] },
+            { "file": [ "0x100", "0xd8d78829" ] }
+          ],
+          "sound": [
+            { "file": [ "0x100", "0xa9cc86bf" ] }
+          ]
+        }
+      },
+      "eyesb": {
+        "name": "bootleg set 1",
+        "settings": {
+          "decoders": {
+            "cpu": "eyes",
+            "video": "woodpecker"
+          }
+        },
+        "roms": {
+          "cpu": [
+            { "file": [ "0x800", "0x339d279a" ] },
+            { "file": [ "0x800", "0x1b68a61d" ] },
+            { "file": [ "0x800", "0xd4f9aaf8" ] },
+            { "file": [ "0x800", "0x6b41bb80" ] },
+            { "file": [ "0x800", "0x748e0e48" ] },
+            { "file": [ "0x800", "0x7b7f4a74" ] },
+            { "file": [ "0x800", "0x367a3884" ] },
+            { "file": [ "0x800", "0x2baaadae" ] }
+          ],
+          "video": [
+            { "file": [ "0x800", "0x342c0653" ] },
+            { "file": [ "0x800", "0x99af4b30" ] },
+            { "file": [ "0x800", "0xb247b82c" ] },
+            { "file": [ "0x800", "0xaaa7a537" ] }
+          ],
+          "palette": [
+            { "file": [ "0x20", "0x2c3cc909" ] },
+            { "file": [ "0x100", "0xd8d78829" ] }
+          ],
+          "sound": [
+            { "file": [ "0x100", "0xa9cc86bf" ] }
+          ]
+        }
+      },
+      "eyeszac": {
+        "name": "Italy",
+        "settings": {
+          "decoders": {
+            "cpu": "eyes",
+            "video": "woodpecker"
+          }
+        },
+        "roms": {
+          "cpu": [
+            { "file": [ "0x1000", "0xe555b265" ] },
+            { "file": [ "0x1000", "0xd6d73eb5" ] },
+            { "file": [ "0x1000", "0x604c940c" ] },
+            { "file": [ "0x1000", "0xacc9cd8b" ] }
+          ],
+          "video": [
+            { "file": [ "0x1000", "0xd6af0030" ] },
+            { "file": [ "0x1000", "0xa42b5201" ] }
+          ],
+          "palette": [
+            { "file": [ "0x20", "0x2fc650bd" ] },
+            { "file": [ "0x100", "0xd8d78829" ] }
+          ],
+          "sound": [
+            { "file": [ "0x100", "0xa9cc86bf" ] }
+          ]
+        }
+      }
+    }
+  }
+}

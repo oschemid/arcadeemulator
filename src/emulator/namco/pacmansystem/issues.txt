@@ -1,6 +1,5 @@
-dsw : new implementation needed
-port3 = public temporary
-rotate : find best solution
-
-shotbull : doesn't work
-8way - 4way : not implemented
+Missing CHEAT mode
+4Way - 8Way
+joystick2 (for jumpshot)
+fire/start (for jumpshot)
+BIG ISSUE - Input s'ajoutent...

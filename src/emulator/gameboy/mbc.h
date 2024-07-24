@@ -4,7 +4,7 @@
 using aos::string;
 
 
-namespace ae {
+namespace aos {
 	namespace gameboy {
 		class BootRom {
 		protected:

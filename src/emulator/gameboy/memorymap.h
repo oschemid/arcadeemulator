@@ -2,7 +2,7 @@
 #include "types.h"
 
 
-namespace ae::gameboy
+namespace aos::gameboy
 {
 	enum MemoryMap : uint16_t
 	{

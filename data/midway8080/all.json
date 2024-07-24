@@ -1,0 +1,400 @@
+{
+  "api": "arcados.driver/v1",
+  "metadata": {
+    "description": "Midway8080 games"
+  },
+  "amazingmaze": {
+    "name": "Amazing Maze",
+    "platform": "midway8080",
+    "version": "maze",
+    "default": {
+      "core": "midway8080",
+      "settings": {
+        "display": {
+          "colormap": "GREEN",
+          "rotated": true
+        },
+        "controllers": {
+          "joystick": {
+            "type": "4WAY",
+            "mapping": "0"
+          },
+          "buttons": {
+            "mapping": "12.C"
+          }
+        },
+        "gametime": {
+          "name": "Two player time",
+          "value": 0,
+          "input": {
+            "6 mins": 0,
+            "4 mins": 64
+          },
+          "parameter": "port1"
+        }
+      },
+      "roms": {
+        "cpu": [
+          { "file": [ "0x800", "0xf2860cff" ] },
+          { "file": [ "0x800", "0x65fad839" ] }
+        ]
+      }
+    }
+  },
+  "schaser": {
+    "name": "Space Chaser",
+    "platform": "midway8080",
+    "version": "schaser",
+    "default": {
+      "core": "midway8080",
+      "settings": {
+        "display": {
+          "colormap": "SPACECHASER"
+        },
+        "controllers": {
+          "joystick": {
+            "type": "4WAYFIRE",
+            "mapping": "12"
+          },
+          "buttons": {
+            "mapping": "C21"
+          }
+        },
+        "difficulty": {
+          "name": "Difficulty",
+          "value": 0,
+          "input": {
+            "Normal": 0,
+            "Hard": 1
+          },
+          "parameter": "port2"
+        },
+        "ships": {
+          "name": "Lives",
+          "value": 0,
+          "input": {
+            "3": 0,
+            "4": 8
+          },
+          "parameter": "port2"
+        }
+      },
+      "roms": {
+        "cpu": [
+          { "file": [ "0x400", "0xbec2b16b" ] },
+          { "file": [ "0x400", "0x9d25e608" ] },
+          { "file": [ "0x400", "0x113d0635" ] },
+          { "file": [ "0x400", "0xf3a43c8d" ] },
+          { "file": [ "0x400", "0x47c84f23" ] },
+          { "file": [ "0x400", "0x02ff2199" ] },
+          { "file": [ "0x400", "0x87d06b88" ] },
+          { "file": [ "0x400", "0x6dfaad08" ] }
+        ],
+        "cpu2": [
+          { "file": [ "0x400", "0x3d1a2ae3" ] },
+          { "file": [ "0x400", "0x037edb99" ] }
+        ]
+      }
+    }
+  },
+  "spaceinvaders": {
+    "name": "Space Invaders",
+    "platform": "midway8080",
+    "version": "midway",
+    "default": {
+      "core": "midway8080",
+      "settings": {
+        "controllers": {
+          "joystick": {
+            "type": "2WAYFIRE",
+            "mapping": "12"
+          },
+          "buttons": {
+            "mapping": "C21"
+          }
+        },
+        "ships": {
+          "parameter": "port2",
+          "value": 0,
+          "name": "Lives",
+          "input": {
+            "3": 0,
+            "4": 1,
+            "5": 2,
+            "6": 3
+          }
+        },
+        "bonus": {
+          "parameter": "port2",
+          "value": 0,
+          "name": "Bonus",
+          "input": {
+            "1500": 0,
+            "1000": 4
+          }
+        },
+        "fixed": {
+          "parameter": "port1",
+          "value": 132
+        }
+      }
+    },
+    "drivers": {
+      "alieninv": {
+        "name": "Alien Invasion",
+        "roms": {
+          "cpu": [
+            { "file": [ "0x800", "0x6ad601c3" ] },
+            { "file": [ "0x800", "0xc6bb6fb3" ] },
+            { "file": [ "0x800", "0x1d2ff324" ] },
+            { "file": [ "0x800", "0x2f2e6791" ] }
+          ]
+        },
+        "settings": {
+          "display": {
+            "colormap": "SPACEINVADERS"
+          },
+          "ships": {
+            "parameter": "port2",
+            "value": 0,
+            "name": "Lives",
+            "input": {
+              "3": 0,
+              "4": 1
+            }
+          },
+          "bonus": {
+            "parameter": "port2",
+            "value": 0
+          }
+        }
+      },
+      "midway": {
+        "name": "Space Invaders (Midway Version)",
+        "roms": {
+          "cpu": [
+            { "file": [ "0x800", "0x734f5ad8" ] },
+            { "file": [ "0x800", "0x6bfaca4a" ] },
+            { "file": [ "0x800", "0x0ccead96" ] },
+            { "file": [ "0x800", "0x14e538b0" ] }
+          ]
+        },
+        "settings": {
+          "display": {
+            "colormap": "SPACEINVADERS"
+          }
+        }
+      },
+      "sitv": {
+        "name": "Space Invaders (TV Version rev 2)",
+        "roms": {
+          "cpu": [
+            { "file": [ "0x800", "0xfef18aad" ] },
+            { "file": [ "0x800", "0x3c759a90" ] },
+            { "file": [ "0x800", "0x0ad3657f" ] },
+            { "file": [ "0x800", "0xcd2c67f6" ] }
+          ]
+        },
+        "settings": {
+          "display": {
+            "colormap": "SPACEINVADERS"
+          }
+        }
+      },
+      "sitv1": {
+        "name": "Space Invaders (TV Version rev 1)",
+        "roms": {
+          "cpu": [
+            { "file": [ "0x800", "0x9f37b146" ] },
+            { "file": [ "0x800", "0x3c759a90" ] },
+            { "file": [ "0x800", "0x0ad3657f" ] },
+            { "file": [ "0x800", "0xcd2c67f6" ] }
+          ]
+        },
+        "settings": {
+          "display": {
+            "colormap": "SPACEINVADERS"
+          }
+        }
+      },
+      "sisv2": {
+        "name": "Space Invaders (SV Version rev 2)",
+        "roms": {
+          "cpu": [
+            { "file": [ "0x400", "0xd0c32d72" ] },
+            { "file": [ "0x400", "0x0e159534" ] },
+            { "file": [ "0x400", "0x483e651e" ] },
+            { "file": [ "0x400", "0x483e651e" ] },
+            { "file": [ "0x400", "0x483e651e" ] },
+            { "file": [ "0x400", "0x1293b826" ] },
+            { "file": [ "0x400", "0xcd80b13f" ] },
+            { "file": [ "0x400", "0x2c68e0b4" ] }
+          ]
+        }
+      },
+      "sisv3": {
+        "name": "Space Invaders (SV Version rev 3)",
+        "roms": {
+          "cpu": [
+            { "file": [ "0x400", "0x86bb8cb6" ] },
+            { "file": [ "0x400", "0x0e159534" ] },
+            { "file": [ "0x400", "0x483e651e" ] },
+            { "file": [ "0x400", "0x483e651e" ] },
+            { "file": [ "0x400", "0x483e651e" ] },
+            { "file": [ "0x400", "0x1293b826" ] },
+            { "file": [ "0x400", "0xcd80b13f" ] },
+            { "file": [ "0x400", "0x2c68e0b4" ] }
+          ]
+        }
+      },
+      "sisv": {
+        "name": "Space Invaders (SV Version rev 4)",
+        "roms": {
+          "cpu": [
+            { "file": [ "0x400", "0x86bb8cb6" ] },
+            { "file": [ "0x400", "0xfebe6d1a" ] },
+            { "file": [ "0x400", "0xa08e7202" ] },
+            { "file": [ "0x400", "0xa08e7202" ] },
+            { "file": [ "0x400", "0xa08e7202" ] },
+            { "file": [ "0x400", "0x1293b826" ] },
+            { "file": [ "0x400", "0xa9011634" ] },
+            { "file": [ "0x400", "0x58730370" ] }
+          ]
+        }
+      },
+      "cosmicmo": {
+        "name": "Cosmic Monsters Version II",
+        "settings": {
+          "fixed": {
+            "parameter": "port1",
+            "value": 0
+          },
+          "display": {
+            "colormap": "COSMICMONSTERS"
+          }
+        },
+        "roms": {
+          "cpu": [
+            { "file": [ "0x400", "0xd6e4e5da" ] },
+            { "file": [ "0x400", "0x8f7988e6" ] },
+            { "file": [ "0x400", "0x2d2e9dc8" ] },
+            { "file": [ "0x400", "0x26cae456" ] }
+          ],
+          "cpu2": [
+            { "file": [ "0x400", "0xb13f228e" ] },
+            { "file": [ "0x400", "0x4ae1b9c4" ] },
+            { "file": [ "0x400", "0x6a13b15b" ] }
+          ]
+        }
+      },
+      "cosmicm2": {
+        "name": "Cosmic Monsters 2",
+        "settings": {
+          "fixed": {
+            "parameter": "port1",
+            "value": 0
+          },
+          "display": {
+            "colormap": "COSMICMONSTERS"
+          }
+        },
+        "roms": {
+          "cpu": [
+            { "file": [ "0x1000", "0xbbffede6" ] }
+          ],
+          "cpu2": [
+            { "file": [ "0x1000", "0xb841f894" ] }
+          ]
+        }
+      },
+      "cosmicin": {
+        "name": "Cosmic Invaders",
+        "settings": {
+          "fixed": {
+            "parameter": "port1",
+            "value": 0
+          },
+          "display": {
+            "colormap": "SPACEINVADERS"
+          }
+        },
+        "roms": {
+          "cpu": [
+            { "file": [ "0x800", "0x734f5ad8" ] },
+            { "file": [ "0x800", "0x6bfaca4a" ] },
+            { "file": [ "0x800", "0x0ccead96" ] },
+            { "file": [ "0x800", "0x5733048c" ] }
+          ]
+        }
+      },
+      "galmonst": {
+        "name": "Galaxy Monsters",
+        "settings": {
+          "fixed": {
+            "parameter": "port1",
+            "value": 0
+          },
+          "display": {
+            "colormap": "SPACEINVADERS"
+          }
+        },
+        "roms": {
+          "cpu": [
+            { "file": [ "0x400", "0x8a0395e9" ] },
+            { "file": [ "0x400", "0x6183ed16" ] },
+            { "file": [ "0x400", "0xb6047fdd" ] },
+            { "file": [ "0x400", "0xb6047fdd" ] },
+            { "file": [ "0x400", "0xb6047fdd" ] },
+            { "file": [ "0x400", "0xe88e8c96" ] },
+            { "file": [ "0x400", "0x34678b80" ] },
+            { "file": [ "0x400", "0x05a6806b" ] }
+          ]
+        }
+      },
+      "spceking": {
+        "name": "Space King",
+        "settings": {
+          "fixed": {
+            "parameter": "port1",
+            "value": 0
+          },
+          "display": {
+            "colormap": "SPACEINVADERS"
+          }
+        },
+        "roms": {
+          "cpu": [
+            { "file": [ "0x800", "0x734f5ad8" ] },
+            { "file": [ "0x800", "0x96dcdd42" ] },
+            { "file": [ "0x800", "0x95fc96ad" ] },
+            { "file": [ "0x800", "0x54170ada" ] }
+          ]
+        }
+      },
+      "spaceatt": {
+        "name": "Space Attack",
+        "settings": {
+          "fixed": {
+            "parameter": "port1",
+            "value": 0
+          },
+          "display": {
+            "colormap": "SPACEINVADERS"
+          }
+        },
+        "roms": {
+          "cpu": [
+            { "file": [ "0x400", "0xd0c32d72" ] },
+            { "file": [ "0x400", "0x0e159534" ] },
+            { "file": [ "0x400", "0x483e651e" ] },
+            { "file": [ "0x400", "0x483e651e" ] },
+            { "file": [ "0x400", "0x483e651e" ] },
+            { "file": [ "0x400", "0x1293b826" ] },
+            { "file": [ "0x400", "0x6fc782aa" ] },
+            { "file": [ "0x400", "0x211ac4a3" ] }
+          ]
+        }
+      }
+    }
+  }
+}

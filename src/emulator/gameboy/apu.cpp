@@ -2,7 +2,7 @@
 #include <iostream>
 
 
-using namespace ae::gameboy;
+using namespace aos::gameboy;
 
 
 Apu::Apu():

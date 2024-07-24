@@ -1,20 +1,19 @@
 #pragma once
 #include "types.h"
-#include "display.h"
+#include "device/rasterdisplay.h"
 #include "xprocessors.h"
 #include "../memorymap.h"
-#include "../../../gui/vulkan/engine.h"
 #include <deque>
 
 
-namespace ae::gameboy
+namespace aos::gameboy
 {
 	class Ppu : public xprocessors::Cpu
 	{
 	public:
 		Ppu();
 
-		void init(aos::display::RasterDisplay*);
+		void init(aos::device::RasterDisplay*);
 
 		uint8_t readOAM(const uint16_t) const;
 		void writeOAM(const uint16_t, const uint8_t);
@@ -114,7 +113,7 @@ namespace ae::gameboy
 
 		uint16_t _dots;
 
-		aos::display::RasterDisplay* _raster;
+		aos::device::RasterDisplay* _raster;
 		
 		uint8_t _dmatransfer;
 		uint16_t _dmaaddress;
@@ -133,6 +132,9 @@ namespace ae::gameboy
 		bool interrupt(const uint8_t) override { return true; }
 
 		uint8_t readVRAM(const uint16_t p) { return _vram[p - 0x8000]; }
-		void writeVRAM(const uint16_t p, const uint8_t v) { _vram[p - 0x8000] = v; }
+		void writeVRAM(const uint16_t p, const uint8_t v) { 
+			if (p == 0x982c)
+				_vram[p - 0x8000] = v;
+			assert(p >= 0x8000); assert(p < 0xa000); _vram[p - 0x8000] = v; }
 	};
 }

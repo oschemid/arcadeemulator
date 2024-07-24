@@ -7,7 +7,7 @@
 #include <array>
 
 
-namespace ae::gameboy {
+namespace aos::gameboy {
 	namespace io {
 		const uint8_t div = 0x04;
 		const uint8_t tima = 0x05;

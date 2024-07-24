@@ -2,7 +2,7 @@
 #include "memorymap.h"
 
 
-using namespace ae::gameboy;
+using namespace aos::gameboy;
 
 SerialLink::SerialLink() :
 	_enabled{ false },

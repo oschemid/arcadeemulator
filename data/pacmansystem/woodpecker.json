@@ -1,0 +1,205 @@
+{
+  "api": "arcados.driver/v1",
+  "metadata": {
+    "description": "Namco Pacman System games"
+  },
+  "nmouse": {
+    "name": "Naughty Mouse",
+    "platform": "namcopacman",
+    "default": {
+      "core": "pacman",
+      "settings": {
+        "decoders": {
+          "cpu": "eyes",
+          "video": "woodpecker",
+          "interrupt": "nmouse"
+        },
+        "fixed": {
+          "value": 129,
+          "parameter": "dsw1"
+        },
+        "lives": {
+          "value": 8,
+          "parameter": "dsw1",
+          "name": "Lives",
+          "input": {
+            "1": 0,
+            "2": 4,
+            "3": 8,
+            "5": 12
+          }
+        },
+        "bonus": {
+          "value": 16,
+          "parameter": "dsw1",
+          "name": "Bonus Life",
+          "input": {
+            "5000": 0,
+            "10000": 16,
+            "15000": 32,
+            "None": 48
+          }
+        },
+        "difficulty": {
+          "value": 0,
+          "parameter": "dsw1",
+          "name": "Difficulty",
+          "input": {
+            "Normal": 0,
+            "Hard": 64
+          }
+        }
+      }
+    },
+    "drivers": {
+      "nmouse": {
+        "name": "Set 1",
+        "roms": {
+          "cpu": [
+            { "file": [ "0x800", "0xe447ecfa" ] },
+            { "file": [ "0x800", "0x2e6f13d9" ] },
+            { "file": [ "0x800", "0x44a80f97" ] },
+            { "file": [ "0x800", "0x9c7a46bd" ] },
+            { "file": [ "0x800", "0x5bc94c5d" ] },
+            { "file": [ "0x800", "0x1af29e22" ] },
+            { "file": [ "0x800", "0xcc3be185" ] },
+            { "file": [ "0x800", "0x66b3e5dc" ] }
+          ],
+          "video": [
+            { "file": [ "0x800", "0x2ea7cc3f" ] },
+            { "file": [ "0x800", "0x0511fcea" ] },
+            { "file": [ "0x800", "0xf5a627cd" ] },
+            { "file": [ "0x800", "0x65f2580e" ] }
+          ],
+          "palette": [
+            { "file": [ "0x20", "0x2fc650bd" ] },
+            { "file": [ "0x100", "0xd8772167" ] }
+          ],
+          "sound": [
+            { "file": [ "0x100", "0xa9cc86bf" ] }
+          ]
+        }
+      },
+      "nmouseb": {
+        "name": "Set 2",
+        "roms": {
+          "cpu": [
+            { "file": [ "0x800", "0xe447ecfa" ] },
+            { "file": [ "0x800", "0x2e6f13d9" ] },
+            { "file": [ "0x800", "0x44a80f97" ] },
+            { "file": [ "0x800", "0x9c7a46bd" ] },
+            { "file": [ "0x800", "0x405aa389" ] },
+            { "file": [ "0x800", "0xf58e7df4" ] },
+            { "file": [ "0x800", "0x06fb18ec" ] },
+            { "file": [ "0x800", "0xd187b82b" ] }
+          ],
+          "video": [
+            { "file": [ "0x800", "0x2ea7cc3f" ] },
+            { "file": [ "0x800", "0x0511fcea" ] },
+            { "file": [ "0x800", "0xf5a627cd" ] },
+            { "file": [ "0x800", "0x330230a5" ] }
+          ],
+          "palette": [
+            { "file": [ "0x20", "0x2fc650bd" ] },
+            { "file": [ "0x100", "0xd8772167" ] }
+          ],
+          "sound": [
+            { "file": [ "0x100", "0xa9cc86bf" ] }
+          ]
+        }
+      }
+    }
+  },
+  "woodpeck": {
+    "name": "Woodpecker",
+    "platform": "namcopacman",
+    "default": {
+      "core": "pacman",
+      "settings": {
+        "decoders": {
+          "video": "woodpecker"
+        },
+        "fixed": {
+          "value": 129,
+          "parameter": "dsw1"
+        },
+        "lives": {
+          "value": 8,
+          "parameter": "dsw1",
+          "name": "Lives",
+          "input": {
+            "1": 0,
+            "2": 4,
+            "3": 8,
+            "5": 12
+          }
+        },
+        "bonus": {
+          "value": 16,
+          "parameter": "dsw1",
+          "name": "Bonus Life",
+          "input": {
+            "5000": 0,
+            "10000": 16,
+            "15000": 32,
+            "None": 48
+          }
+        }
+      }
+    },
+    "drivers": {
+      "woodpeck": {
+        "name": "Set 1",
+        "roms": {
+          "cpu": [
+            { "file": [ "0x1000", "0x37ea66ca" ] }
+          ],
+          "cpu2": [
+            { "file": [ "0x1000", "0xcd115dba" ] },
+            { "file": [ "0x1000", "0xd40b2321" ] },
+            { "file": [ "0x1000", "0x024092f4" ] },
+            { "file": [ "0x1000", "0x18ef0fc8" ] }
+          ],
+          "video": [
+            { "file": [ "0x800", "0x15a87f62" ] },
+            { "file": [ "0x800", "0xab4abd88" ] },
+            { "file": [ "0x800", "0x5b9ba95b" ] },
+            { "file": [ "0x800", "0xd7b80a45" ] }
+          ],
+          "palette": [
+            { "file": [ "0x20", "0x2fc650bd" ] },
+            { "file": [ "0x100", "0xd8772167" ] }
+          ],
+          "sound": [
+            { "file": [ "0x100", "0xa9cc86bf" ] }
+          ]
+        }
+      },
+      "woodpecka": {
+        "name": "Set 2",
+        "roms": {
+          "cpu": [
+            { "file": [ "0x1000", "0xb5ee8bca" ] }
+          ],
+          "cpu2": [
+            { "file": [ "0x1000", "0xc5ec2de6" ] },
+            { "file": [ "0x1000", "0x07ea534e" ] },
+            { "file": [ "0x1000", "0xa3a3253a" ] },
+            { "file": [ "0x1000", "0x6c50546b" ] }
+          ],
+          "video": [
+            { "file": [ "0x1000", "0x0bf52102" ] },
+            { "file": [ "0x1000", "0x0ed8def8" ] }
+          ],
+          "palette": [
+            { "file": [ "0x20", "0x2fc650bd" ] },
+            { "file": [ "0x100", "0xd8772167" ] }
+          ],
+          "sound": [
+            { "file": [ "0x100", "0xa9cc86bf" ] }
+          ]
+        }
+      }
+    }
+  }
+}

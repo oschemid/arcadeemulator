@@ -6,7 +6,7 @@
 #include "channel.h"
 
 
-namespace ae {
+namespace aos {
 	namespace gameboy {
 		class Apu {
 		protected:

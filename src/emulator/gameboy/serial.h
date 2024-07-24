@@ -4,7 +4,7 @@
 #include "memorymap.h"
 
 
-namespace ae::gameboy
+namespace aos::gameboy
 {
 	class SerialLink : public xprocessors::Device
 	{

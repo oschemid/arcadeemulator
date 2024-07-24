@@ -1,9 +1,9 @@
 #pragma once
 
 #include "types.h"
-#include "emulator.h"
+#include "core.h"
 
-#include "xprocessors.h"
+#include "sm83.h"
 #include "ppu/ppu.h"
 #include "apu.h"
 #include "mbc.h"
@@ -11,14 +11,15 @@
 #include "serial.h"
 
 
-namespace ae::gameboy
+namespace aos::gameboy
 {
-	class Gameboy : public aos::emulator::Emulator
+	class Gameboy : public aos::Core
 	{
 	public:
 		std::unique_ptr<Mmu> _mmu;
 		SerialLink _serial;
 		Ppu _ppu;
+		tools::Clock _clock{ 4194 };
 
 		std::string _rom;
 		std::shared_ptr<Mbc> _cartridge;
@@ -26,14 +27,15 @@ namespace ae::gameboy
 
 		Apu _apu;
 
-		xprocessors::Cpu::Ptr cpu;
+		xprocessors::cpu::sm83 _cpu;
 
 	public:
 		Gameboy(const string);
 		virtual ~Gameboy() = default;
 
-		aos::emulator::SystemInfo getSystemInfo() const override;
-		void init(aos::display::RasterDisplay*) override;
-		uint8_t tick() override;
+		virtual json getRequirements() const override;
+
+		void init(map<string, Device::SharedPtr>) override;
+		void run() override;
 	};
 }

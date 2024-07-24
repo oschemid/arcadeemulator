@@ -1,0 +1,783 @@
+{
+	"api": "arcados.driver/v1",
+	"metadata": {
+		"description": "Namco Pacman System games"
+	},
+	"pacman": {
+		"name": "Pacman",
+		"platform": "namcopacman",
+		"version": "pacman",
+		"default": {
+			"core": "pacman",
+			"settings": {
+				"fixed": {
+					"value": 1,
+					"parameter": "dsw1"
+				},
+				"lives": {
+					"value": 8,
+					"name": "Lives",
+					"parameter": "dsw1",
+					"input": {
+						"1": 0,
+						"2": 4,
+						"3": 8,
+						"5": 12
+					}
+				},
+				"bonus": {
+					"value": 0,
+					"name": "Bonus",
+					"parameter": "dsw1",
+					"input": {
+						"10000 points": 0,
+						"15000 points": 16,
+						"20000 points": 32,
+						"no": 48
+					}
+				},
+				"difficulty": {
+					"value": 64,
+					"name": "Difficulty",
+					"parameter": "dsw1",
+					"input": {
+						"Hard": 0,
+						"Normal": 64
+					}
+				},
+				"ghostname": {
+					"value": 128,
+					"name": "Ghost names",
+					"parameter": "dsw1",
+					"input": {
+						"Alternate": 0,
+						"Normal": 128
+					}
+				}
+			},
+			"roms": {
+				"palette": [
+					{ "file": [ "0x20", "0x2fc650bd" ] },
+					{ "file": [ "0x100", "0x3eb3a8e4" ] }
+				],
+				"sound": [
+					{ "file": [ "0x100", "0xa9cc86bf" ] }
+				]
+			}
+		},
+		"drivers": {
+			"puckman": {
+				"name": "Puck Man (Japan set 1)",
+				"roms": {
+					"cpu": [
+						{ "file": [ "0x800", "0xf36e88ab" ] },
+						{ "file": [ "0x800", "0x618bd9b3" ] },
+						{ "file": [ "0x800", "0x7d177853" ] },
+						{ "file": [ "0x800", "0xd3e8914c" ] },
+						{ "file": [ "0x800", "0x6bf4f625" ] },
+						{ "file": [ "0x800", "0xa948ce83" ] },
+						{ "file": [ "0x800", "0xb6289b26" ] },
+						{ "file": [ "0x800", "0x17a88c13" ] }
+					],
+					"video": [
+						{ "file": [ "0x800", "0x2066a0b7" ] },
+						{ "file": [ "0x800", "0x3591b89d" ] },
+						{ "file": [ "0x800", "0x9e39323a" ] },
+						{ "file": [ "0x800", "0x1b1d9096" ] }
+					]
+				}
+			},
+			"puckmanb": {
+				"name": "Puck Man (bootleg set 1)",
+				"roms": {
+					"cpu": [
+						{ "file": [ "0x1000", "0xfee263b3" ] },
+						{ "file": [ "0x1000", "0x39d1fc83" ] },
+						{ "file": [ "0x1000", "0x02083b03" ] },
+						{ "file": [ "0x1000", "0x7a36fe55" ] }
+					],
+					"video": [
+						{ "file": [ "0x1000", "0x0c944964" ] },
+						{ "file": [ "0x1000", "0x958fedf9" ] }
+					]
+				}
+			},
+			"puckmanf": {
+				"name": "Puck Man (speedup hack)",
+				"roms": {
+					"cpu": [
+						{ "file": [ "0x1000", "0xfee263b3" ] },
+						{ "file": [ "0x1000", "0x51b38db9" ] },
+						{ "file": [ "0x1000", "0x02083b03" ] },
+						{ "file": [ "0x1000", "0x7a36fe55" ] }
+					],
+					"video": [
+						{ "file": [ "0x1000", "0x0c944964" ] },
+						{ "file": [ "0x1000", "0x958fedf9" ] }
+					]
+				}
+			},
+			"puckmanh": {
+				"name": "Puck Man (bootleg set 2)",
+				"roms": {
+					"cpu": [
+						{ "file": [ "0x1000", "0x5fe8610a" ] },
+						{ "file": [ "0x1000", "0x61d38c6c" ] },
+						{ "file": [ "0x1000", "0x4e7ef99f" ] },
+						{ "file": [ "0x1000", "0x8939ddd2" ] }
+					],
+					"video": [
+						{ "file": [ "0x800", "0x2229ab07" ] },
+						{ "file": [ "0x800", "0x3591b89d" ] },
+						{ "file": [ "0x800", "0x9e39323a" ] },
+						{ "file": [ "0x800", "0x1b1d9096" ] }
+					]
+				}
+			},
+			"puckmod": {
+				"name": "Puck Man (Japan set 2)",
+				"roms": {
+					"cpu": [
+						{ "file": [ "0x1000", "0xfee263b3" ] },
+						{ "file": [ "0x1000", "0x39d1fc83" ] },
+						{ "file": [ "0x1000", "0x02083b03" ] },
+						{ "file": [ "0x1000", "0x7d98d5f5" ] }
+					],
+					"video": [
+						{ "file": [ "0x1000", "0x0c944964" ] },
+						{ "file": [ "0x1000", "0x958fedf9" ] }
+					]
+				}
+			},
+			"pacman": {
+				"name": "Pac-Man (Midway)",
+				"roms": {
+					"cpu": [
+						{ "file": [ "0x1000", "0xc1e6ab10" ] },
+						{ "file": [ "0x1000", "0x1a6fb2d4" ] },
+						{ "file": [ "0x1000", "0xbcdd1beb" ] },
+						{ "file": [ "0x1000", "0x817d94e3" ] }
+					],
+					"video": [
+						{ "file": [ "0x1000", "0x0c944964" ] },
+						{ "file": [ "0x1000", "0x958fedf9" ] }
+					]
+				}
+			},
+			"pacmanso": {
+				"name": "Pac-Man (SegaSA / Sonic)",
+				"roms": {
+					"cpu": [
+						{ "file": [ "0x800", "0x76dbed21" ] },
+						{ "file": [ "0x800", "0x965bb9b2" ] },
+						{ "file": [ "0x800", "0x7d177853" ] },
+						{ "file": [ "0x800", "0xd3e8914c" ] },
+						{ "file": [ "0x800", "0xa5af382c" ] },
+						{ "file": [ "0x800", "0xa948ce83" ] },
+						{ "file": [ "0x800", "0xcd03135a" ] },
+						{ "file": [ "0x800", "0xfb397ced" ] }
+					],
+					"video": [
+						{ "file": [ "0x800", "0x2ee076d2" ] },
+						{ "file": [ "0x800", "0x3591b89d" ] },
+						{ "file": [ "0x800", "0x9e39323a" ] },
+						{ "file": [ "0x800", "0x1b1d9096" ] }
+					]
+				}
+			},
+			"pacmanvg": {
+				"name": "Pac-Man (Video Game SA)",
+				"roms": {
+					"cpu": [
+						{ "file": [ "0x800", "0x76dbed21" ] },
+						{ "file": [ "0x800", "0x965bb9b2" ] },
+						{ "file": [ "0x800", "0x7d177853" ] },
+						{ "file": [ "0x800", "0xd3e8914c" ] },
+						{ "file": [ "0x800", "0xa5af382c" ] },
+						{ "file": [ "0x800", "0xa948ce83" ] },
+						{ "file": [ "0x800", "0x7c42d9be" ] },
+						{ "file": [ "0x800", "0x68a7300d" ] }
+					],
+					"video": [
+						{ "file": [ "0x800", "0x2229ab07" ] },
+						{ "file": [ "0x800", "0x3591b89d" ] },
+						{ "file": [ "0x800", "0x9e39323a" ] },
+						{ "file": [ "0x800", "0x1b1d9096" ] }
+					]
+				}
+			},
+			"pacmanf": {
+				"name": "Pac-Man (Midway, speedup)",
+				"roms": {
+					"cpu": [
+						{ "file": [ "0x1000", "0xc1e6ab10" ] },
+						{ "file": [ "0x1000", "0x720dc3ee" ] },
+						{ "file": [ "0x1000", "0xbcdd1beb" ] },
+						{ "file": [ "0x1000", "0x817d94e3" ] }
+					],
+					"video": [
+						{ "file": [ "0x1000", "0x0c944964" ] },
+						{ "file": [ "0x1000", "0x958fedf9" ] }
+					]
+				}
+			},
+			"pacmod": {
+				"name": "Pac-Man (Midway, harder)",
+				"roms": {
+					"cpu": [
+						{ "file": [ "0x1000", "0x3b2ec270" ] },
+						{ "file": [ "0x1000", "0x1a6fb2d4" ] },
+						{ "file": [ "0x1000", "0x18811780" ] },
+						{ "file": [ "0x1000", "0x5c96a733" ] }
+					],
+					"video": [
+						{ "file": [ "0x1000", "0x299fb17a" ] },
+						{ "file": [ "0x1000", "0x958fedf9" ] }
+					]
+				}
+			},
+			"pacmanjpm": {
+				"name": "Pac-Man (JPM bootleg)",
+				"roms": {
+					"cpu": [
+						{ "file": [ "0x800", "0x2c0fa0ab" ] },
+						{ "file": [ "0x800", "0xafeca2f1" ] },
+						{ "file": [ "0x800", "0x7d177853" ] },
+						{ "file": [ "0x800", "0xd3e8914c" ] },
+						{ "file": [ "0x800", "0x9045a44c" ] },
+						{ "file": [ "0x800", "0x93f344c5" ] },
+						{ "file": [ "0x800", "0x258580a2" ] },
+						{ "file": [ "0x800", "0xb4d7ee8c" ] }
+					],
+					"video": [
+						{ "file": [ "0x800", "0x2066a0b7" ] },
+						{ "file": [ "0x800", "0x3591b89d" ] },
+						{ "file": [ "0x800", "0x9e39323a" ] },
+						{ "file": [ "0x800", "0x1b1d9096" ] }
+					]
+				}
+			},
+			"newpuc2": {
+				"name": "Newpuc2 (set 1)",
+				"roms": {
+					"cpu": [
+						{ "file": [ "0x800", "0x69496a98" ] },
+						{ "file": [ "0x800", "0x158fc01c" ] },
+						{ "file": [ "0x800", "0x7d177853" ] },
+						{ "file": [ "0x800", "0x70810ccf" ] },
+						{ "file": [ "0x800", "0x81719de8" ] },
+						{ "file": [ "0x800", "0x3f250c58" ] },
+						{ "file": [ "0x800", "0xe6675736" ] },
+						{ "file": [ "0x800", "0x1f81e765" ] }
+					],
+					"video": [
+						{ "file": [ "0x800", "0x2066a0b7" ] },
+						{ "file": [ "0x800", "0x777c70d3" ] },
+						{ "file": [ "0x800", "0xca8c184c" ] },
+						{ "file": [ "0x800", "0x7dc75a81" ] }
+					]
+				}
+			},
+			"newpuc2b": {
+				"name": "Newpuc2 (set 2)",
+				"roms": {
+					"cpu": [
+						{ "file": [ "0x800", "0x9d027c4a" ] },
+						{ "file": [ "0x800", "0x158fc01c" ] },
+						{ "file": [ "0x800", "0x7d177853" ] },
+						{ "file": [ "0x800", "0x70810ccf" ] },
+						{ "file": [ "0x800", "0xf5e4b2b1" ] },
+						{ "file": [ "0x800", "0x3f250c58" ] },
+						{ "file": [ "0x800", "0xf068e009" ] },
+						{ "file": [ "0x800", "0x1fadcc2f" ] }
+					],
+					"video": [
+						{ "file": [ "0x800", "0x2066a0b7" ] },
+						{ "file": [ "0x800", "0x777c70d3" ] },
+						{ "file": [ "0x800", "0xca8c184c" ] },
+						{ "file": [ "0x800", "0x7dc75a81" ] }
+					]
+				}
+			},
+			"newpuckx": {
+				"name": "New Puck-X",
+				"roms": {
+					"cpu": [
+						{ "file": [ "0x1000", "0xa8ae23c5" ] },
+						{ "file": [ "0x1000", "0x1a6fb2d4" ] },
+						{ "file": [ "0x1000", "0x197443f8" ] },
+						{ "file": [ "0x1000", "0x2e64a3ba" ] }
+					],
+					"video": [
+						{ "file": [ "0x1000", "0x0c944964" ] },
+						{ "file": [ "0x1000", "0x958fedf9" ] }
+					]
+				}
+			},
+			"pacheart": {
+				"name": "Pac-Man (Hearts)",
+				"roms": {
+					"cpu": [
+						{ "file": [ "0x800", "0xd844b679" ] },
+						{ "file": [ "0x800", "0xb9152a38" ] },
+						{ "file": [ "0x800", "0x7d177853" ] },
+						{ "file": [ "0x800", "0x842d6574" ] },
+						{ "file": [ "0x800", "0x9045a44c" ] },
+						{ "file": [ "0x800", "0x888f3c3e" ] },
+						{ "file": [ "0x800", "0xf5265c10" ] },
+						{ "file": [ "0x800", "0x1a21a381" ] }
+					],
+					"video": [
+						{ "file": [ "0x800", "0xc62bbabf" ] },
+						{ "file": [ "0x800", "0x3591b89d" ] },
+						{ "file": [ "0x800", "0xca8c184c" ] },
+						{ "file": [ "0x800", "0x1b1d9096" ] }
+					]
+				}
+			},
+			"bucaner": {
+				"name": "Buccaneer (set 1)",
+				"roms": {
+					"cpu": [
+						{ "file": [ "0x800", "0x2c0fa0ab" ] },
+						{ "file": [ "0x800", "0xafeca2f1" ] },
+						{ "file": [ "0x800", "0x6b53ada9" ] },
+						{ "file": [ "0x800", "0x35f3ca84" ] },
+						{ "file": [ "0x800", "0x9045a44c" ] },
+						{ "file": [ "0x800", "0x888f3c3e" ] },
+						{ "file": [ "0x800", "0x292de161" ] },
+						{ "file": [ "0x800", "0x884af858" ] }
+					],
+					"video": [
+						{ "file": [ "0x800", "0x4060c077" ] },
+						{ "file": [ "0x800", "0xe3861283" ] },
+						{ "file": [ "0x800", "0x09f66dec" ] },
+						{ "file": [ "0x800", "0x653314e7" ] }
+					]
+				}
+			},
+			"bucanera": {
+				"name": "Buccaneer (set 2)",
+				"roms": {
+					"cpu": [
+						{ "file": [ "0x800", "0x2c0fa0ab" ] },
+						{ "file": [ "0x800", "0xafeca2f1" ] },
+						{ "file": [ "0x800", "0x6b53ada9" ] },
+						{ "file": [ "0x800", "0x35f3ca84" ] },
+						{ "file": [ "0x800", "0x9045a44c" ] },
+						{ "file": [ "0x800", "0x888f3c3e" ] },
+						{ "file": [ "0x800", "0x292de161" ] },
+						{ "file": [ "0x800", "0xe037834d" ] }
+					],
+					"video": [
+						{ "file": [ "0x800", "0xf814796f" ] },
+						{ "file": [ "0x800", "0xe3861283" ] },
+						{ "file": [ "0x800", "0x09f66dec" ] },
+						{ "file": [ "0x800", "0x653314e7" ] }
+					]
+				}
+			},
+			"hangly": {
+				"name": "Hangly-Man (set 1)",
+				"roms": {
+					"cpu": [
+						{ "file": [ "0x1000", "0x5fe8610a" ] },
+						{ "file": [ "0x1000", "0x73726586" ] },
+						{ "file": [ "0x1000", "0x4e7ef99f" ] },
+						{ "file": [ "0x1000", "0x7f4147e6" ] }
+					],
+					"video": [
+						{ "file": [ "0x1000", "0x0c944964" ] },
+						{ "file": [ "0x1000", "0x958fedf9" ] }
+					]
+				}
+			},
+			"hangly2": {
+				"name": "Hangly-Man (set 2)",
+				"roms": {
+					"cpu": [
+						{ "file": [ "0x1000", "0x5fe8610a" ] },
+						{ "file": [ "0x800", "0x5ba228bb" ] },
+						{ "file": [ "0x800", "0xbaf5461e" ] },
+						{ "file": [ "0x1000", "0x4e7ef99f" ] },
+						{ "file": [ "0x800", "0x51305374" ] },
+						{ "file": [ "0x800", "0x427c9d4d" ] }
+					],
+					"video": [
+						{ "file": [ "0x1000", "0x299fb17a" ] },
+						{ "file": [ "0x1000", "0x958fedf9" ] }
+					]
+				}
+			},
+			"hangly3": {
+				"name": "Hangly-Man (set 3)",
+				"roms": {
+					"cpu": [
+						{ "file": [ "0x800", "0x9d027c4a" ] },
+						{ "file": [ "0x800", "0x194c7189" ] },
+						{ "file": [ "0x800", "0x5ba228bb" ] },
+						{ "file": [ "0x800", "0xbaf5461e" ] },
+						{ "file": [ "0x800", "0x08419c4a" ] },
+						{ "file": [ "0x800", "0xab74b51f" ] },
+						{ "file": [ "0x800", "0x5039b082" ] },
+						{ "file": [ "0x800", "0x931770d7" ] }
+					],
+					"video": [
+						{ "file": [ "0x800", "0x5f4be3cc" ] },
+						{ "file": [ "0x800", "0x3591b89d" ] },
+						{ "file": [ "0x800", "0x9e39323a" ] },
+						{ "file": [ "0x800", "0x1b1d9096" ] }
+					]
+				}
+			},
+			"baracuda": {
+				"name": "Barracuda",
+				"roms": {
+					"cpu": [
+						{ "file": [ "0x1000", "0x5fe8610a" ] },
+						{ "file": [ "0x1000", "0x61d38c6c" ] },
+						{ "file": [ "0x1000", "0x4e7ef99f" ] },
+						{ "file": [ "0x1000", "0x55e86c2b" ] }
+					],
+					"video": [
+						{ "file": [ "0x800", "0x3fc4030c" ] },
+						{ "file": [ "0x800", "0xea7fba5e" ] },
+						{ "file": [ "0x800", "0xf3e9c9d5" ] },
+						{ "file": [ "0x800", "0x133d720d" ] }
+					]
+				}
+			},
+			"popeyeman": {
+				"name": "Popeye-Man",
+				"roms": {
+					"cpu": [
+						{ "file": [ "0x800", "0x9d027c4a" ] },
+						{ "file": [ "0x800", "0x194c7189" ] },
+						{ "file": [ "0x800", "0x5ba228bb" ] },
+						{ "file": [ "0x800", "0xbaf5461e" ] },
+						{ "file": [ "0x800", "0x08419c4a" ] },
+						{ "file": [ "0x800", "0xab74b51f" ] },
+						{ "file": [ "0x800", "0x5039b082" ] },
+						{ "file": [ "0x800", "0x931770d7" ] }
+					],
+					"video": [
+						{ "file": [ "0x800", "0xb569c4c1" ] },
+						{ "file": [ "0x800", "0x3591b89d" ] },
+						{ "file": [ "0x800", "0x014fb5a4" ] },
+						{ "file": [ "0x800", "0x21b91c64" ] }
+					]
+				}
+			},
+			"crockman": {
+				"name": "Crock-Man",
+				"roms": {
+					"cpu": [
+						{ "file": [ "0x800", "0x2c0fa0ab" ] },
+						{ "file": [ "0x800", "0xafeca2f1" ] },
+						{ "file": [ "0x800", "0x7d177853" ] },
+						{ "file": [ "0x800", "0xd3e8914c" ] },
+						{ "file": [ "0x800", "0x9045a44c" ] },
+						{ "file": [ "0x800", "0x93f344c5" ] },
+						{ "file": [ "0x800", "0xbed4a077" ] },
+						{ "file": [ "0x800", "0x800be41e" ] }
+					],
+					"video": [
+						{ "file": [ "0x800", "0xa10218c4" ] },
+						{ "file": [ "0x800", "0x3591b89d" ] },
+						{ "file": [ "0x800", "0x9e39323a" ] },
+						{ "file": [ "0x800", "0x1b1d9096" ] }
+					]
+				}
+			},
+			"crockmanf": {
+				"name": "Crock-Man (bootleg)",
+				"roms": {
+					"cpu": [
+						{ "file": [ "0x800", "0x2c0fa0ab" ] },
+						{ "file": [ "0x800", "0xafeca2f1" ] },
+						{ "file": [ "0x800", "0x7d177853" ] },
+						{ "file": [ "0x800", "0xd3e8914c" ] },
+						{ "file": [ "0x800", "0x9045a44c" ] },
+						{ "file": [ "0x800", "0x93f344c5" ] },
+						{ "file": [ "0x800", "0xbed4a077" ] },
+						{ "file": [ "0x800", "0x800be41e" ] }
+					],
+					"video": [
+						{ "file": [ "0x800", "0x581d0c11" ] },
+						{ "file": [ "0x800", "0x3591b89d" ] },
+						{ "file": [ "0x800", "0x9e39323a" ] },
+						{ "file": [ "0x800", "0x1b1d9096" ] }
+					]
+				}
+			},
+			"joyman": {
+				"name": "Joyman",
+				"roms": {
+					"cpu": [
+						{ "file": [ "0x800", "0xd844b679" ] },
+						{ "file": [ "0x800", "0xab9c8f29" ] },
+						{ "file": [ "0x800", "0x7d177853" ] },
+						{ "file": [ "0x800", "0xb3c8d32e" ] },
+						{ "file": [ "0x800", "0x9045a44c" ] },
+						{ "file": [ "0x800", "0x888f3c3e" ] },
+						{ "file": [ "0x800", "0x00b553f8" ] },
+						{ "file": [ "0x800", "0x5d5ce992" ] }
+					],
+					"video": [
+						{ "file": [ "0x800", "0x39b557bc" ] },
+						{ "file": [ "0x800", "0x33e0289e" ] },
+						{ "file": [ "0x800", "0x338771a6" ] },
+						{ "file": [ "0x800", "0xf4f0add5" ] }
+					]
+				}
+			},
+			"ctrpllrp": {
+				"name": "Caterpillar Pacman",
+				"roms": {
+					"cpu": [
+						{ "file": [ "0x800", "0x9d027c4a" ] },
+						{ "file": [ "0x800", "0xf39846d3" ] },
+						{ "file": [ "0x800", "0xafa149a8" ] },
+						{ "file": [ "0x800", "0xbaf5461e" ] },
+						{ "file": [ "0x800", "0x6bb282a1" ] },
+						{ "file": [ "0x800", "0xfa2140f5" ] },
+						{ "file": [ "0x800", "0x86c91e0e" ] },
+						{ "file": [ "0x800", "0x3d28134e" ] }
+					],
+					"video": [
+						{ "file": [ "0x800", "0x1c4617be" ] },
+						{ "file": [ "0x800", "0x46f72fef" ] },
+						{ "file": [ "0x800", "0xba9ec199" ] },
+						{ "file": [ "0x800", "0x41c09655" ] }
+					]
+				}
+			},
+			"pacmanfm": {
+				"name": "Pac Man (FAMARE SA)",
+				"roms": {
+					"cpu": [
+						{ "file": [ "0x800", "0xf36e88ab" ] },
+						{ "file": [ "0x800", "0x618bd9b3" ] },
+						{ "file": [ "0x800", "0x7d177853" ] },
+						{ "file": [ "0x800", "0xd3e8914c" ] },
+						{ "file": [ "0x800", "0x6bf4f625" ] },
+						{ "file": [ "0x800", "0xa948ce83" ] },
+						{ "file": [ "0x800", "0xb6289b26" ] },
+						{ "file": [ "0x800", "0x17a88c13" ] }
+					],
+					"video": [
+						{ "file": [ "0x800", "0x7a7b48b3" ] },
+						{ "file": [ "0x800", "0x3591b89d" ] },
+						{ "file": [ "0x800", "0x9e39323a" ] },
+						{ "file": [ "0x800", "0x1b1d9096" ] }
+					]
+				}
+			},
+			"pacmanug": {
+				"name": "Pac Man (U.Games)",
+				"roms": {
+					"cpu": [
+						{ "file": [ "0x800", "0xf36e88ab" ] },
+						{ "file": [ "0x800", "0x618bd9b3" ] },
+						{ "file": [ "0x800", "0x7d177853" ] },
+						{ "file": [ "0x800", "0xd3e8914c" ] },
+						{ "file": [ "0x800", "0x6bf4f625" ] },
+						{ "file": [ "0x800", "0xa948ce83" ] },
+						{ "file": [ "0x800", "0xb6289b26" ] },
+						{ "file": [ "0x800", "0x17a88c13" ] }
+					],
+					"video": [
+						{ "file": [ "0x800", "0xdc9f2a7b" ] },
+						{ "file": [ "0x800", "0x3591b89d" ] },
+						{ "file": [ "0x800", "0x9e39323a" ] },
+						{ "file": [ "0x800", "0x1b1d9096" ] }
+					]
+				}
+			},
+			"pacuman": {
+				"name": "Pacu-Man",
+				"roms": {
+					"cpu": [
+						{ "file": [ "0x800", "0xec8c1ed8" ] },
+						{ "file": [ "0x800", "0x40edaf56" ] },
+						{ "file": [ "0x800", "0xdb4f702b" ] },
+						{ "file": [ "0x800", "0x28f7257d" ] },
+						{ "file": [ "0x800", "0x212acb41" ] },
+						{ "file": [ "0x800", "0xe73dd1b9" ] },
+						{ "file": [ "0x800", "0x908a2cb2" ] },
+						{ "file": [ "0x800", "0xcf4ba26c" ] }
+					],
+					"video": [
+						{ "file": [ "0x800", "0x2066a0b7" ] },
+						{ "file": [ "0x800", "0x3591b89d" ] },
+						{ "file": [ "0x800", "0x9e39323a" ] },
+						{ "file": [ "0x800", "0x1b1d9096" ] }
+					]
+				},
+				"settings": {
+					"fixed": {
+						"value": 0,
+						"parameter": "dsw1"
+					}
+				}
+			},
+			"pacmanpe": {
+				"name": "Come Come",
+				"roms": {
+					"cpu": [
+						{ "file": [ "0x800", "0x183d235a" ] },
+						{ "file": [ "0x800", "0x2771c530" ] },
+						{ "file": [ "0x800", "0x7d177853" ] },
+						{ "file": [ "0x800", "0xd3e8914c" ] },
+						{ "file": [ "0x800", "0xcc92abb1" ] },
+						{ "file": [ "0x800", "0x8810b38e" ] },
+						{ "file": [ "0x800", "0xa02ce07f" ] },
+						{ "file": [ "0x800", "0x34e9566d" ] }
+					],
+					"video": [
+						{ "file": [ "0x800", "0x2229ab07" ] },
+						{ "file": [ "0x800", "0x3591b89d" ] },
+						{ "file": [ "0x800", "0x9e39323a" ] },
+						{ "file": [ "0x800", "0x1b1d9096" ] }
+					]
+				},
+				"settings": {
+					"controllers": {
+						"coin": false
+					},
+					"fixed": {
+						"value": 0,
+						"parameter": "dsw1"
+					},
+					"lives": {
+						"value": 4,
+						"name": "Lives",
+						"parameter": "dsw1",
+						"input": {
+							"2": 0,
+							"3": 4
+						}
+					}
+				}
+			},
+			"pacmansp": {
+				"name": "Puck Man (spanish)",
+				"roms": {
+					"cpu": [
+						{
+							"file": [ "0x8000", "0xf2404b4d" ],
+							"size": "0x4000"
+						}
+					],
+					"video": [
+						{
+							"file": [ "0x2000", "0x7a75b696" ],
+							"size": "0x800"
+						},
+						{
+							"file": [ "0x2000", "0x7a75b696" ],
+							"size": "0x800",
+							"start": "0x1000"
+						},
+						{
+							"file": [ "0x2000", "0x7a75b696" ],
+							"size": "0x800",
+							"start": "0x800"
+						},
+						{
+							"file": [ "0x2000", "0x7a75b696" ],
+							"size": "0x800",
+							"start": "0x1800"
+						}
+					]
+				},
+				"settings": {
+					"difficulty": {
+						"value": 64,
+						"name": "Difficulty",
+						"parameter": "dsw1",
+						"input": {
+							"Hard (Invalid)": 0,
+							"Normal": 64
+						}
+					}
+				}
+			}
+		}
+	},
+	"pacplus": {
+		"name": "Pacman Plus",
+		"platform": "namcopacman",
+		"default": {
+			"core": "pacman",
+			"settings": {
+				"decoders": {
+					"cpu": "pacmanplus"
+				},
+				"fixed": {
+					"value": 1,
+					"parameter": "dsw1"
+				},
+				"lives": {
+					"value": 8,
+					"name": "Lives",
+					"parameter": "dsw1",
+					"input": {
+						"1": 0,
+						"2": 4,
+						"3": 8,
+						"5": 12
+					}
+				},
+				"bonus": {
+					"value": 0,
+					"name": "Bonus",
+					"parameter": "dsw1",
+					"input": {
+						"10000 points": 0,
+						"15000 points": 16,
+						"20000 points": 32,
+						"no": 48
+					}
+				},
+				"difficulty": {
+					"value": 64,
+					"name": "Difficulty",
+					"parameter": "dsw1",
+					"input": {
+						"Hard": 0,
+						"Normal": 64
+					}
+				},
+				"ghostname": {
+					"value": 128,
+					"name": "Ghost names",
+					"parameter": "dsw1",
+					"input": {
+						"Alternate": 0,
+						"Normal": 128
+					}
+				}
+			},
+			"roms": {
+				"cpu": [
+					{ "file": [ "0x1000", "0xd611ef68" ] },
+					{ "file": [ "0x1000", "0xc7207556" ] },
+					{ "file": [ "0x1000", "0xae379430" ] },
+					{ "file": [ "0x1000", "0x5a6dff7b" ] }
+				],
+				"video": [
+					{ "file": [ "0x1000", "0x022c35da" ] },
+					{ "file": [ "0x1000", "0x4de65cdd" ] }
+				],
+				"palette": [
+					{ "file": [ "0x20", "0x063dd53a" ] },
+					{ "file": [ "0x100", "0xe271a166" ] }
+				],
+				"sound": [
+					{ "file": [ "0x100", "0xa9cc86bf" ] }
+				]
+			}
+		}
+	}
+}

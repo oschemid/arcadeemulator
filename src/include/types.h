@@ -26,7 +26,8 @@ namespace aos {
 		uint16_t height;
 		enum class rotation_t {
 			NONE, 
-			ROT90
+			ROT90,
+			ROT270
 		} rotation;
 	};
 	struct rgb_t {
@@ -62,6 +63,6 @@ namespace aos {
 		~File();
 
 		size_t getSize() const { return _size; }
-		bool read(const uint16_t, const uint16_t, const uint8_t*);
+		bool read(const size_t, const size_t, const uint8_t*);
 	};
 };

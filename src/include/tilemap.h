@@ -2,7 +2,7 @@
 
 #include "types.h"
 #include <cassert>
-#include "display.h"
+#include "device/rasterdisplay.h"
 #include <vector>
 
 using aos::palette_t;
@@ -47,8 +47,8 @@ namespace aos::tilemap
 		{
 		}
 
-		void drawTile(aos::display::RasterDisplay&, const Tile&, const uint16_t, const uint16_t, const palette_t, const bool, const bool);
-		void drawMaskTile(aos::display::RasterDisplay&, const Tile&, const uint16_t, const uint16_t, const palette_t, const bool, const bool);
+		void drawTile(aos::device::RasterDisplay&, const Tile&, const uint16_t, const uint16_t, const palette_t, const bool, const bool);
+		void drawMaskTile(aos::device::RasterDisplay&, const Tile&, const uint16_t, const uint16_t, const palette_t, const bool, const bool);
 
 	protected:
 		uint16_t _width{ 0 };
